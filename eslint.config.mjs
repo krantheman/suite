@@ -1,0 +1,241 @@
+import vueParser from 'vue-eslint-parser'
+import eslint from '@eslint/js'
+import prettier from 'eslint-config-prettier'
+import importPlugin from 'eslint-plugin-import'
+import prettierPlugin from 'eslint-plugin-prettier'
+import vuePlugin from 'eslint-plugin-vue'
+import globals from 'globals'
+import { config, configs, parser } from 'typescript-eslint'
+
+export default config(
+  {
+    ignores: ['frappe-ui/**', '**/doctypes.ts'],
+  },
+  {
+    files: ['**/*.{js,mjs,cjs,ts,vue}'],
+    extends: [
+      importPlugin.flatConfigs.recommended,
+      importPlugin.flatConfigs.typescript,
+    ],
+    settings: {
+      'import/resolver': {
+        typescript: {
+          project: './frontend/tsconfig.json',
+        },
+        alias: {
+          map: ['@', './frontend/src'],
+          extensions: ['.js', '.ts', '.vue'],
+        },
+      },
+    },
+    rules: {
+      'import/no-unresolved': ['error', { ignore: ['^~icons/lucide/'] }],
+    },
+  },
+  {
+    languageOptions: {
+      parser: vueParser,
+      parserOptions: {
+        parser: {
+          ts: parser,
+        },
+        tsconfigRootDir: import.meta.dirname,
+      },
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        frappe: true,
+        Vue: true,
+        SetVueGlobals: true,
+        __: true,
+        repl: true,
+        Class: true,
+        locals: true,
+        cint: true,
+        cstr: true,
+        cur_frm: true,
+        cur_dialog: true,
+        cur_page: true,
+        cur_list: true,
+        cur_tree: true,
+        msg_dialog: true,
+        is_null: true,
+        in_list: true,
+        has_common: true,
+        posthog: true,
+        has_words: true,
+        validate_email: true,
+        open_web_template_values_editor: true,
+        validate_name: true,
+        validate_phone: true,
+        validate_url: true,
+        get_number_format: true,
+        format_number: true,
+        format_currency: true,
+        comment_when: true,
+        open_url_post: true,
+        toTitle: true,
+        lstrip: true,
+        rstrip: true,
+        strip: true,
+        strip_html: true,
+        replace_all: true,
+        flt: true,
+        precision: true,
+        CREATE: true,
+        AMEND: true,
+        CANCEL: true,
+        copy_dict: true,
+        get_number_format_info: true,
+        strip_number_groups: true,
+        print_table: true,
+        Layout: true,
+        web_form_settings: true,
+        $c: true,
+        $a: true,
+        $i: true,
+        $bg: true,
+        $y: true,
+        $c_obj: true,
+        refresh_many: true,
+        refresh_field: true,
+        toggle_field: true,
+        get_field_obj: true,
+        get_query_params: true,
+        unhide_field: true,
+        hide_field: true,
+        set_field_options: true,
+        getCookie: true,
+        getCookies: true,
+        get_url_arg: true,
+        md5: true,
+        $: true,
+        jQuery: true,
+        moment: true,
+        hljs: true,
+        Awesomplete: true,
+        Sortable: true,
+        Showdown: true,
+        Taggle: true,
+        Gantt: true,
+        Slick: true,
+        Webcam: true,
+        PhotoSwipe: true,
+        PhotoSwipeUI_Default: true,
+        io: true,
+        JsBarcode: true,
+        L: true,
+        Chart: true,
+        DataTable: true,
+        Cypress: true,
+        cy: true,
+        it: true,
+        describe: true,
+        expect: true,
+        context: true,
+        before: true,
+        beforeEach: true,
+        after: true,
+        qz: true,
+        localforage: true,
+        extend_cscript: true,
+      },
+      ecmaVersion: 2022,
+      sourceType: 'module',
+    },
+  },
+  eslint.configs.recommended,
+  configs.recommended,
+  ...vuePlugin.configs['flat/recommended'],
+  prettier,
+  {
+    plugins: { prettier: prettierPlugin },
+    rules: {
+      'prettier/prettier': 'error',
+      'space-unary-ops': ['error', { words: true }],
+      'prefer-const': 'error',
+      'no-console': 'warn',
+      'import/no-duplicates': 'error',
+      'import/newline-after-import': 'error',
+      'import/order': [
+        'error',
+        {
+          alphabetize: {
+            order: 'asc',
+          },
+          named: true,
+          groups: ['builtin', 'external', 'internal', 'type'],
+          pathGroups: [
+            {
+              pattern: 'vue**',
+              group: 'external',
+              position: 'before',
+            },
+            {
+              pattern: 'frappe-ui',
+              group: 'external',
+              position: 'after',
+            },
+            {
+              pattern: 'frappe-ui/src/**',
+              group: 'external',
+              position: 'after',
+            },
+            {
+              pattern: '@/apps/mail/utils/**',
+              group: 'internal',
+              position: 'after',
+            },
+            {
+              pattern: '@/apps/mail/stores/**',
+              group: 'internal',
+              position: 'after',
+            },
+            {
+              pattern: '@/apps/mail/pages/**',
+              group: 'internal',
+              position: 'after',
+            },
+            {
+              pattern: '@/apps/mail/components/**',
+              group: 'internal',
+              position: 'after',
+            },
+          ],
+          pathGroupsExcludedImportTypes: [],
+          distinctGroup: false,
+          'newlines-between': 'always',
+        },
+      ],
+    },
+  },
+  {
+    // The mobile workspace is NativeScript, not browser: its own @/ alias points
+    // at mobile/app and it pulls in @mail/types, so the resolver and a couple of
+    // rules differ from the frontend defaults above.
+    files: ['mobile/**/*.{ts,vue}'],
+    settings: {
+      'import/resolver': {
+        typescript: {
+          project: './mobile/tsconfig.json',
+        },
+        alias: {
+          map: [
+            ['@', './mobile/app'],
+            ['@mail/types', './packages/types/src'],
+          ],
+          extensions: ['.js', '.ts', '.vue'],
+        },
+      },
+    },
+    rules: {
+      // NativeScript view props are camelCase (e.g. flexDirection), unlike HTML attributes.
+      'vue/attribute-hyphenation': 'off',
+    },
+  },
+  {
+    linterOptions: {
+      reportUnusedDisableDirectives: 'off',
+    },
+  },
+)
