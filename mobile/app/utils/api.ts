@@ -1,4 +1,3 @@
-import { sessionStore } from '@/stores/session'
 import { siteStore } from '@/stores/site'
 
 export interface ApiError {
@@ -7,43 +6,28 @@ export interface ApiError {
 	status: number
 }
 
-// Wraps a Frappe API call: POST /api/method/<method> with JSON params.
-// Handles Authorization header injection and surfaces Frappe error shapes.
 export function useApi() {
 	async function call<T>(method: string, params?: Record<string, unknown>): Promise<T> {
 		const site = siteStore()
-		const session = sessionStore()
-
 		if (!site.activeSite) throw new Error('No active site')
 
 		const url = `${site.activeSite.url}/api/method/${method}`
-		const headers: Record<string, string> = {
-			'Content-Type': 'application/json',
-			Accept: 'application/json',
-		}
-
-		if (session.tokens?.access_token) {
-			headers['Authorization'] = `Bearer ${session.tokens.access_token}`
-		}
-
 		const res = await fetch(url, {
 			method: 'POST',
-			headers,
+			headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
 			body: params ? JSON.stringify(params) : undefined,
 		})
 
 		const json = await res.json().catch(() => ({}))
 
 		if (!res.ok) {
-			const err: ApiError = {
+			throw {
 				message: json?.message ?? json?.exc ?? `HTTP ${res.status}`,
 				exc_type: json?.exc_type,
 				status: res.status,
-			}
-			throw err
+			} as ApiError
 		}
 
-		// Frappe wraps successful responses in { message: <data> }
 		return json.message as T
 	}
 

@@ -2,51 +2,40 @@ import { computed, ref } from 'vue'
 import { ApplicationSettings } from '@nativescript/core'
 import { defineStore } from 'pinia'
 
-// Token storage key is namespaced by site URL so multi-site works cleanly.
-// NOTE: ApplicationSettings is not encrypted — issue #486 (auth implementation)
-// replaces this with secure storage when wiring the real OAuth2 PKCE flow.
-
-function tokenKey(siteUrl: string) {
-	return `mail-token:${siteUrl}`
-}
-
-export interface OAuthTokens {
-	access_token: string
-	refresh_token: string
-	expires_at: number // unix ms
-}
+const sessionKey = (siteUrl: string) => `mail-session:${siteUrl}`
 
 export const sessionStore = defineStore('mail-session', () => {
-	const siteUrl = ref<string>('')
-	const tokens = ref<OAuthTokens | null>(null)
+	const loggedIn = ref(false)
 
-	const isLoggedIn = computed(() => !!tokens.value?.access_token)
+	const isLoggedIn = computed(() => loggedIn.value)
 
-	function loadTokens(site: string) {
-		siteUrl.value = site
-		try {
-			const raw = ApplicationSettings.getString(tokenKey(site), '')
-			tokens.value = raw ? (JSON.parse(raw) as OAuthTokens) : null
-		} catch {
-			tokens.value = null
+	function loadSession(siteUrl: string) {
+		loggedIn.value = ApplicationSettings.getBoolean(sessionKey(siteUrl), false)
+	}
+
+	async function login(siteUrl: string, usr: string, pwd: string): Promise<void> {
+		const res = await fetch(`${siteUrl}/api/method/login`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+			body: JSON.stringify({ usr, pwd }),
+		})
+		const json = await res.json().catch(() => ({}))
+		if (!res.ok || json.message === 'Failed') {
+			throw new Error(json.message || 'Login failed')
 		}
+		loggedIn.value = true
+		ApplicationSettings.setBoolean(sessionKey(siteUrl), true)
 	}
 
-	function saveTokens(site: string, t: OAuthTokens) {
-		siteUrl.value = site
-		tokens.value = t
-		ApplicationSettings.setString(tokenKey(site), JSON.stringify(t))
+	async function logout(siteUrl: string): Promise<void> {
+		try {
+			await fetch(`${siteUrl}/api/method/logout`, { method: 'POST' })
+		} catch {
+			// ignore network errors on logout
+		}
+		loggedIn.value = false
+		ApplicationSettings.setBoolean(sessionKey(siteUrl), false)
 	}
 
-	function clearTokens(site: string) {
-		tokens.value = null
-		ApplicationSettings.remove(tokenKey(site))
-	}
-
-	function isTokenExpired(): boolean {
-		if (!tokens.value) return true
-		return Date.now() >= tokens.value.expires_at - 60_000 // 1 min buffer
-	}
-
-	return { siteUrl, tokens, isLoggedIn, loadTokens, saveTokens, clearTokens, isTokenExpired }
+	return { isLoggedIn, loadSession, login, logout }
 })
