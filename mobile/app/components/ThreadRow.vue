@@ -1,8 +1,10 @@
 <template>
-	<!-- One thread list row. The avatar + content open the thread; the star is a
-	     separate sibling tap target. The outer row has no tap handler so the star
-	     tap can't also bubble up and open the thread. Horizontal insets are margins
-	     on grid children, not container padding, per the iOS spacing constraints. -->
+	<!-- One thread list row. A full-row transparent overlay opens the thread; the star
+	     sits on top of it as its own tap target. The overlay is layered ABOVE the avatar/
+	     content (so iOS hit-testing — which returns the top-most view, not the first with a
+	     handler — routes those taps to it) but BELOW the star (so the star still wins in its
+	     area). Tapping anywhere but the star navigates. Horizontal insets are margins on grid
+	     children, not container padding, per the iOS spacing constraints. -->
 	<GridLayout columns="auto, *, auto" class="border-outline-gray-1 border-b py-3">
 		<!-- avatar: sender image, else monochrome initials -->
 		<UserAvatar
@@ -11,28 +13,32 @@
 			:name="senderName"
 			:image="thread.user_image"
 			verticalAlignment="top"
-			@tap="$emit('open')"
 		/>
 
 		<!-- content -->
-		<StackLayout col="1" class="ml-3" verticalAlignment="top" @tap="$emit('open')">
-			<!-- line 1: unread dot + sender -->
-			<GridLayout columns="auto, *">
+		<StackLayout col="1" class="ml-3" verticalAlignment="top">
+			<!-- line 1: unread dot + sender + draft badge. Flexbox so the name shrinks
+			     (truncating) and the badge sits right after it, not right-aligned. -->
+			<FlexboxLayout flexDirection="row" alignItems="center">
 				<StackLayout
 					v-if="!thread.seen"
-					col="0"
 					class="mr-1.5 h-2 w-2 rounded-full bg-blue-500"
-					verticalAlignment="center"
+					flexShrink="0"
 				/>
 				<Label
-					col="1"
 					:text="header"
 					class="text-ink-gray-9 mr-2 text-base"
 					:class="thread.seen ? 'font-medium' : 'font-bold'"
 					textWrap="false"
-					verticalAlignment="center"
+					flexShrink="1"
 				/>
-			</GridLayout>
+				<Label
+					v-if="thread.draft"
+					:text="__('Draft')"
+					class="bg-surface-red-1 text-ink-red-3 rounded px-1.5 py-0.5 text-xs font-bold"
+					flexShrink="0"
+				/>
+			</FlexboxLayout>
 
 			<!-- line 2: subject -->
 			<Label
@@ -94,6 +100,10 @@
 			horizontalAlignment="right"
 			verticalAlignment="top"
 		/>
+
+		<!-- full-row tap target: open the thread (transparent, above content, below star) -->
+		<GridLayout col="0" colSpan="3" @tap="$emit('open')" />
+
 		<GridLayout
 			col="2"
 			class="mr-1 h-7 w-9"
