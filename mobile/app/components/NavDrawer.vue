@@ -141,13 +141,13 @@
 import { computed, nextTick, ref, watch } from 'vue'
 import { CoreTypes, isIOS } from '@nativescript/core'
 
-import { formatBytes } from '@/utils/format'
-import { folderColorClass, lucide, mailboxIcon } from '@/utils/lucide'
-import { safeAreaBottom, safeAreaTop } from '@/utils/safeArea'
-import { siteStore } from '@/stores/site'
-import { userStore } from '@/stores/user'
+import { formatBytes } from '@/apps/mail/utils/format'
+import { folderColorClass, lucide, mailboxIcon } from '@/apps/mail/utils/lucide'
+import { safeAreaBottom, safeAreaTop } from '@/apps/mail/utils/safeArea'
+import { siteStore } from '@/apps/mail/stores/site'
+import { userStore } from '@/apps/mail/stores/user'
 
-import type { NavSelection } from '@/types/navigation'
+import type { NavSelection } from '@/apps/mail/types/navigation'
 import type { MailboxData, UserAccount } from '@mail/types'
 import type { EventData, View } from '@nativescript/core'
 

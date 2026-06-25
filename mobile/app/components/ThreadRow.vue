@@ -125,9 +125,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import { formatListDate, formatRecipients } from '@/utils/format'
-import { lucide } from '@/utils/lucide'
-import UserAvatar from '@/components/UserAvatar.vue'
+import { formatListDate, formatRecipients } from '@/apps/mail/utils/format'
+import { lucide } from '@/apps/mail/utils/lucide'
+import UserAvatar from '@/apps/mail/components/UserAvatar.vue'
 
 import type { Thread } from '@mail/types'
 

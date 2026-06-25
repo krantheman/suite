@@ -4,7 +4,7 @@
 
 import { SecureStorage } from '@nativescript/secure-storage'
 
-import type { OAuthTokens } from '@/utils/oauth'
+import type { OAuthTokens } from '@/apps/mail/utils/oauth'
 
 const storage = new SecureStorage()
 

@@ -83,21 +83,21 @@
 import { computed, onMounted, provide, ref, watch } from 'vue'
 import { $navigateTo } from 'nativescript-vue'
 
-import { composeContext } from '@/state/composeDraft'
-import { lucide } from '@/utils/lucide'
-import { safeAreaTop } from '@/utils/safeArea'
-import { loadTranslations } from '@/utils/translation'
-import { sessionStore } from '@/stores/session'
-import { siteStore } from '@/stores/site'
-import { userStore } from '@/stores/user'
-import ComposeView from '@/pages/ComposeView.vue'
-import LandingPage from '@/pages/LandingPage.vue'
-import ThreadView from '@/pages/ThreadView.vue'
-import AccountSheet from '@/components/AccountSheet.vue'
-import MailboxScreen from '@/components/MailboxScreen.vue'
-import NavDrawer from '@/components/NavDrawer.vue'
+import { composeContext } from '@/apps/mail/state/composeDraft'
+import { lucide } from '@/apps/mail/utils/lucide'
+import { safeAreaTop } from '@/apps/mail/utils/safeArea'
+import { loadTranslations } from '@/apps/mail/utils/translation'
+import { sessionStore } from '@/apps/mail/stores/session'
+import { siteStore } from '@/apps/mail/stores/site'
+import { userStore } from '@/apps/mail/stores/user'
+import ComposeView from '@/apps/mail/pages/ComposeView.vue'
+import LandingPage from '@/apps/mail/pages/LandingPage.vue'
+import ThreadView from '@/apps/mail/pages/ThreadView.vue'
+import AccountSheet from '@/apps/mail/components/AccountSheet.vue'
+import MailboxScreen from '@/apps/mail/components/MailboxScreen.vue'
+import NavDrawer from '@/apps/mail/components/NavDrawer.vue'
 
-import type { ActiveMailbox, NavSelection } from '@/types/navigation'
+import type { ActiveMailbox, NavSelection } from '@/apps/mail/types/navigation'
 import type { MailboxData } from '@mail/types'
 
 const site = siteStore()
@@ -183,22 +183,34 @@ function logout() {
 	$navigateTo(LandingPage, { clearHistory: true })
 }
 
-// Switch the active site: load its stored session and reload user data, or fall
-// back to the landing page when that site isn't signed in.
-function onSwitchSite(url: string) {
+// Switch the active site: load its data directly. If there's no stored session
+// for it, run the OAuth login for that site (rather than bouncing to the landing
+// page), and only fall back to the landing page if we can't.
+async function onSwitchSite(url: string) {
 	sheetOpen.value = false
 	drawerOpen.value = false
 	site.setActiveSite(url)
 	session.load(url)
-	if (session.isLoggedIn) {
-		store.reset()
-		currentView.value = ''
-		activeMailbox.value = null
-		void store.fetchUser()
-		void loadTranslations()
-	} else {
-		$navigateTo(LandingPage, { clearHistory: true })
+
+	if (!session.isLoggedIn) {
+		const clientId = site.sites.find((s) => s.url === url)?.client_id
+		if (!clientId) {
+			$navigateTo(LandingPage, { clearHistory: true })
+			return
+		}
+		try {
+			await session.login(url, clientId)
+		} catch {
+			$navigateTo(LandingPage, { clearHistory: true })
+			return
+		}
 	}
+
+	store.reset()
+	currentView.value = ''
+	activeMailbox.value = null
+	void store.fetchUser()
+	void loadTranslations()
 }
 
 function onAddSite() {

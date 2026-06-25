@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { lucide } from '@/utils/lucide'
+import { lucide } from '@/apps/mail/utils/lucide'
 
 defineProps<{ icon: string; label: string; sub?: string; danger?: boolean }>()
 defineEmits<{ tap: [] }>()

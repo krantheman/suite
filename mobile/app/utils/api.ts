@@ -1,5 +1,5 @@
-import { sessionStore } from '@/stores/session'
-import { siteStore } from '@/stores/site'
+import { sessionStore } from '@/apps/mail/stores/session'
+import { siteStore } from '@/apps/mail/stores/site'
 
 export interface ApiError {
 	message: string

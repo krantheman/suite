@@ -15,8 +15,8 @@ import {
 	type RedirectResult,
 	buildAuthorizeUrl,
 	exchangeCodeForTokens,
-} from '@/utils/oauth'
-import { createPkcePair } from '@/utils/pkce'
+} from '@/apps/mail/utils/oauth'
+import { createPkcePair } from '@/apps/mail/utils/pkce'
 
 export async function loginWithOAuth(siteUrl: string, clientId: string): Promise<OAuthTokens> {
 	const pkce = createPkcePair()

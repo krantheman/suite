@@ -1,9 +1,9 @@
 import { createApp, registerElement } from 'nativescript-vue'
 import { createPinia } from 'pinia'
 
-import translationPlugin, { loadTranslations } from '@/utils/translation'
-import { sessionStore } from '@/stores/session'
-import { siteStore } from '@/stores/site'
+import translationPlugin, { loadTranslations } from '@/apps/mail/utils/translation'
+import { sessionStore } from '@/apps/mail/stores/session'
+import { siteStore } from '@/apps/mail/stores/site'
 
 import App from './App.vue'
 import './app.css'

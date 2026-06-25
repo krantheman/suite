@@ -232,11 +232,11 @@
 import { computed, nextTick, ref, watch } from 'vue'
 import { CoreTypes } from '@nativescript/core'
 
-import { lucide } from '@/utils/lucide'
-import { safeAreaBottom } from '@/utils/safeArea'
-import { siteStore } from '@/stores/site'
-import { userStore } from '@/stores/user'
-import UserAvatar from '@/components/UserAvatar.vue'
+import { lucide } from '@/apps/mail/utils/lucide'
+import { safeAreaBottom } from '@/apps/mail/utils/safeArea'
+import { siteStore } from '@/apps/mail/stores/site'
+import { userStore } from '@/apps/mail/stores/user'
+import UserAvatar from '@/apps/mail/components/UserAvatar.vue'
 
 import type { UserAccount } from '@mail/types'
 import type { EventData, View } from '@nativescript/core'

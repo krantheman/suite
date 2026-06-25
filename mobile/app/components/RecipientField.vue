@@ -100,9 +100,9 @@
 import { computed, nextTick, ref, watch } from 'vue'
 import { isAndroid } from '@nativescript/core'
 
-import { useApi } from '@/utils/api'
-import { lucide } from '@/utils/lucide'
-import { flattenField } from '@/utils/nativeField'
+import { useApi } from '@/apps/mail/utils/api'
+import { lucide } from '@/apps/mail/utils/lucide'
+import { flattenField } from '@/apps/mail/utils/nativeField'
 
 import type { DraftRecipient } from '@mail/types'
 import type { EventData, PropertyChangeData, View } from '@nativescript/core'
@@ -249,7 +249,7 @@ function queueSuggestions(query: string) {
 	}
 	suggestTimer = setTimeout(async () => {
 		try {
-			const res = await api.call<string[]>('mail.api.mail.get_email_suggestions', {
+			const res = await api.call<string[]>('suite.mail.api.mail.get_email_suggestions', {
 				account: props.account,
 				query: q,
 				limit: 3,

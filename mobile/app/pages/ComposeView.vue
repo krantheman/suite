@@ -167,15 +167,15 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { isAndroid } from '@nativescript/core'
 import { $navigateBack } from 'nativescript-vue'
 
-import { composeContext } from '@/state/composeDraft'
-import { useApi } from '@/utils/api'
-import { lucide } from '@/utils/lucide'
-import { safeAreaTop } from '@/utils/safeArea'
-import { userStore } from '@/stores/user'
-import ComposeSheet from '@/components/ComposeSheet.vue'
-import ComposeSheetRow from '@/components/ComposeSheetRow.vue'
-import RecipientField from '@/components/RecipientField.vue'
-import RichTextEditor from '@/components/RichTextEditor.vue'
+import { composeContext } from '@/apps/mail/state/composeDraft'
+import { useApi } from '@/apps/mail/utils/api'
+import { lucide } from '@/apps/mail/utils/lucide'
+import { safeAreaTop } from '@/apps/mail/utils/safeArea'
+import { userStore } from '@/apps/mail/stores/user'
+import ComposeSheet from '@/apps/mail/components/ComposeSheet.vue'
+import ComposeSheetRow from '@/apps/mail/components/ComposeSheetRow.vue'
+import RecipientField from '@/apps/mail/components/RecipientField.vue'
+import RichTextEditor from '@/apps/mail/components/RichTextEditor.vue'
 
 import type { DraftRecipient } from '@mail/types'
 import type { EventData } from '@nativescript/core'
@@ -296,12 +296,12 @@ async function saveDraft() {
 	saving = true
 	try {
 		const res = draftId.value
-			? await api.call<{ id: string }>('mail.api.mail.update_draft_mail', {
+			? await api.call<{ id: string }>('suite.mail.api.mail.update_draft_mail', {
 					id: draftId.value,
 					...mailPayload(),
 					submit: false,
 				})
-			: await api.call<{ id: string }>('mail.api.mail.create_mail', {
+			: await api.call<{ id: string }>('suite.mail.api.mail.create_mail', {
 					...mailPayload(),
 					save_as_draft: true,
 				})
@@ -333,13 +333,13 @@ async function send() {
 	sending = true
 	try {
 		if (draftId.value) {
-			await api.call('mail.api.mail.update_draft_mail', {
+			await api.call('suite.mail.api.mail.update_draft_mail', {
 				id: draftId.value,
 				...mailPayload(),
 				submit: true,
 			})
 		} else {
-			await api.call('mail.api.mail.create_mail', { ...mailPayload(), save_as_draft: false })
+			await api.call('suite.mail.api.mail.create_mail', { ...mailPayload(), save_as_draft: false })
 		}
 		savedSnapshot = snapshot() // sent — nothing left to draft-save on unmount
 		$navigateBack()
@@ -369,7 +369,7 @@ async function discard() {
 	savedSnapshot = snapshot() // prevent the unmount auto-save from re-creating it
 	if (draftId.value) {
 		try {
-			await api.call('mail.api.mail.delete_mail', {
+			await api.call('suite.mail.api.mail.delete_mail', {
 				account: fromAccount.value,
 				id: draftId.value,
 			})

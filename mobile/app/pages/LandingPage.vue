@@ -76,11 +76,11 @@
 import { ref } from 'vue'
 import { $navigateTo } from 'nativescript-vue'
 
-import { useApi } from '@/utils/api'
-import { loadTranslations } from '@/utils/translation'
-import { sessionStore } from '@/stores/session'
-import { siteStore } from '@/stores/site'
-import AppShell from '@/pages/AppShell.vue'
+import { useApi } from '@/apps/mail/utils/api'
+import { loadTranslations } from '@/apps/mail/utils/translation'
+import { sessionStore } from '@/apps/mail/stores/session'
+import { siteStore } from '@/apps/mail/stores/site'
+import AppShell from '@/apps/mail/pages/AppShell.vue'
 
 import type { SiteInfo } from '@mail/types'
 
@@ -113,7 +113,7 @@ async function addSite() {
 	const url = normalizeUrl(siteInput.value)
 	busy.value = true
 	try {
-		const info = await unauthenticatedCall<ClientInfo>(url, 'mail.api.mobile.get_client_id')
+		const info = await unauthenticatedCall<ClientInfo>(url, 'suite.mail.api.mobile.get_client_id')
 		const siteInfo: SiteInfo = {
 			url,
 			sitename: info.sitename,

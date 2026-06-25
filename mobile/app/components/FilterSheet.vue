@@ -55,10 +55,10 @@
 import { computed, nextTick, ref, watch } from 'vue'
 import { CoreTypes } from '@nativescript/core'
 
-import { lucide } from '@/utils/lucide'
-import { safeAreaBottom } from '@/utils/safeArea'
+import { lucide } from '@/apps/mail/utils/lucide'
+import { safeAreaBottom } from '@/apps/mail/utils/safeArea'
 
-import type { ThreadFilter } from '@/types/navigation'
+import type { ThreadFilter } from '@/apps/mail/types/navigation'
 import type { EventData, View } from '@nativescript/core'
 
 const props = defineProps<{ open: boolean; current: ThreadFilter; showStarred: boolean }>()

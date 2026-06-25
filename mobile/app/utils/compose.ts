@@ -3,7 +3,7 @@
 
 import dayjs from 'dayjs'
 
-import { groupRecipients } from '@/utils/format'
+import { groupRecipients } from '@/apps/mail/utils/format'
 
 import type { ComposeMailData, DraftRecipient, Mail, Recipient } from '@mail/types'
 

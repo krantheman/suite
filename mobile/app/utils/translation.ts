@@ -1,6 +1,6 @@
-import { useApi } from '@/utils/api'
-import { sessionStore } from '@/stores/session'
-import { siteStore } from '@/stores/site'
+import { useApi } from '@/apps/mail/utils/api'
+import { sessionStore } from '@/apps/mail/stores/session'
+import { siteStore } from '@/apps/mail/stores/site'
 
 let translatedMessages: Record<string, string> = {}
 
@@ -33,10 +33,10 @@ export async function loadTranslations() {
 
 	try {
 		translatedMessages = sessionStore().isLoggedIn
-			? await call<Record<string, string>>('mail.api.get_translations')
+			? await call<Record<string, string>>('suite.mail.api.get_translations')
 			: await unauthenticatedCall<Record<string, string>>(
 					site.activeSite.url,
-					'mail.api.get_translations',
+					'suite.mail.api.get_translations',
 				)
 	} catch {
 		translatedMessages = {}

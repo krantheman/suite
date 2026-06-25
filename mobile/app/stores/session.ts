@@ -1,9 +1,9 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 
-import { loginWithOAuth } from '@/utils/authFlow'
-import { type OAuthTokens, refreshTokens } from '@/utils/oauth'
-import { clearTokens, loadTokens, saveTokens } from '@/utils/secureStorage'
+import { loginWithOAuth } from '@/apps/mail/utils/authFlow'
+import { type OAuthTokens, refreshTokens } from '@/apps/mail/utils/oauth'
+import { clearTokens, loadTokens, saveTokens } from '@/apps/mail/utils/secureStorage'
 
 export type { OAuthTokens }
 

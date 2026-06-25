@@ -24,8 +24,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import { emailFromAvatarUrl, gravatarUrl } from '@/utils/gravatar'
-import { siteStore } from '@/stores/site'
+import { emailFromAvatarUrl, gravatarUrl } from '@/apps/mail/utils/gravatar'
+import { siteStore } from '@/apps/mail/stores/site'
 
 const props = withDefaults(defineProps<{ name: string; image?: string; size?: number }>(), {
 	image: '',
@@ -51,7 +51,7 @@ function initials(name: string): string {
 // Uploaded photos / absolute URLs are resolved against the active site as-is.
 function resolveSrc(image: string): string {
 	if (!image) return ''
-	if (image.includes('mail.api.mail.get_avatar')) {
+	if (image.includes('suite.mail.api.mail.get_avatar')) {
 		const email = emailFromAvatarUrl(image)
 		return email ? gravatarUrl(email, 256) : ''
 	}

@@ -6,9 +6,9 @@
 import { ref } from 'vue'
 import { $navigateTo } from 'nativescript-vue'
 
-import { sessionStore } from '@/stores/session'
-import AppShell from '@/pages/AppShell.vue'
-import LandingPage from '@/pages/LandingPage.vue'
+import { sessionStore } from '@/apps/mail/stores/session'
+import AppShell from '@/apps/mail/pages/AppShell.vue'
+import LandingPage from '@/apps/mail/pages/LandingPage.vue'
 
 const session = sessionStore()
 

@@ -2,7 +2,7 @@ import { computed, ref } from 'vue'
 import { ApplicationSettings } from '@nativescript/core'
 import { defineStore } from 'pinia'
 
-import { useApi } from '@/utils/api'
+import { useApi } from '@/apps/mail/utils/api'
 
 import type { MailboxData, User, UserAccount } from '@mail/types'
 
@@ -52,7 +52,7 @@ export const userStore = defineStore('mail-user', () => {
 		isLoading.value = true
 		error.value = null
 		try {
-			const data = await api.call<User>('mail.api.account.get_user_info')
+			const data = await api.call<User>('suite.mail.api.account.get_user_info')
 			user.value = data
 			resolveAccount(data.accounts)
 		} catch (e) {
@@ -65,7 +65,7 @@ export const userStore = defineStore('mail-user', () => {
 	async function fetchMailboxes() {
 		if (!account.value) return
 		try {
-			const data = await api.call<MailboxData[]>('mail.api.mail.get_mailboxes', {
+			const data = await api.call<MailboxData[]>('suite.mail.api.mail.get_mailboxes', {
 				account: account.value,
 			})
 			mailboxes.value = data
@@ -77,7 +77,7 @@ export const userStore = defineStore('mail-user', () => {
 	async function fetchQuota() {
 		if (!account.value) return
 		try {
-			quota.value = await api.call<Quota>('mail.api.account.get_quota', {
+			quota.value = await api.call<Quota>('suite.mail.api.account.get_quota', {
 				account: account.value,
 			})
 		} catch {

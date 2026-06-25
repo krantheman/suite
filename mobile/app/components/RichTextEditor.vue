@@ -7,7 +7,7 @@
 import { onUnmounted, ref } from 'vue'
 import { isAndroid } from '@nativescript/core'
 
-import { buildEditorDocument } from '@/utils/richTextDoc'
+import { buildEditorDocument } from '@/apps/mail/utils/richTextDoc'
 
 import type { EventData, LoadEventData } from '@nativescript/core'
 

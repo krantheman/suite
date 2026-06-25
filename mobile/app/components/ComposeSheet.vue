@@ -29,7 +29,7 @@
 import { nextTick, ref, watch } from 'vue'
 import { CoreTypes } from '@nativescript/core'
 
-import { safeAreaBottom } from '@/utils/safeArea'
+import { safeAreaBottom } from '@/apps/mail/utils/safeArea'
 
 import type { EventData, View } from '@nativescript/core'
 
