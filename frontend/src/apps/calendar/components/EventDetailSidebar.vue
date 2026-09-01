@@ -38,7 +38,15 @@ import EventParticipantList from '@/apps/calendar/components/EventParticipantLis
 import RecurringScopeModal from '@/apps/calendar/components/Modals/RecurringScopeModal.vue'
 import LinkifiedText from '@/components/LinkifiedText.vue'
 
-const { calendarEvent } = defineProps<{ calendarEvent: any }>()
+const { calendarEvent, variant = 'panel' } = defineProps<{
+	calendarEvent: any
+	/**
+	 * Where the panel is hosted. `panel` is the desktop column beside the
+	 * calendar — its own width, its own border, its own scroll. `sheet` is the
+	 * phone's bottom sheet, which owns all three, so the body renders bare.
+	 */
+	variant?: 'panel' | 'sheet'
+}>()
 const router = useRouter()
 
 const emit = defineEmits(['close', 'edit', 'reloadEvents', 'emailParticipants'])
@@ -374,7 +382,11 @@ const openUrl = (location: string) => {
 
 <template>
 	<div
-		class="bg-surface-base flex h-full w-[352px] shrink-0 flex-col overflow-hidden border-l text-left"
+		:class="
+			variant === 'sheet'
+				? 'flex w-full flex-col text-left'
+				: 'bg-surface-base flex h-full w-[352px] shrink-0 flex-col overflow-hidden border-l text-left'
+		"
 	>
 		<!-- Header -->
 		<!-- h-12 matches the mail header bar's 48px, so when mail hosts this panel
@@ -399,7 +411,15 @@ const openUrl = (location: string) => {
 						<MoreHorizontal class="icon text-ink-gray-7" />
 					</Button>
 				</Dropdown>
-				<Button variant="ghost" :tooltip="__('Close')" @click="emit('close')">
+				<!-- A sheet is dismissed by dragging it down or tapping outside, so a
+				     close button would be a third way to do what the surface already
+				     says it does. -->
+				<Button
+					v-if="variant !== 'sheet'"
+					variant="ghost"
+					:tooltip="__('Close')"
+					@click="emit('close')"
+				>
 					<X class="icon text-ink-gray-7" />
 				</Button>
 			</div>

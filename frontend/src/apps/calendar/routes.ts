@@ -36,6 +36,13 @@ export const routes: RouteRecordRaw[] = [
 				name: 'calendar-day',
 				component: () => import('@/apps/calendar/pages/CalendarView.vue'),
 			},
+			// Phone-only destination: the tab bar's third tab. On a desktop the same
+			// settings are the SettingsDialog the sidebar opens.
+			{
+				path: 'account/:accountId/profile',
+				name: 'calendar-profile',
+				component: () => import('@/apps/calendar/pages/ProfileView.vue'),
+			},
 			// Shortcut routes: short paths that resolve to their full account-scoped
 			// equivalents once the active accountId is known (resolved in the guard).
 			{

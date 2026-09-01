@@ -900,7 +900,9 @@ const recurringScopeModalProps = computed(() => ({
 <template>
 	<Dialog :open="show" size="4xl" bare @update:open="(open) => (open ? (show = true) : leave())">
 		<template #default>
-			<div class="flex max-h-[85vh] flex-col text-ink-gray-8">
+			<!-- On a phone the dialog is the screen: 85vh of a 4xl box left the form in
+			     a letterbox with its own scrollbar inside the page's. -->
+			<div class="flex max-h-[85vh] flex-col text-ink-gray-8 max-sm:h-dvh max-sm:max-h-none">
 				<!-- header -->
 				<div class="flex items-center border-b px-6 py-4">
 					<span class="text-md font-semibold">{{ dialogTitle }}</span>
@@ -918,7 +920,12 @@ const recurringScopeModalProps = computed(() => ({
 					</div>
 				</div>
 
-				<div class="flex min-h-0 flex-1">
+				<!-- Two columns become one below sm: at 390px the participants column left
+				     the details column too narrow to put a label and its field on the same
+				     line, and every row wrapped to one word deep. Stacked, the form keeps
+				     its order — details, then who is coming — and the whole thing scrolls
+				     as one surface rather than two side by side. -->
+				<div class="flex min-h-0 flex-1 max-sm:flex-col max-sm:overflow-y-auto">
 					<!-- left: event details -->
 					<div class="min-w-0 flex-1 overflow-y-auto px-6 py-5">
 						<!-- lead title. The field sizes to its own text — a mirror span shares
@@ -1143,7 +1150,9 @@ const recurringScopeModalProps = computed(() => ({
 					</div>
 
 					<!-- right: guests rail -->
-					<div class="w-[300px] shrink-0 overflow-y-auto border-l px-5 py-5">
+					<div
+						class="w-[300px] shrink-0 overflow-y-auto border-l px-5 py-5 max-sm:w-full max-sm:overflow-visible max-sm:border-l-0 max-sm:border-t"
+					>
 						<div class="mb-3 flex items-baseline gap-2">
 							<Users :size="15" class="icon self-center text-ink-gray-5" />
 							<span class="text-base font-medium">{{ __('Participants') }}</span>

@@ -1,6 +1,7 @@
 import type { RouteLocationNormalized } from 'vue-router'
 
 import suiteRouter from '@/router'
+import { useScreenSize } from '@/composables/useScreenSize'
 
 import { userStore } from '@/apps/calendar/stores/user'
 
@@ -21,7 +22,14 @@ const resolveShortcut = (
 	params: Params,
 	accountId: string,
 ) => {
-	const defaultRoute = { name: 'calendar-month', params: { accountId } }
+	// Home is the month grid on a desktop and the agenda on a phone, where a
+	// month of columns has nothing legible in it — the phone renders the day
+	// route as its agenda (see CalendarView's phone shell).
+	const { isMobile } = useScreenSize()
+	const defaultRoute = {
+		name: isMobile.value ? 'calendar-day' : 'calendar-month',
+		params: { accountId },
+	}
 
 	switch (name) {
 		case 'calendar-month-shortcut':

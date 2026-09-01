@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, reactive, ref, useTemplateRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useNow } from '@vueuse/core'
 import { Button, Dialog, TabButtons, createResource, usePageMeta } from 'frappe-ui'
 import { Calendar } from 'frappe-ui/experimental'
 
@@ -17,6 +18,8 @@ import AppSidebar from '@/apps/calendar/components/AppSidebar.vue'
 import EventDetailSidebar from '@/apps/calendar/components/EventDetailSidebar.vue'
 import EventModal from '@/apps/calendar/components/Modals/EventModal.vue'
 import RecurringScopeModal from '@/apps/calendar/components/Modals/RecurringScopeModal.vue'
+import EventDetailSheet from '@/apps/calendar/components/mobile/EventDetailSheet.vue'
+import MobileCalendar from '@/apps/calendar/components/mobile/MobileCalendar.vue'
 
 const dayjs = inject('$dayjs')
 
@@ -36,7 +39,93 @@ const ROUTE_TO_VIEW = { 'calendar-month': 'Month', 'calendar-week': 'Week', 'cal
 const routeNameForView = (view) => VIEW_TO_ROUTE[view as keyof typeof VIEW_TO_ROUTE]
 const viewForRouteName = (name) => ROUTE_TO_VIEW[name as keyof typeof ROUTE_TO_VIEW]
 
-usePageMeta(() => appPageMeta(calendarRef.value?.currentMonthYear || __('Frappe Calendar'), 'Calendar'))
+/* -------------------------------------------------------------------------- */
+/* The phone shell                                                            */
+/*                                                                            */
+/* The desktop grid and the phone's agenda are two trees over one set of      */
+/* events, not one tree restyled — `useScreenSize` decides which mounts, and  */
+/* only one of them ever exists. So the state the fui Calendar holds for the  */
+/* desktop (which day, which view) is held here for the phone, and everything */
+/* downstream — the fetch window, the route, the page title — reads whichever */
+/* of the two is live.                                                        */
+/* -------------------------------------------------------------------------- */
+
+/** The day the phone is on. The desktop's equivalent lives inside the Calendar. */
+const mobileDate = ref(routeDate().format('YYYY-MM-DD'))
+const mobileView = ref<'agenda' | 'month'>(route.name === 'calendar-month' ? 'month' : 'agenda')
+
+// Drives the now-line and the "Today" affordance. Half a minute is as often as
+// a clock reading h:mm can say anything new.
+const now = useNow({ interval: 30_000 })
+
+/** A route without a date means today, the way setRoute writes it. */
+function routeDate() {
+	const { year, month, day } = route.params
+	const date = year && month && day ? dayjs(`${year}-${month}-${day}`, 'YYYY-M-D') : dayjs()
+	return date.isValid() ? date : dayjs()
+}
+
+// The month whose events are fetched: the calendar's on desktop, the selected
+// day's on the phone. Without this the phone asked for `dayjs().year(undefined)`
+// — the Calendar that answers those questions is not mounted there.
+const anchorMonth = computed(() => {
+	if (isMobile.value) return dayjs(mobileDate.value)
+	return dayjs().year(calendarRef.value?.currentYear).month(calendarRef.value?.currentMonth)
+})
+
+const pageTitle = computed(() => {
+	if (isMobile.value) return dayjs(mobileDate.value).format('MMMM YYYY')
+	return calendarRef.value?.currentMonthYear || __('Frappe Calendar')
+})
+
+usePageMeta(() => appPageMeta(pageTitle.value, 'Calendar'))
+
+// The phone writes its day into the route the way the desktop calendar does, so
+// a deep link opens on it and Back walks the days visited. The view rides along:
+// agenda is the day route, month the month one.
+watch([mobileDate, mobileView], ([date, view], [previousDate]) => {
+	if (!isMobile.value) return
+
+	const day = dayjs(date)
+	const name = view === 'month' ? 'calendar-month' : 'calendar-day'
+	const params = {
+		accountId: store.accountId,
+		year: String(day.year()),
+		month: String(day.month() + 1),
+		day: String(day.date()),
+	}
+	if (route.name !== name || route.params.day !== params.day || route.params.month !== params.month)
+		router.replace({ name, params, query: route.query })
+
+	// A new month is outside the window that was fetched for the old one.
+	if (previousDate && !day.isSame(dayjs(previousDate), 'month')) events.reload()
+})
+
+// The tab bar's FAB lives outside this view, so it asks for a new event through the
+// URL (?new=1) and this answers — then drops the flag, so a reload or a Back does not
+// reopen the modal.
+watch(
+	() => route.query.new,
+	(flag) => {
+		if (!flag || !isMobile.value) return
+		const { new: _new, ...query } = route.query
+		router.replace({ query })
+		handleOpenEvent({ date: dayjs(mobileDate.value).toDate() })
+	},
+	{ immediate: true },
+)
+
+// Back/Forward and the account switch write the route; the phone follows it,
+// the way applyRoute has the desktop calendar follow it.
+watch(
+	() => [route.name, route.params.year, route.params.month, route.params.day],
+	() => {
+		if (!isMobile.value) return
+		const date = routeDate().format('YYYY-MM-DD')
+		if (date !== mobileDate.value) mobileDate.value = date
+		mobileView.value = route.name === 'calendar-month' ? 'month' : 'agenda'
+	},
+)
 
 watch(
 	() => [
@@ -117,7 +206,12 @@ const applyRoute = () => {
 		calendar.setCalendarDate(date)
 }
 
-onMounted(applyRoute)
+onMounted(() => {
+	applyRoute()
+	// The desktop's first fetch is a side effect of the fui Calendar mounting and
+	// announcing its month; the phone has no such component, so it asks itself.
+	if (isMobile.value) events.fetch()
+})
 
 watch(
 	() => [route.name, route.params.year, route.params.month, route.params.day],
@@ -200,9 +294,7 @@ const coloredCalendars = computed(
 const events = createResource({
 	url: 'suite.calendar.api.get_calendar_events',
 	makeParams: () => {
-		const date = dayjs()
-			.year(calendarRef.value?.currentYear)
-			.month(calendarRef.value?.currentMonth)
+		const date = anchorMonth.value
 		return {
 			account: store.accountId,
 			from_date: date.startOf('month').subtract(37, 'day').utc().format('YYYY-MM-DD[T]HH:mm:ss[Z]'),
@@ -332,6 +424,26 @@ const toggleEventDetail = (calendarEvent) => {
 		closeEventDetail()
 	else handleEventClick({ calendarEvent })
 }
+
+// Which row the sheet was opened from. An event spanning several days has a row on
+// each of them and they are the same event, so the id alone cannot say which was
+// tapped — the day goes with it. Cleared when the sheet closes, so a later deep link
+// does not inherit a stale row.
+const openRow = ref('')
+
+const openEventRow = (event: any, date: string) => {
+	const key = `${event.id + (event.recurrence_id ?? '')}@${date}`
+	// The row is what toggles, not the event behind it: tapping the row whose sheet is
+	// open closes it, and tapping another day of the same multi-day event moves to that
+	// day rather than reading as "the open event again" and closing.
+	if (key === openRow.value) return closeEventDetail()
+	openRow.value = key
+	handleEventClick({ calendarEvent: event })
+}
+
+watch(selectedCalendarEvent, (open) => {
+	if (!open) openRow.value = ''
+})
 
 // The calendar app has no compose surface of its own — hand over to mail's
 // compose window via its deep link (mailto: would depend on the OS having a
@@ -618,8 +730,10 @@ const NOTIFY_MODAL_OPTIONS = {
 </script>
 
 <template>
-	<div class="flex h-screen min-h-0 w-full min-w-0 flex-col">
-		<div class="flex min-h-0 min-w-0 flex-1">
+	<!-- h-full, not a viewport unit: on a phone the layout owns the height and hands
+	     this view what is left above the tab bar; on a desktop it is the page. -->
+	<div class="flex h-full min-h-0 w-full min-w-0 flex-col max-sm:h-dvh sm:h-screen">
+		<div v-if="!isMobile" class="flex min-h-0 min-w-0 flex-1">
 			<AppSidebar
 				:calendars="coloredCalendars"
 				:visible-calendars
@@ -686,12 +800,11 @@ const NOTIFY_MODAL_OPTIONS = {
 					</template>
 				</Calendar>
 			</div>
-			<!-- Desktop only: it is a side panel with a fixed width, so on a phone it
-			     covered the grid it is meant to sit beside. The selection still happens
-			     (?event= stays in the URL, so a shared link still names its event),
-			     there is just nowhere to show it until this gets a sheet of its own. -->
+			<!-- Desktop only: a side panel with a fixed width, which on a phone covered
+			     the grid it is meant to sit beside. There the same component is hosted
+			     in a bottom sheet instead (EventDetailSheet, below). -->
 			<EventDetailSidebar
-				v-if="selectedCalendarEvent && !isMobile"
+				v-if="selectedCalendarEvent"
 				:key="selectedCalendarEvent.id + (selectedCalendarEvent.recurrence_id ?? '')"
 				:calendar-event="selectedCalendarEvent"
 				@close="closeEventDetail"
@@ -700,7 +813,32 @@ const NOTIFY_MODAL_OPTIONS = {
 				@email-participants="emailParticipants"
 			/>
 		</div>
+
+		<!-- The phone. Agenda is home — a week strip for orientation and the list of
+		     what is coming — with the month a tap away and the same events under it.
+		     The tab bar and its FAB are the app's own chrome here, as mail's are. -->
+		<template v-else>
+			<MobileCalendar
+				:view="mobileView"
+				:events="visibleEvents"
+				:selected="mobileDate"
+				:now="now"
+				:open-event="selectedCalendarEvent"
+				:open-row="openRow"
+				@select-date="(date) => (mobileDate = date)"
+				@select-event="openEventRow"
+			/>
+		</template>
 	</div>
+	<template v-if="isMobile">
+		<EventDetailSheet
+			:calendar-event="selectedCalendarEvent"
+			@close="closeEventDetail"
+			@edit="handleOpenEvent({ calendarEvent: selectedCalendarEvent })"
+			@reload-events="events.reload()"
+			@email-participants="emailParticipants"
+		/>
+	</template>
 	<EventModal v-model="showEditEvent" :selected-event="event" @reload-events="events.reload()" />
 	<RecurringScopeModal
 		v-model="showRecurringEventModal"

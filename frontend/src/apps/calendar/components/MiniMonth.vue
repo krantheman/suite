@@ -79,6 +79,8 @@ import { computed, inject, ref, watch } from 'vue'
 import { Button } from 'frappe-ui'
 import { CalendarColorMap } from 'frappe-ui/experimental'
 
+import { monthDays } from '@/apps/calendar/composables/useMonthGrid'
+
 const dayjs = inject('$dayjs')
 
 const props = defineProps<{
@@ -112,46 +114,20 @@ const weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
 const monthName = computed(() => dayjs().month(viewed.value.month).format('MMMM'))
 const year = computed(() => viewed.value.year)
 
-/** Segments a tick can split into; more would be slivers at these widths. */
-const MAX_SEGMENTS = 3
-
-/** How many events touch the day, and the calendar colours among them, in order of first appearance. */
-const loadOn = (key: string) => {
-	let load = 0
-	const colors: string[] = []
-	for (const event of props.events) {
-		// Density answers "how busy am I": a draft claims the time, a decline does not.
-		if (event.isDeclined) continue
-		if (event.fromDate > key || event.toDate < key) continue
-		load++
-		const color = event.color || 'green'
-		if (!colors.includes(color) && colors.length < MAX_SEGMENTS) colors.push(color)
-	}
-	return { load, colors }
-}
-
 const selectedKey = computed(() =>
 	props.selected ? dayjs(props.selected).format('YYYY-MM-DD') : '',
 )
 
-const days = computed(() => {
-	const first = dayjs(new Date(viewed.value.year, viewed.value.month, 1))
-	const start = first.subtract(first.day(), 'day')
-	const today = dayjs().format('YYYY-MM-DD')
-	// Six rows keeps the card the same height from month to month.
-	return Array.from({ length: 42 }, (_, i) => {
-		const date = start.add(i, 'day')
-		const key = date.format('YYYY-MM-DD')
-		return {
-			key,
-			date,
-			inMonth: date.month() === viewed.value.month,
-			isToday: key === today,
-			isSelected: props.view === 'Day' && key === selectedKey.value,
-			...loadOn(key),
-		}
-	})
-})
+// The card, the phone's month and the phone's week strip are the same six rows
+// of days with the same density on them — only the size they are drawn at
+// differs. In Week the calendar's day is not marked here: the band behind its
+// row says where it is, and a marked day inside a marked row said it twice.
+const days = monthDays(
+	() => viewed.value.month,
+	() => viewed.value.year,
+	() => props.events,
+	() => (props.view === 'Day' ? selectedKey.value : ''),
+)
 
 /** Row of the calendar's week on this card, when the card is showing it. */
 const selectedRow = computed(() => {
