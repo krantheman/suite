@@ -50,10 +50,10 @@
 							{{ event.title }}
 						</span>
 						<span
-							v-if="subtitle(event)"
+							v-if="eventDescription(event)"
 							class="text-ink-gray-5 mt-0.5 block truncate text-xs leading-4"
 						>
-							{{ subtitle(event) }}
+							{{ eventDescription(event) }}
 						</span>
 					</span>
 				</button>
@@ -74,7 +74,7 @@ import { CalendarColorMap } from 'frappe-ui/experimental'
 
 import dayjs from '@/apps/calendar/utils/dayjs'
 import { formatAgendaTime, nowMarkerIndex } from '@/apps/calendar/utils/agenda'
-import { getRepeatMessage } from '@/apps/calendar/utils/format'
+import { eventDescription } from '@/apps/calendar/utils/eventMeta'
 
 import type { AgendaEvent, AgendaSection } from '@/apps/calendar/utils/agenda'
 
@@ -119,28 +119,4 @@ const nowLabel = computed(() => dayjs(props.now).format('h:mm'))
 const paletteColor = (color?: string) =>
 	CalendarColorMap[color ?? '']?.color || CalendarColorMap.green.color
 
-/**
- * The second line carries whatever the row can say in a few words about where
- * the event is and who else is in it — the location, else the meeting, else how
- * often it repeats. A row without any of that stays one line tall.
- */
-const subtitle = (event: AgendaEvent) => {
-	const parts: string[] = []
-
-	const place = event.locations?.find((l: any) => l._name)?._name
-	if (place) parts.push(place)
-	else if (event.links?.some((l: any) => l?.href?.includes('/meet/'))) parts.push(__('Frappe Meet'))
-
-	if (event.recurrence_rule?.frequency) {
-		const repeat = getRepeatMessage(event.recurrence_rule)
-		if (repeat) parts.push(repeat.toLowerCase())
-	}
-
-	const going = event.participants?.filter(
-		(p: any) => p.participation_status === 'ACCEPTED',
-	).length
-	if (going > 1) parts.push(__('{0} going', [going]))
-
-	return parts.join(' · ')
-}
 </script>

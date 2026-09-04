@@ -3,7 +3,7 @@ import { computed, inject, onMounted, reactive, ref, useTemplateRef, watch } fro
 import { useRoute, useRouter } from 'vue-router'
 import { useNow } from '@vueuse/core'
 import { Button, Dialog, TabButtons, createResource, usePageMeta } from 'frappe-ui'
-import { Calendar, CalendarActiveEvent } from 'frappe-ui/experimental'
+import { Calendar, CalendarActiveEvent, calendarContinuesTo } from 'frappe-ui/experimental'
 
 import { useScreenSize } from '@/composables/useScreenSize'
 import { appPageMeta } from '@/utils/documentTitle'
@@ -13,6 +13,7 @@ import { eventLastDay, isAllDayEvent } from '@/apps/calendar/utils/eventTime'
 import { reanchoredRule } from '@/apps/calendar/utils/recurrence'
 import { isFirstOccurrence, scopeOptions } from '@/apps/calendar/utils/recurringScope'
 import type { RecurringScope } from '@/apps/calendar/utils/recurringScope'
+import { eventDescription, eventGoing, eventPlace } from '@/apps/calendar/utils/eventMeta'
 import { userStore } from '@/apps/calendar/stores/user'
 import AppSidebar from '@/apps/calendar/components/AppSidebar.vue'
 import EventDetailSidebar from '@/apps/calendar/components/EventDetailSidebar.vue'
@@ -248,6 +249,12 @@ const transformEvent = (event) => {
 		// The server's `draft` (JMAP isDraft): saved, but nothing sent. The pill draws it
 		// as an outline.
 		isDraft: !!event.draft,
+		// frappe-ui's own generic fields, which its event popover and the default
+		// row description read. Suite keeps the arrays these come from, so without
+		// this the library has nothing to say about where an event is or who is in
+		// it — and the popover's venue and participant lines never appear.
+		venue: eventPlace(event),
+		participant: eventGoing(event),
 		// The viewer declined: struck through in the grid.
 		isDeclined: !!event.participants?.some(
 			(p) => p.participation_status === 'DECLINED' && isOwnEmail(p.email),
@@ -801,6 +808,23 @@ const NOTIFY_MODAL_OPTIONS = {
 								/>
 							</div>
 						</div>
+					</template>
+
+					<!-- The rail's and agenda's rows have room for what a pill does
+					     not: where the event is, how often it repeats, who is coming.
+					     frappe-ui hands back what it worked out itself, so this adds
+					     to it rather than deriving it twice — the same line the phone's
+					     agenda shows, from the same place. -->
+					<template #event-description="{ calendarEvent, date }">
+						{{
+							[
+								eventDescription(calendarEvent),
+								calendarContinuesTo(calendarEvent, date) &&
+									__('Ends {0}', [calendarContinuesTo(calendarEvent, date)]),
+							]
+								.filter(Boolean)
+								.join(' · ')
+						}}
 					</template>
 				</Calendar>
 			</div>
