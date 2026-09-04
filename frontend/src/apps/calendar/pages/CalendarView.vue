@@ -3,7 +3,7 @@ import { computed, inject, onMounted, reactive, ref, useTemplateRef, watch } fro
 import { useRoute, useRouter } from 'vue-router'
 import { useNow } from '@vueuse/core'
 import { Button, Dialog, TabButtons, createResource, usePageMeta } from 'frappe-ui'
-import { Calendar } from 'frappe-ui/experimental'
+import { Calendar, CalendarActiveEvent } from 'frappe-ui/experimental'
 
 import { useScreenSize } from '@/composables/useScreenSize'
 import { appPageMeta } from '@/utils/documentTitle'
@@ -482,6 +482,10 @@ watch(
 	[() => events.data, () => route.query.event, () => route.query.recurrence],
 	([data, id, recurrence]) => {
 		selectedCalendarEvent.value = findLinkedEvent(data, id, recurrence)
+		// The calendar draws the selected row as a raised card. The selection itself lives
+		// in ?event=, so it is set from here rather than left to the click — closing the
+		// sidebar clears the param, and the card goes with it.
+		CalendarActiveEvent.value = selectedCalendarEvent.value?.id ?? ''
 	},
 	{ immediate: true },
 )
@@ -771,7 +775,7 @@ const NOTIFY_MODAL_OPTIONS = {
 						<!-- Navigation leads: back, Today, forward, then the title they change,
 						     so the title's length moves nothing. New event sits at the far
 						     right, past the view switcher. -->
-						<div class="mb-2 flex items-center justify-between">
+						<div class="mb-4 flex items-center justify-between">
 							<div class="flex items-center gap-x-1">
 								<Button variant="ghost" icon="lucide-chevron-left" @click="decrement" />
 								<Button variant="ghost" :label="__('Today')" @click="setCalendarDate()" />
