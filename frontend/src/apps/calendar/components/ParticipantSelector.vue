@@ -141,7 +141,11 @@ const removeParticipant = (email: string) => {
 </script>
 
 <template>
-	<div class="space-y-4">
+	<!-- 12px between the field and the list, not 16: the rows are 8px apart as boxes,
+	     but each box stands taller than the avatar in it, so a row gap shows as ~16px
+	     of air between the circles. Matching that visible rhythm — rather than the box
+	     one — is what makes the column read as continuous from the field down. -->
+	<div class="space-y-3">
 		<div>
 			<h3 v-if="label" class="text-base-medium mb-2 text-ink-gray-8">{{ label }}</h3>
 			<Combobox
@@ -160,7 +164,10 @@ const removeParticipant = (email: string) => {
 				</template>
 			</Combobox>
 		</div>
-		<div class="max-h-[32rem] space-y-4 overflow-y-auto">
+		<!-- 8px between rows, the same step the detail panel gives this list: 16 is
+		     the step between the sections above, and a row spaced like a section
+		     reads as a card of its own. -->
+		<div class="max-h-[32rem] space-y-2 overflow-y-auto">
 			<EventParticipantList
 				:participants="visibleParticipants"
 				@remove-participant="removeParticipant"

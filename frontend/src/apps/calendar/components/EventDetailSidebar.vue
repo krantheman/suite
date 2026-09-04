@@ -575,14 +575,21 @@ const openUrl = (location: string) => {
 				<!-- Indented to the header row's text axis (gutter + icon + gap): the
 				     list is the "2 people" line's expansion, so they read as one
 				     block with the icon hanging in the gutter. -->
-				<div class="space-y-3 py-2 pl-11 pr-4.5">
+				<!-- pt-1, not pt-2: the gap under the "N people" line is measured from its
+				     text, while a row's gap is measured from its box — which stands taller
+				     than the avatar in it. Equal padding therefore read as 21px under the
+				     header against 16px between the faces. -->
+				<div class="space-y-2 pb-2 pl-11 pr-4.5 pt-1">
 					<EventParticipantList
 						:participants="visibleParticipants"
 						:dont-show-remove="true"
 					/>
+					<!-- pt-1 on top of the list's 8px step, for the same reason in reverse:
+					     this row is one line of text where the others are two-line boxes, so
+					     the shared step leaves it 12px below the last face instead of 16. -->
 					<button
 						v-if="!showAllParticipants && orderedParticipants.length > VISIBLE_PARTICIPANT_COUNT"
-						class="text-ink-gray-6 hover:text-ink-gray-8 flex items-center gap-2.5 py-0.5 text-sm"
+						class="text-ink-gray-6 hover:text-ink-gray-8 flex items-center gap-2.5 pb-0.5 pt-1 text-sm"
 						@click="showAllParticipants = true"
 					>
 						<MoreHorizontal class="icon size-3.5 shrink-0" />
