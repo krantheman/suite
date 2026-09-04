@@ -24,7 +24,8 @@ const resolveShortcut = (
 ) => {
 	// Home is the month grid on a desktop and the agenda on a phone, where a
 	// month of columns has nothing legible in it — the phone renders the day
-	// route as its agenda (see CalendarView's phone shell).
+	// route as its own agenda (see CalendarView's phone shell), which is a
+	// different surface from the desktop 'calendar-agenda' view.
 	const { isMobile } = useScreenSize()
 	const defaultRoute = {
 		name: isMobile.value ? 'calendar-day' : 'calendar-month',
@@ -38,6 +39,8 @@ const resolveShortcut = (
 			return { name: 'calendar-week', params: { accountId, ...params } }
 		case 'calendar-day-shortcut':
 			return { name: 'calendar-day', params: { accountId, ...params } }
+		case 'calendar-agenda-shortcut':
+			return { name: 'calendar-agenda', params: { accountId, ...params } }
 		default:
 			return defaultRoute
 	}

@@ -36,6 +36,11 @@ export const routes: RouteRecordRaw[] = [
 				name: 'calendar-day',
 				component: () => import('@/apps/calendar/pages/CalendarView.vue'),
 			},
+			{
+				path: 'account/:accountId/agenda/:year?/:month?/:day?',
+				name: 'calendar-agenda',
+				component: () => import('@/apps/calendar/pages/CalendarView.vue'),
+			},
 			// Phone-only destination: the tab bar's third tab. On a desktop the same
 			// settings are the SettingsDialog the sidebar opens.
 			{
@@ -72,6 +77,12 @@ export const routes: RouteRecordRaw[] = [
 			{
 				path: 'day/:year?/:month?/:day?',
 				name: 'calendar-day-shortcut',
+				component: ShortcutRedirect,
+				meta: { shortcut: true },
+			},
+			{
+				path: 'agenda/:year?/:month?/:day?',
+				name: 'calendar-agenda-shortcut',
 				component: ShortcutRedirect,
 				meta: { shortcut: true },
 			},

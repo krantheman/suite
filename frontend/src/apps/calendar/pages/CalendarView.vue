@@ -35,8 +35,18 @@ const calendarRef = useTemplateRef('calendar')
 
 // Calendar's `activeView` is 'Month' | 'Week' | 'Day'; the suite router uses
 // namespaced names 'calendar-month' | 'calendar-week' | 'calendar-day'.
-const VIEW_TO_ROUTE = { Month: 'calendar-month', Week: 'calendar-week', Day: 'calendar-day' }
-const ROUTE_TO_VIEW = { 'calendar-month': 'Month', 'calendar-week': 'Week', 'calendar-day': 'Day' }
+const VIEW_TO_ROUTE = {
+	Month: 'calendar-month',
+	Week: 'calendar-week',
+	Day: 'calendar-day',
+	Agenda: 'calendar-agenda',
+}
+const ROUTE_TO_VIEW = {
+	'calendar-month': 'Month',
+	'calendar-week': 'Week',
+	'calendar-day': 'Day',
+	'calendar-agenda': 'Agenda',
+}
 const routeNameForView = (view) => VIEW_TO_ROUTE[view as keyof typeof VIEW_TO_ROUTE]
 const viewForRouteName = (name) => ROUTE_TO_VIEW[name as keyof typeof ROUTE_TO_VIEW]
 
@@ -163,13 +173,20 @@ const setRoute = () => {
 	const day = calendarRef.value?.currentDay
 
 	const target = dayjs().year(year).month(month).date(day)
-	const view = calendarRef.value?.activeView as 'Month' | 'Week' | 'Day'
+	const view = calendarRef.value?.activeView as 'Month' | 'Week' | 'Day' | 'Agenda'
 	const name = routeNameForView(view)
 	const accountId = route.params.accountId
 
+	// The other three view names double as dayjs units; Agenda does not, and an
+	// unknown unit quietly turns isSame into a millisecond comparison — never
+	// true, so today's agenda would refuse the bare URL and every step would
+	// push a history entry instead of replacing one. It lists a month, so that
+	// is the unit it is compared by.
+	const unit = view === 'Agenda' ? 'month' : view
+
 	// Today's period gets the bare URL. Query carries the open event's deep
 	// link; date/view navigation keeps it.
-	const location = dayjs().isSame(target, view)
+	const location = dayjs().isSame(target, unit)
 		? { name, params: { accountId }, query: route.query }
 		: { name, params: { accountId, year, month: month + 1, day }, query: route.query }
 
@@ -179,7 +196,7 @@ const setRoute = () => {
 	// only re-forms the current entry rather than adding a copy of it.
 	const { year: y, month: m, day: d } = route.params
 	const current = y && m && d ? dayjs(`${y}-${m}-${d}`, 'YYYY-M-D') : dayjs()
-	if (viewForRouteName(route.name) === view && current.isSame(target, view)) router.replace(location)
+	if (viewForRouteName(route.name) === view && current.isSame(target, unit)) router.replace(location)
 	else router.push(location)
 }
 
