@@ -3,7 +3,7 @@ import { computed, inject, onMounted, reactive, ref, useTemplateRef, watch } fro
 import { useRoute, useRouter } from 'vue-router'
 import { useNow } from '@vueuse/core'
 import { Button, Dialog, TabButtons, createResource, usePageMeta } from 'frappe-ui'
-import { Calendar, CalendarActiveEvent, calendarContinuesTo } from 'frappe-ui/experimental'
+import { Calendar, CalendarActiveEvent, calendarDaySpan } from 'frappe-ui/experimental'
 
 import { useScreenSize } from '@/composables/useScreenSize'
 import { appPageMeta } from '@/utils/documentTitle'
@@ -834,11 +834,7 @@ const NOTIFY_MODAL_OPTIONS = {
 					     agenda shows, from the same place. -->
 					<template #event-description="{ calendarEvent, date }">
 						{{
-							[
-								eventDescription(calendarEvent),
-								calendarContinuesTo(calendarEvent, date) &&
-									__('Ends {0}', [calendarContinuesTo(calendarEvent, date)]),
-							]
+							[eventDescription(calendarEvent), calendarDaySpan(calendarEvent, date)]
 								.filter(Boolean)
 								.join(' · ')
 						}}
