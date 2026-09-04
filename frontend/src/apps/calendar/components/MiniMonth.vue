@@ -37,7 +37,7 @@
 				class="relative rounded-2 pb-2.5 pt-1 text-center text-xs leading-4"
 				:class="
 					day.isToday
-						? 'bg-surface-gray-10 text-ink-gray-1'
+						? 'bg-surface-gray-10 text-ink-base'
 						: day.isSelected
 							? 'bg-surface-gray-3 text-ink-gray-9'
 							: [
@@ -59,14 +59,20 @@
 				     to read. -->
 				<span
 					v-if="day.inMonth && day.load"
-					class="absolute bottom-[3px] left-1/2 flex h-[3px] -translate-x-1/2 gap-px opacity-80"
-					:class="day.load === 1 ? 'w-1.5' : day.load <= 3 ? 'w-[11px]' : 'w-4'"
+					class="absolute bottom-[3px] left-1/2 flex h-[3px] -translate-x-1/2 gap-px"
+					:class="[
+						day.load === 1 ? 'w-1.5' : day.load <= 3 ? 'w-[11px]' : 'w-4',
+						// The calendar colours are strong at full strength against the
+						// pale cell; on today's dark cell the tick is the surface's own
+						// ink, and dimming that only makes it look switched off.
+						day.isToday ? '' : 'opacity-80',
+					]"
 				>
 					<span
 						v-for="color in day.colors"
 						:key="color"
 						class="min-w-0 flex-1 rounded-full"
-						:style="{ background: day.isToday ? 'var(--surface-elevation-1)' : tickColor(color) }"
+						:style="{ background: day.isToday ? 'var(--ink-base)' : tickColor(color) }"
 					/>
 				</span>
 			</button>
