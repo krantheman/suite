@@ -23,6 +23,7 @@ import type { RecurringScope } from '@/apps/calendar/utils/recurringScope'
 import { eventDescription, eventGoing, eventPlace } from '@/apps/calendar/utils/eventMeta'
 import { userStore } from '@/apps/calendar/stores/user'
 import { invalidateEventDensity } from '@/apps/calendar/composables/useEventDensity'
+import { rememberCalendarView } from '@/apps/calendar/utils/lastView'
 import AppSidebar from '@/apps/calendar/components/AppSidebar.vue'
 import EventDetailSidebar from '@/apps/calendar/components/EventDetailSidebar.vue'
 import EventModal from '@/apps/calendar/components/Modals/EventModal.vue'
@@ -245,6 +246,12 @@ watch(
 	() => [route.name, route.params.year, route.params.month, route.params.day],
 	() => applyRoute(),
 )
+
+// Whichever way the view was reached — the switcher, a deep link, Back — the
+// route is what says which one it is, so remembering it here covers all three
+// rather than only the button. Immediate: arriving on a view is leaving the
+// calendar in it, and a reader who opens Week and closes the tab meant Week.
+watch(() => route.name, rememberCalendarView, { immediate: true })
 
 const transformEvent = (event) => {
 	// All-day-ness is the event's own flag, or the midnight-to-midnight shape of an invite

@@ -4,6 +4,7 @@ import suiteRouter from '@/router'
 import { useScreenSize } from '@/composables/useScreenSize'
 
 import { userStore } from '@/apps/calendar/stores/user'
+import { lastCalendarView } from '@/apps/calendar/utils/lastView'
 
 /**
  * Calendar-local guard on the shared suite router: setup-wizard escape,
@@ -22,13 +23,16 @@ const resolveShortcut = (
 	params: Params,
 	accountId: string,
 ) => {
-	// Home is the month grid on a desktop and the agenda on a phone, where a
-	// month of columns has nothing legible in it — the phone renders the day
-	// route as its own agenda (see CalendarView's phone shell), which is a
-	// different surface from the desktop 'calendar-agenda' view.
+	// Home is the view the calendar was last left in. Failing that — nothing
+	// remembered, or a view this device cannot draw — the month grid on a desktop
+	// and the agenda on a phone, where a month of columns has nothing legible in
+	// it; the phone renders the day route as its own agenda (see CalendarView's
+	// phone shell), which is a different surface from the desktop
+	// 'calendar-agenda' view.
 	const { isMobile } = useScreenSize()
 	const defaultRoute = {
-		name: isMobile.value ? 'calendar-day' : 'calendar-month',
+		name:
+			lastCalendarView(isMobile.value) ?? (isMobile.value ? 'calendar-day' : 'calendar-month'),
 		params: { accountId },
 	}
 
