@@ -2,7 +2,14 @@
 import { computed, inject, onMounted, reactive, ref, useTemplateRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useNow } from '@vueuse/core'
-import { Button, Dialog, TabButtons, createResource, usePageMeta } from 'frappe-ui'
+import {
+	Button,
+	Dialog,
+	TabButtons,
+	createResource,
+	usePageMeta,
+	useKeyboardShortcut,
+} from 'frappe-ui'
 import { Calendar, CalendarActiveEvent, calendarDaySpan } from 'frappe-ui/experimental'
 
 import { useScreenSize } from '@/composables/useScreenSize'
@@ -536,6 +543,22 @@ const openEventRow = (event: any, date: string) => {
 
 watch(selectedCalendarEvent, (open) => {
 	if (!open) openRow.value = ''
+})
+
+// Escape closes the open event, the way it closes anything laid over what you
+// were reading. Registered only while one is open, so the key is left to
+// whatever else wants it the rest of the time.
+//
+// `useKeyboardShortcut` already declines to fire while focus is in a field or
+// inside a dialog, which is what keeps this from closing the panel behind the
+// edit modal — Escape there belongs to the modal, and the panel is what the
+// reader comes back to.
+useKeyboardShortcut({
+	combo: 'Escape',
+	description: __('Close the open event'),
+	group: __('Calendar'),
+	enabled: () => !!selectedCalendarEvent.value,
+	handler: closeEventDetail,
 })
 
 // The calendar app has no compose surface of its own — hand over to mail's
