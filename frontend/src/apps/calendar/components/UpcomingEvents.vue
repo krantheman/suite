@@ -26,10 +26,11 @@
 				{{ events.length }}
 			</span>
 		</div>
-		<!-- Four rows tall, then scrolls. -mx/px (and -mb/pb at scroll end) keep
-		     the clip edge off the active row's shadow, same trick as the sidebar
-		     body. -->
-		<div class="-mx-1 -mb-1 flex max-h-49 flex-col gap-1 overflow-y-auto px-1 pb-1">
+		<!-- Four rows tall, then scrolls. -m/p on all four sides keeps the clip
+		     edge off the active row's ring and shadow, same trick as the sidebar
+		     body — the top included: without it the first row's ring is cut along
+		     its top edge, which reads as a box missing a side. -->
+		<div class="-m-1 flex max-h-49 flex-col gap-1 overflow-y-auto p-1">
 			<button
 				v-for="event in events"
 				:key="event.id + (event.recurrence_id ?? '')"
