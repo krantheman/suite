@@ -49,6 +49,11 @@ const emit = defineEmits<{
 
 const paletteColor = (color?: string) => (CalendarColorMap[color] || CalendarColorMap.green).color
 
+// The mini month names calendars by id; the palette is assigned here, where the
+// calendars and their colours already live.
+const miniMonthColor = (calendar: string) =>
+	calendars.find((cal: any) => cal.name === calendar)?.color || 'green'
+
 const dotStyle = (color: string) => ({ background: paletteColor(color) })
 
 // A JMAP calendar is often named after its account — "Frappe Calendar
@@ -175,7 +180,7 @@ const menuItems = computed(() => [
 					<MiniMonth
 						:month
 						:year
-						:events="events || []"
+						:calendar-color="miniMonthColor"
 						:selected="day != null ? new Date(year, month, day) : undefined"
 						:view
 						@select="(date) => emit('selectDate', date)"

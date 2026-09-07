@@ -86,6 +86,7 @@ import { Button } from 'frappe-ui'
 import { CalendarColorMap } from 'frappe-ui/experimental'
 
 import { monthDays } from '@/apps/calendar/composables/useMonthGrid'
+import { useEventDensity } from '@/apps/calendar/composables/useEventDensity'
 
 const dayjs = inject('$dayjs')
 
@@ -93,8 +94,12 @@ const props = defineProps<{
 	/** The month the calendar shows; the card starts here and resyncs when it changes. */
 	month: number
 	year: number
-	/** Calendar events with `fromDate`/`toDate` (`YYYY-MM-DD`, inclusive) and a palette `color`. */
-	events: { fromDate: string; toDate: string; color?: string }[]
+	/**
+	 * Palette colour per calendar id, for the ticks. The events themselves are the
+	 * card's own — see useEventDensity — since it is paged independently of the
+	 * calendar and has to know about months the main view never fetched.
+	 */
+	calendarColor: (calendar: string) => string
 	/** The day the calendar is on, and which view: Day marks the day, Week its whole row. */
 	selected?: Date
 	view?: 'Month' | 'Week' | 'Day'
@@ -128,10 +133,16 @@ const selectedKey = computed(() =>
 // of days with the same density on them — only the size they are drawn at
 // differs. In Week the calendar's day is not marked here: the band behind its
 // row says where it is, and a marked day inside a marked row said it twice.
+const { events } = useEventDensity(
+	() => viewed.value.month,
+	() => viewed.value.year,
+	(calendar) => props.calendarColor(calendar),
+)
+
 const days = monthDays(
 	() => viewed.value.month,
 	() => viewed.value.year,
-	() => props.events,
+	() => events.value,
 	() => (props.view === 'Day' ? selectedKey.value : ''),
 )
 
