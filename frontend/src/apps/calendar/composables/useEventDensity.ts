@@ -53,17 +53,24 @@ const toGridEvent = (row: DensityRow, color: (calendar: string) => string): Grid
 
 // Keyed by account and month, so paging back to somewhere already seen redraws
 // from what is in hand instead of asking again. Module-scoped rather than per
-// component: the cache has to be droppable from outside when an event is saved
+// component: the cache has to be markable from outside when an event is saved
 // or deleted, and the card that draws it is nowhere near the code that does that.
 const byMonth = ref<Record<string, GridEvent[]>>({})
 
+// Months whose rows are known to be out of date but are still worth drawing.
+// A month is stale, not dropped, so the card keeps the ticks it has while the
+// new ones are on their way: dropping them blanked every tick on the card for
+// the length of a request, and a save is exactly when the reader is looking at
+// it. Stale ticks are a day old at worst; no ticks says the month is empty.
+const stale = ref<Record<string, true>>({})
+
 /**
- * Forgets the cached density. Called after an event is created, edited or
- * deleted — the tick under that day is now wrong, and the card has no other way
- * to hear about it.
+ * Marks the cached density out of date. Called after an event is created,
+ * edited or deleted — the tick under that day is now wrong, and the card has no
+ * other way to hear about it.
  */
 export const invalidateEventDensity = () => {
-	byMonth.value = {}
+	stale.value = Object.fromEntries(Object.keys(byMonth.value).map((key) => [key, true]))
 }
 
 export const useEventDensity = (
@@ -95,21 +102,24 @@ export const useEventDensity = (
 
 	const load = () => {
 		const wanted = key.value
-		if (byMonth.value[wanted] || !store.accountId) return
+		if (!store.accountId) return
+		if (byMonth.value[wanted] && !stale.value[wanted]) return
 		density.submit(undefined, {
 			onSuccess: (rows: DensityRow[]) => {
 				byMonth.value[wanted] = (rows ?? []).map((row) => toGridEvent(row, color))
+				delete stale.value[wanted]
 			},
 		})
 	}
 
 	watch(key, load, { immediate: true })
 
-	// A dropped cache leaves the displayed month with nothing to draw, so it asks
-	// again — for that month alone, not for every month it happens to have seen.
+	// Marked stale, the displayed month asks again — that month alone, not every
+	// month it happens to have seen. What it is already drawing stays up until
+	// the answer lands.
 	watch(
-		() => byMonth.value[key.value],
-		(rows) => rows === undefined && load(),
+		() => stale.value[key.value],
+		(isStale) => isStale && load(),
 	)
 
 	return { events: computed(() => byMonth.value[key.value] ?? []) }
