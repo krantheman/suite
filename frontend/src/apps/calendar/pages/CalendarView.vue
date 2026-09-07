@@ -15,6 +15,7 @@ import { isFirstOccurrence, scopeOptions } from '@/apps/calendar/utils/recurring
 import type { RecurringScope } from '@/apps/calendar/utils/recurringScope'
 import { eventDescription, eventGoing, eventPlace } from '@/apps/calendar/utils/eventMeta'
 import { userStore } from '@/apps/calendar/stores/user'
+import { invalidateEventDensity } from '@/apps/calendar/composables/useEventDensity'
 import AppSidebar from '@/apps/calendar/components/AppSidebar.vue'
 import EventDetailSidebar from '@/apps/calendar/components/EventDetailSidebar.vue'
 import EventModal from '@/apps/calendar/components/Modals/EventModal.vue'
@@ -147,7 +148,9 @@ watch(
 	([year, month], [oldYear, oldMonth]) => {
 		// Nothing to write while the calendar is not mounted (a hot reload unmounts it).
 		if (year == null || month == null) return
-		if (year !== oldYear || month !== oldMonth) events.reload()
+		// Refetching is the range watcher's job — a month change reports a new range
+		// too, and reloading here as well fetched the same window twice.
+		void oldYear, oldMonth
 		setRoute()
 	},
 )
@@ -163,7 +166,7 @@ watch(
 	() => store.accountId,
 	() => {
 		calendars.reload()
-		events.reload()
+		reloadEvents()
 	},
 )
 
@@ -315,20 +318,56 @@ const coloredCalendars = computed(
 	() => calendars.data?.map((cal) => ({ ...cal, color: calendarColor(cal.name) })) || [],
 )
 
+// The period the calendar is showing, as it reports it on every change of view or
+// date. Declared above the resource that reads it: makeParams runs late enough
+// either way, but a fetch moving earlier would find it in its dead zone.
+const visibleRange = ref<{ view: string; startDate: string; endDate: string } | null>(null)
+
+// The Agenda's span, and so the forward reach every fetch has to cover.
+const AGENDA_MONTHS = 3
+
+// What the last fetch covered, so a range change only asks again when it wants
+// something outside it.
+let fetchedRange: { from: string; to: string } | null = null
+
+/**
+ * The window for a given anchor month: wide enough for every view of it — the
+ * Month strip's 42 days, a week, a day, and the Agenda's three months all fall
+ * inside it — and a month past the Agenda's own reach at the front.
+ *
+ * The reach is what makes paging free. The window follows the anchor, so when a
+ * page lands, the span it shows is already inside the window fetched for the
+ * page before it; the fetch that follows is for the page after, and lands while
+ * the reader is looking at a list that is already complete.
+ */
+const windowFor = (anchor: dayjs.Dayjs) => {
+	const first = anchor.startOf('month')
+	return { from: first.subtract(1, 'month'), to: first.add(AGENDA_MONTHS, 'month').endOf('month') }
+}
+
 const events = createResource({
 	url: 'suite.calendar.api.get_calendar_events',
 	makeParams: () => {
-		const date = anchorMonth.value
+		const { from, to } = windowFor(anchorMonth.value)
+		fetchedRange = { from: from.format('YYYY-MM-DD'), to: to.format('YYYY-MM-DD') }
 		return {
 			account: store.accountId,
-			from_date: date.startOf('month').subtract(37, 'day').utc().format('YYYY-MM-DD[T]HH:mm:ss[Z]'),
-			to_date: date.endOf('month').add(37, 'day').utc().format('YYYY-MM-DD[T]HH:mm:ss[Z]'),
+			from_date: from.utc().format('YYYY-MM-DD[T]HH:mm:ss[Z]'),
+			to_date: to.utc().format('YYYY-MM-DD[T]HH:mm:ss[Z]'),
 			time_zone: dayjs.tz.guess(),
 		}
 	},
 	transform: (data) => data.map(transformEvent),
 	onError: (error) => raiseToast(error.message, 'error'),
 })
+
+// The events themselves changed, as opposed to the window over them moving. The
+// sidebar's mini month draws from its own density call, so it has no way to hear
+// about a save or a delete unless it is told to forget what it has.
+const reloadEvents = () => {
+	events.reload()
+	invalidateEventDensity()
+}
 
 const visibleEvents = computed(
 	() =>
@@ -404,8 +443,38 @@ const splitYear = (title: string) => {
 	return match ? { label: match[1], year: match[2] } : { label: title, year: '' }
 }
 
-// The period the calendar is showing, as it reports it on every change of view or date.
-const visibleRange = ref<{ view: string; startDate: string; endDate: string } | null>(null)
+// The window follows the anchor: every page moves it, so the span that lands is
+// already inside the window fetched for the page before it.
+//
+// Settled first, though. On mount the calendar reports its default view's range
+// before the route's view is applied, so a reload straight into the Agenda
+// announced the month's 42 days and then the agenda's three months. Both were
+// fetched, and whichever answered last won: often the month's, leaving a
+// three-month list holding six weeks of events. Only the range still standing
+// at the end of the tick is worth asking about.
+let rangeSettle: ReturnType<typeof setTimeout> | null = null
+
+watch(visibleRange, (range) => {
+	if (!range) return
+	if (rangeSettle) clearTimeout(rangeSettle)
+	rangeSettle = setTimeout(() => {
+		rangeSettle = null
+		if (!visibleRange.value) return
+
+		// Keyed on the window this anchor wants, not on whether the span on screen
+		// is covered. Covered was enough to avoid a wasted fetch, but it also meant
+		// the window only moved when the reader had already run past its edge — so
+		// every other press of next paid for a round trip and reflowed the list as
+		// it landed. Moving the window on every page keeps it one page ahead, and
+		// the fetch happens behind a view that is already complete.
+		const wanted = windowFor(anchorMonth.value)
+		const from = wanted.from.format('YYYY-MM-DD')
+		const to = wanted.to.format('YYYY-MM-DD')
+		if (fetchedRange && fetchedRange.from === from && fetchedRange.to === to) return
+
+		events.reload()
+	})
+})
 
 // The header names the period in view: the month for Month, the day for Day (the
 // calendar's own title serves both), and for Week the days themselves — "Aug 23 – 29",
@@ -692,7 +761,7 @@ const instanceStart = () => {
 const onEventSaved = {
 	onSuccess: () => {
 		raiseToast(__('Event updated.'), 'success')
-		events.reload()
+		reloadEvents()
 	},
 	onError: (error) => {
 		revertUpdate()
@@ -850,7 +919,7 @@ const NOTIFY_MODAL_OPTIONS = {
 				:calendar-event="selectedCalendarEvent"
 				@close="closeEventDetail"
 				@edit="handleOpenEvent({ calendarEvent: selectedCalendarEvent })"
-				@reload-events="events.reload()"
+				@reload-events="reloadEvents"
 				@email-participants="emailParticipants"
 			/>
 		</div>
@@ -876,11 +945,11 @@ const NOTIFY_MODAL_OPTIONS = {
 			:calendar-event="selectedCalendarEvent"
 			@close="closeEventDetail"
 			@edit="handleOpenEvent({ calendarEvent: selectedCalendarEvent })"
-			@reload-events="events.reload()"
+			@reload-events="reloadEvents"
 			@email-participants="emailParticipants"
 		/>
 	</template>
-	<EventModal v-model="showEditEvent" :selected-event="event" @reload-events="events.reload()" />
+	<EventModal v-model="showEditEvent" :selected-event="event" @reload-events="reloadEvents" />
 	<RecurringScopeModal
 		v-model="showRecurringEventModal"
 		v-bind="recurringScopeModalProps"
