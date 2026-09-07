@@ -383,6 +383,16 @@ const reloadEvents = () => {
 	invalidateEventDensity()
 }
 
+// The palette colour an event is drawn in, put on the event itself. Every
+// surface that shows one — the grid, the rows, the sidebar's upcoming list, the
+// detail panel — reads `color`, so it is worked out in one place; the panel used
+// to miss out and fall back to the colour the server carries, which had one
+// event green in the list and blue in the panel beside it.
+const withCalendarColor = (event) => ({
+	...event,
+	color: calendarColor(event.calendars[0]?.calendar),
+})
+
 const visibleEvents = computed(
 	() =>
 		events.data
@@ -391,7 +401,7 @@ const visibleEvents = computed(
 					.map((c) => c.calendar)
 					.some((cal) => visibleCalendars.value.includes(cal)),
 			)
-			.map((event) => ({ ...event, color: calendarColor(event.calendars[0]?.calendar) })) || [],
+			.map(withCalendarColor) || [],
 )
 
 const showEditEvent = ref(false)
@@ -604,7 +614,11 @@ const findLinkedEvent = (data, id, recurrence) => {
 watch(
 	[() => events.data, () => route.query.event, () => route.query.recurrence],
 	([data, id, recurrence]) => {
-		selectedCalendarEvent.value = findLinkedEvent(data, id, recurrence)
+		// Resolved against every event, not just the visible ones: a link to an
+		// event in a calendar the reader has unticked still opens it. The colour
+		// goes on here, since this list has not been through `visibleEvents`.
+		const linked = findLinkedEvent(data, id, recurrence)
+		selectedCalendarEvent.value = linked && withCalendarColor(linked)
 		// The calendar draws the selected row as a raised card. The selection itself lives
 		// in ?event=, so it is set from here rather than left to the click — closing the
 		// sidebar clears the param, and the card goes with it.

@@ -17,6 +17,7 @@ import {
 	X,
 } from 'lucide-vue-next'
 import { Badge, Button, Dialog, Dropdown, TabButtons, createResource, toast } from 'frappe-ui'
+import { CalendarColorMap } from 'frappe-ui/experimental'
 import DOMPurify from 'dompurify'
 
 import meetLogo from '@/assets/app-logos/meet.png'
@@ -156,6 +157,25 @@ const DEFAULT_EVENT_COLOR = '#30a66d'
 
 const eventCalendar = computed(
 	() => calendarEvent.calendars?.find((c: any) => c.color) ?? calendarEvent.calendars?.[0],
+)
+
+/**
+ * The dot beside the account, in the colour the event is drawn in everywhere
+ * else.
+ *
+ * The calendar app hands each calendar a palette colour by position and paints
+ * its pills, rows and sidebar dot with it — so the panel has to read that, not
+ * the colour the server happens to carry, which had the same event green in the
+ * list and blue in the panel beside it.
+ *
+ * Mail opens this panel on events it never transformed, which have no palette
+ * colour of their own; those still fall back to the calendar's own.
+ */
+const dotColor = computed(
+	() =>
+		CalendarColorMap[calendarEvent.color as string]?.color ||
+		eventCalendar.value?.color ||
+		DEFAULT_EVENT_COLOR,
 )
 
 // The organizer beats the viewer's own address (redundant in their own panel);
@@ -396,7 +416,7 @@ const openUrl = (location: string) => {
 			<div class="flex min-w-0 flex-1 items-center gap-2">
 				<span
 					class="size-2.5 shrink-0 rounded-full"
-					:style="{ backgroundColor: eventCalendar?.color || DEFAULT_EVENT_COLOR }"
+					:style="{ backgroundColor: dotColor }"
 				/>
 				<span class="text-ink-gray-6 truncate text-sm">
 					{{ calendarOwnerLabel }}
