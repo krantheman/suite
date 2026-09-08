@@ -145,12 +145,18 @@ const getDefaultEventData = () => {
 		? dayjs(selectedEvent.time, 'h a').format('HH:mm')
 		: defaultStartTime(selectedEvent.date)
 
+	// A new event is a timed one. Only a click in the all-day lane says otherwise — that is
+	// the reader pointing at the all-day row, not the absence of a time: a month cell and the
+	// New Event button carry no time either, and neither is a statement that the event runs
+	// all day. Off by default, and a switch away when it isn't.
+	const isAllDay = selectedEvent?.isFullDay === true
+
 	const identity = store.organizerIdentity
 
 	return {
 		title: '',
 		organizer: identity?.email,
-		isAllDay: !selectedEvent?.time,
+		isAllDay,
 		repeat: false,
 		startDate: dayjs(selectedEvent.date).format('YYYY-MM-DD'),
 		startTime,
@@ -158,7 +164,7 @@ const getDefaultEventData = () => {
 		endTime: dayjs(startTime, 'HH:mm').add(DEFAULT_DURATION_MINUTES, 'minute').format('HH:mm'),
 		locations: [],
 		links: [],
-		alerts: [defaultAlert(!selectedEvent?.time, dayjs(selectedEvent.date).format('YYYY-MM-DD'))],
+		alerts: [defaultAlert(isAllDay, dayjs(selectedEvent.date).format('YYYY-MM-DD'))],
 		followsDefaults: false,
 		description: '',
 		free_busy_status: 'Busy',
@@ -1034,15 +1040,22 @@ const recurringScopeModalProps = computed(() => ({
 									<label class="block text-xs text-ink-gray-5">
 										{{ __('Starts') }}
 									</label>
+									<!-- 7:6, the ratio of what the two actually need: "2026-09-08" and
+									     "12:45 AM" against the same chevron and padding either side. An even
+									     split clipped the date; 3:2 clipped the time to "12:45 AN". -->
 									<div class="flex gap-2">
-										<FormControl v-model="event.startDate" type="date" class="w-full" />
+										<FormControl
+											v-model="event.startDate"
+											type="date"
+											class="min-w-0 flex-[7]"
+										/>
 										<FormControl
 											v-if="!event.isAllDay"
 											v-model="event.startTime"
 											type="time"
 											:interval="15"
 											format="h:mm A"
-											class="w-full"
+											class="min-w-0 flex-[6]"
 										/>
 									</div>
 								</div>
@@ -1051,14 +1064,14 @@ const recurringScopeModalProps = computed(() => ({
 										{{ __('Ends') }}
 									</label>
 									<div class="flex gap-2">
-										<FormControl v-model="event.endDate" type="date" class="w-full" />
+										<FormControl v-model="event.endDate" type="date" class="min-w-0 flex-[7]" />
 										<FormControl
 											v-if="!event.isAllDay"
 											v-model="event.endTime"
 											type="time"
 											:interval="15"
 											format="h:mm A"
-											class="w-full"
+											class="min-w-0 flex-[6]"
 										/>
 									</div>
 								</div>
