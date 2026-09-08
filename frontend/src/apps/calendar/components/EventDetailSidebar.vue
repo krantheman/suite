@@ -44,7 +44,11 @@ const { calendarEvent, variant = 'panel' } = defineProps<{
 	/**
 	 * Where the panel is hosted. `panel` is the desktop column beside the
 	 * calendar — its own width, its own border, its own scroll. `sheet` is the
-	 * phone's bottom sheet, which owns all three, so the body renders bare.
+	 * phone's bottom sheet, which owns the width and the border but not the scroll:
+	 * the sheet would scroll the panel whole, carrying the RSVP off the bottom the
+	 * moment the participants list was expanded. Bounded here instead — to the sheet's
+	 * own 90dvh — so the details scroll inside it and the answer stays where a thumb
+	 * left it.
 	 */
 	variant?: 'panel' | 'sheet'
 }>()
@@ -404,7 +408,7 @@ const openUrl = (location: string) => {
 	<div
 		:class="
 			variant === 'sheet'
-				? 'flex w-full flex-col text-left'
+				? 'flex max-h-[90dvh] w-full flex-col overflow-hidden pb-[calc(env(safe-area-inset-bottom)+0.5rem)] text-left'
 				: 'bg-surface-base flex h-full w-[352px] shrink-0 flex-col overflow-hidden border-l text-left'
 		"
 	>
@@ -445,36 +449,35 @@ const openUrl = (location: string) => {
 			</div>
 		</div>
 
-		<!-- -mt-2 eats the header's centering slack so the visual gap above the
-		     title (which also includes the header text's own centering slack and
-		     the title's half-leading) matches the pb below the date; it sits on
-		     the scroll wrapper because a negative margin on the first child of an
-		     overflow-y-auto box would only clip. -->
-		<div class="-mt-2 flex min-h-0 flex-1 flex-col overflow-y-auto">
-			<!-- Title and time. No top padding — what's left of the header's
-			     centering slack is the gap above the title; pb balances it below
-			     the date and keeps breathing room when a long title wraps (the
-			     block just grows). Single-line, -mt + block sum to 49px, so
-			     header (48) + block + divider match the mail header bar +
-			     screener banner (49px each) and the divider lands on the
-			     banner's border when mail hosts the panel. -->
-			<div class="flex flex-col px-4.5 pb-3">
-				<!-- leading-6 keeps wrapped titles readable while leaving the
-				     title–date gap clearly wider than the title's own line gap; the
-				     date keeps text-sm's default 1.15 line-height (14.95px), so
-				     -8 + 24 + 6 + 14.95 + 12 sums to 49 within a subpixel. -->
-				<div class="min-w-0 space-y-1.5">
-					<h3 class="text-ink-gray-8 break-words text-md font-semibold leading-6">
-						{{ calendarEvent.title || __('Untitled event') }}
-					</h3>
-					<div class="flex items-center gap-2 text-sm text-ink-gray-6">
-						<Badge v-if="calendarEvent.isDraft" theme="gray" :label="__('Draft')" />
-						<span class="break-words">{{ dateLabel }}</span>
-					</div>
+		<!-- Title and time, outside the scroll: what the panel is about stays put
+		     while what it says about it moves. -mt-2 eats the header's centering
+		     slack so the visual gap above the title (which also includes the header
+		     text's own centering slack and the title's half-leading) matches the pb
+		     below the date. No top padding — that slack is the gap; pb balances it
+		     below the date and keeps breathing room when a long title wraps (the
+		     block just grows). Single-line, -mt + block sum to 49px, so header (48)
+		     + block + divider match the mail header bar + screener banner (49px
+		     each) and the divider lands on the banner's border when mail hosts the
+		     panel. -->
+		<div class="-mt-2 flex shrink-0 flex-col px-4.5 pb-3">
+			<!-- leading-6 keeps wrapped titles readable while leaving the
+			     title–date gap clearly wider than the title's own line gap; the
+			     date keeps text-sm's default 1.15 line-height (14.95px), so
+			     -8 + 24 + 6 + 14.95 + 12 sums to 49 within a subpixel. -->
+			<div class="min-w-0 space-y-1.5">
+				<h3 class="text-ink-gray-8 break-words text-md font-semibold leading-6">
+					{{ calendarEvent.title || __('Untitled event') }}
+				</h3>
+				<div class="flex items-center gap-2 text-sm text-ink-gray-6">
+					<Badge v-if="calendarEvent.isDraft" theme="gray" :label="__('Draft')" />
+					<span class="break-words">{{ dateLabel }}</span>
 				</div>
 			</div>
+		</div>
 
-			<div class="border-t" />
+		<div class="shrink-0 border-t" />
+
+		<div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
 
 			<!-- Details. The block goes, trailing divider included, when the event
 			     carries none of these rows — the divider above it stays, so the
@@ -502,13 +505,18 @@ const openUrl = (location: string) => {
 							</div>
 							<div class="text-ink-gray-5 truncate text-xs">{{ meetLinkDisplay }}</div>
 						</div>
-						<button
-							class="text-ink-gray-5 hover:text-ink-gray-7 shrink-0"
-							:title="__('Copy Frappe Meet link')"
+						<!-- The same button the row below it uses to mail the participants, and
+						     the one the header closes with: a ghost Button rather than a bare
+						     one, which is what carries the hover fill, the focus ring, a hit
+						     area worth aiming at, and a tooltip instead of a title attribute. -->
+						<Button
+							variant="ghost"
+							class="-my-1.5 shrink-0"
+							:tooltip="__('Copy Frappe Meet link')"
 							@click="copyMeetLink"
 						>
-							<Copy class="icon size-4" />
-						</button>
+							<Copy class="icon text-ink-gray-7 size-4" />
+						</Button>
 					</div>
 					<div class="px-4.5 py-2">
 						<button
@@ -643,8 +651,18 @@ const openUrl = (location: string) => {
 			</template>
 		</div>
 
-		<!-- RSVP -->
-		<div v-if="userParticipant?.expect_reply" class="flex flex-col gap-2 px-4.5 pb-3 pt-2">
+		<!-- RSVP. Ruled off the way the title above is: both sit outside the scroll,
+		     and a pinned block with nothing between it and moving content reads as
+		     the end of that content rather than as a shelf of its own. -->
+		<div v-if="userParticipant?.expect_reply" class="shrink-0 border-t" />
+		<!-- The sheet's own bottom padding clears the home indicator, so the block
+		     inside it carries none of its own; the column, which ends at the window
+		     edge, still does. -->
+		<div
+			v-if="userParticipant?.expect_reply"
+			class="flex flex-col gap-2 px-4.5 pt-3"
+			:class="variant === 'sheet' ? 'pb-1' : 'pb-3'"
+		>
 			<span class="text-ink-gray-6 text-sm">{{ __('Going?') }}</span>
 			<TabButtons
 				class="w-full [&>div>[data-slot=tab-button]]:flex-1 [&>div]:w-full [&_[data-slot=tab-button]>span]:w-full"
