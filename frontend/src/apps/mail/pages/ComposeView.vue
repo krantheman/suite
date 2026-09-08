@@ -269,7 +269,7 @@ import { useKeyboardInsets, useTextEditorButtons } from '@/apps/mail/utils/compo
 import { CustomImageExtension, CustomParagraphExtension, uploadFunction } from '@/apps/mail/utils/text-editor'
 import { takePendingCompose } from '@/apps/mail/composables/composeHandoff'
 import { useComposeMail } from '@/apps/mail/composables/useComposeMail'
-import AdaptiveDropdown from '@/apps/mail/components/AdaptiveDropdown.vue'
+import AdaptiveDropdown from '@/components/AdaptiveDropdown.vue'
 import RecipientInput from '@/apps/mail/components/Controls/RecipientInput.vue'
 import ScheduleSendModal from '@/apps/mail/components/Modals/ScheduleSendModal.vue'
 

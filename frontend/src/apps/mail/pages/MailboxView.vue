@@ -491,8 +491,8 @@ import {
 	raisePromiseToast,
 	raiseToast,
 	shouldIgnoreKeypress,
-	stripShortcutHint,
 } from '@/apps/mail/utils'
+import { stripShortcutHint } from '@/utils/actionLabel'
 import { utcDayEnd, utcDayStart } from '@/apps/mail/utils/datetime'
 import {
 	hasCursor,
@@ -518,7 +518,7 @@ import {
 } from '@/apps/mail/composables/usePaginatedThreads'
 import { useThreadActions } from '@/apps/mail/utils/useThreadActions'
 import { type MailboxRole, userStore } from '@/apps/mail/stores/user'
-import AdaptiveDropdown from '@/apps/mail/components/AdaptiveDropdown.vue'
+import AdaptiveDropdown from '@/components/AdaptiveDropdown.vue'
 import HeaderActions from '@/apps/mail/components/HeaderActions.vue'
 import LoadingBar from '@/apps/mail/components/LoadingBar.vue'
 import NoMails from '@/apps/mail/components/Icons/NoMails.vue'
