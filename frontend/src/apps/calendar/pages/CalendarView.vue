@@ -393,6 +393,19 @@ const withCalendarColor = (event) => ({
 	color: calendarColor(event.calendars[0]?.calendar),
 })
 
+/**
+ * Whether the calendar has yet to be told what is in the window it is showing.
+ *
+ * `loading` alone is not that: it is false in the moment between mounting and the
+ * request going out, and the Agenda — which has nothing to draw until events arrive —
+ * used that moment to say the span had nothing on it. No data and no error yet is the
+ * same not-knowing, so it counts too. An error does not: the toast has said what
+ * happened, and a list waiting forever says nothing.
+ */
+const eventsPending = computed(
+	() => events.loading || (!events.data && !events.error),
+)
+
 const visibleEvents = computed(
 	() =>
 		events.data
@@ -897,6 +910,7 @@ const NOTIFY_MODAL_OPTIONS = {
 				<Calendar
 					ref="calendar"
 					:events="visibleEvents"
+					:loading="eventsPending"
 					:config="{ isEditMode: true }"
 					:on-click="({ calendarEvent }) => toggleEventDetail(calendarEvent)"
 					:on-dbl-click="(event) => handleOpenEvent(event)"
