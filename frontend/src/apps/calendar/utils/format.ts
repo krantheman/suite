@@ -11,6 +11,17 @@ const DAYS_MAP: Record<string, string> = {
   sa: 'Saturday',
 }
 
+// The days of a rule come back in whatever order they were stored, so a series
+// set up on a Tuesday read "on Tuesday, Wednesday, Monday, Thursday, Friday" —
+// the right five days, listed as though they were unrelated. A week is read in
+// week order, so they are sorted into it before they are named. Anything not a
+// day of the week keeps its place at the end rather than being dropped.
+const DAY_ORDER = Object.keys(DAYS_MAP)
+const dayIndex = (day: string) => {
+  const index = DAY_ORDER.indexOf(day)
+  return index === -1 ? DAY_ORDER.length : index
+}
+
 const getByDayMessage = (byDay?: { day: string; nthOfPeriod?: number }[]) => {
   if (!byDay?.length) return ''
   const [first] = byDay
@@ -24,7 +35,12 @@ const getByDayMessage = (byDay?: { day: string; nthOfPeriod?: number }[]) => {
       DAYS_MAP[first.day],
     ])
 
-  return __(' on {0}', [byDay.map((d) => DAYS_MAP[d.day]).join(', ')])
+  return __(' on {0}', [
+    [...byDay]
+      .sort((a, b) => dayIndex(a.day) - dayIndex(b.day))
+      .map((d) => DAYS_MAP[d.day])
+      .join(', '),
+  ])
 }
 
 const getByMonthDayMessage = (byMonthDay?: number[]) => {

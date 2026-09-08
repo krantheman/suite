@@ -16,6 +16,46 @@ describe('getRepeatMessage', () => {
 
 	// The days arrive in whatever order the rule stored them — a series set up on a
 	// Tuesday put Tuesday first — and a week is read in week order.
+	it('names the days of a weekly rule in week order', () => {
+		const byDay = ['tu', 'we', 'mo', 'th', 'fr'].map((day) => ({ day }))
+		expect(getRepeatMessage({ frequency: 'weekly', interval: 1, byDay } as any)).toBe(
+			'Every  week on Monday, Tuesday, Wednesday, Thursday, Friday',
+		)
+	})
+
+	it('starts the week on Sunday, as the grid does', () => {
+		const byDay = ['sa', 'su'].map((day) => ({ day }))
+		expect(getRepeatMessage({ frequency: 'weekly', interval: 1, byDay } as any)).toBe(
+			'Every  week on Sunday, Saturday',
+		)
+	})
+
+	// Sorting must not become a way to lose a day.
+	it('keeps a day it does not recognise, at the end', () => {
+		const byDay = [{ day: 'xx' }, { day: 'mo' }]
+		expect(getRepeatMessage({ frequency: 'weekly', interval: 1, byDay } as any)).toContain(
+			'Monday',
+		)
+	})
+
+	it('is unchanged for a rule naming one nth day', () => {
+		expect(
+			getRepeatMessage({
+				frequency: 'monthly',
+				interval: 1,
+				byDay: [{ day: 'tu', nthOfPeriod: 2 }],
+			} as any),
+		).toBe('Every  month on the 2nd Tuesday')
+	})
+
+	it('says nothing about a rule it cannot read', () => {
+		// An occurrence can outlive the rule that made it: a series whose rule was cleared keeps
+		// the occurrences the server had already expanded, and they still carry a recurrence id.
+		// This used to assert its way to a frequency and throw out of the panel rendering it.
+		expect(getRepeatMessage({} as any)).toBe('')
+		expect(getRepeatMessage(undefined as any)).toBe('')
+		expect(getRepeatMessage({ interval: 1 } as any)).toBe('')
+	})
 })
 
 describe('formatAlertPhrase', () => {
