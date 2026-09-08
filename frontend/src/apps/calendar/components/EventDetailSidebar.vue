@@ -481,9 +481,15 @@ const openUrl = (location: string) => {
 			     panel reads title / date / participants. -->
 			<div v-if="hasDetails" class="flex flex-col py-2">
 				<!-- Recurrence -->
-				<div v-if="repeatMessage" class="flex items-center gap-2.5 px-4.5 py-2">
-					<Repeat class="icon text-ink-gray-5 size-4 shrink-0" />
-					<span class="text-ink-gray-7 min-w-0 break-words text-sm">{{ repeatMessage }}</span>
+				<!-- items-start, not items-center: a rule naming five days wraps, and
+				     an icon centred on the block then sits between the two lines rather
+				     than beside the sentence it labels. Every other row here is one
+				     line, where the two agree. text-p-sm for the same reason the icon
+				     moved — 1.15 is a line-height for a label, and this one is a
+				     sentence. -->
+				<div v-if="repeatMessage" class="flex items-start gap-2.5 px-4.5 py-2">
+					<Repeat class="icon text-ink-gray-5 mt-0.5 size-4 shrink-0" />
+					<span class="text-ink-gray-7 min-w-0 break-words text-p-sm">{{ repeatMessage }}</span>
 				</div>
 
 				<!-- Meet link -->

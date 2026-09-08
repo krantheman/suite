@@ -107,3 +107,71 @@ export interface RecurrenceRule {
   until?: string
   count?: number
 }
+
+/**
+ * An alert as a sentence, saying what the desktop's row of controls says: how the
+ * reader is told, then when. The phone shows this in place of those controls and
+ * opens them on a tap, so anything the sentence leaves out is a field whose value
+ * cannot be read without opening it.
+ *
+ * The detail panel has a formatter of its own (EventDetailSidebar's formatAlert): it
+ * reads the shape the server sends — an ISO offset, or a `when` timestamp — where this
+ * reads the shape the form edits, which EventModal's parseAlert produces.
+ */
+export const formatAlertPhrase = (alert: {
+  type: string
+  action?: string
+  number?: number
+  unit?: string
+  direction?: number
+  relative_to?: string
+  date?: string
+  time?: string
+}) => {
+  // Named on every alert, as the desktop's row names it. Left off the ordinary case,
+  // the sentence lost its subject — "on 7 Sep at 9:00 am" says when something happens
+  // without saying what.
+  const action = alert.action === 'Email' ? __('Email') : __('Notification')
+
+  if (alert.type === 'AbsoluteTrigger')
+    return (
+      `${action} ` +
+      __('on {0} at {1}', [
+        dayjs(alert.date).format('D MMM'),
+        dayjs(`${alert.date}T${alert.time}`).format('h:mm a'),
+      ])
+    )
+
+  const number = Math.abs(alert.number ?? 0)
+  if (!number) return `${action} ${__('at time of event')}`
+
+  // Built here rather than at module scope: `__` is installed on the window at app start,
+  // and a table of translated strings evaluated at import time runs before it exists.
+  const units: Record<string, [string, string]> = {
+    weeks: [__('week'), __('weeks')],
+    days: [__('day'), __('days')],
+    hours: [__('hour'), __('hours')],
+    minutes: [__('minute'), __('minutes')],
+  }
+
+  const [singular, plural] = units[alert.unit ?? 'minutes'] ?? units.minutes
+  const unit = number === 1 ? singular : plural
+
+  // The anchor is named both ways round: the desktop's row always shows Start or
+  // End, and a phrase that says "before" of one and "before end" of the other reads
+  // as though the first were anchored to nothing.
+  if (alert.relative_to === 'End')
+    return (
+      `${action} ` +
+      (alert.direction === 1
+        ? __('{0} {1} after end', [number, unit])
+        : __('{0} {1} before end', [number, unit]))
+    )
+
+  return (
+    `${action} ` +
+    (alert.direction === 1
+      ? __('{0} {1} after start', [number, unit])
+      : __('{0} {1} before start', [number, unit]))
+  )
+}

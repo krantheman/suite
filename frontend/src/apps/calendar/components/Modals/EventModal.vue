@@ -38,6 +38,7 @@ import { getRepeatMessage } from '@/apps/calendar/utils/format'
 import { reanchoredRule } from '@/apps/calendar/utils/recurrence'
 import { isFirstOccurrence, scopeOptions } from '@/apps/calendar/utils/recurringScope'
 import type { RecurringScope } from '@/apps/calendar/utils/recurringScope'
+import { useScreenSize } from '@/composables/useScreenSize'
 import { userStore } from '@/apps/calendar/stores/user'
 import type { ParticipantIdentity } from '@/apps/calendar/types/doctypes'
 import { useEventDelete } from '@/apps/calendar/composables/useEventDelete'
@@ -45,6 +46,7 @@ import RecurringScopeModal from '@/apps/calendar/components/Modals/RecurringScop
 import EventAlertList from '@/apps/calendar/components/EventAlertList.vue'
 import ParticipantSelector from '@/apps/calendar/components/ParticipantSelector.vue'
 import EventRepeatSettingsModal from '@/apps/calendar/components/Modals/EventRepeatSettingsModal.vue'
+import MobileEventForm from '@/apps/calendar/components/mobile/MobileEventForm.vue'
 
 const show = defineModel<boolean>()
 const { selectedEvent } = defineProps<{ selectedEvent: any }>()
@@ -54,6 +56,7 @@ const user = inject('$user')
 const dayjs = inject('$dayjs')
 const store = userStore()
 const { participantIdentities } = store
+const { isMobile } = useScreenSize()
 
 const isNew = computed(() => !selectedEvent?.calendarEvent)
 // A saved draft: the server holds it but has sent nothing. Only a new event can become
@@ -484,6 +487,12 @@ const toggleRepeat = () => {
 	else event.recurrence_rule = {}
 }
 
+// One size for every glyph in the field column, so a row is found by its label
+// rather than by how big its icon happens to draw. 16 rather than the 18 the
+// column carried: at 18 the boxy glyphs — the calendar, the briefcase — filled
+// their frame corner to corner and read a size above the round ones beside them.
+const FIELD_ICON_SIZE = 16
+
 const repeatLabel = computed(() => {
 	if (!event.recurrence_rule?.frequency) return __('Repeat')
 	const message = getRepeatMessage(event.recurrence_rule)
@@ -643,7 +652,9 @@ const submitEvent = (sendEmail: boolean) => {
 //
 // Draft is not a button; it is what happens when you leave without sending,
 // the way mail's compose keeps what you typed. Cancel means "throw this away"
-// and asks first only if there is something to throw away. ✕, Escape and a
+// and asks first only if there is something to throw away — and the question it
+// asks carries the draft as an answer, which on a phone is the only place the
+// offer is made at all: there is no ✕ there, and no Save split. ✕, Escape and a
 // click outside mean "keep": a new event or a draft is saved as a draft with
 // a toast that can undo it. A published event cannot go back to being a
 // draft, so unsent edits there get the same question Cancel asks.
@@ -657,6 +668,17 @@ const showDiscardModal = ref(false)
 const cancel = () => {
 	if (isDirty.value) showDiscardModal.value = true
 	else show.value = false
+}
+
+// The draft is only ever offered where it can actually be written: a published event
+// cannot go back to being one, and without an organizer there is nothing to save it as.
+const canKeepAsDraft = computed(() => canSaveDraft.value && !missingOrganizer.value)
+
+const saveDraftFromDiscard = () => {
+	showDiscardModal.value = false
+	// Puts the question back up itself when the dates don't hold, so this closing it first
+	// is not the last word.
+	saveDraftAndLeave()
 }
 
 const discardChanges = () => {
@@ -744,6 +766,13 @@ const shouldShowRecurringEventModal = computed(
 const addAlert = (alert: object) => {
 	event.followsDefaults = false
 	event.alerts.push(alert)
+}
+
+// The phone's alert picker replaces a row outright, or drops it: same statement as
+// addAlert's, about a list it rewrites rather than appends to.
+const setAlerts = (alerts: object[]) => {
+	event.followsDefaults = false
+	event.alerts = alerts
 }
 
 const addAlertOptions = computed(() => [
@@ -898,7 +927,17 @@ const recurringScopeModalProps = computed(() => ({
 </script>
 
 <template>
-	<Dialog :open="show" size="4xl" bare @update:open="(open) => (open ? (show = true) : leave())">
+	<!-- Two trees rather than one restyled, as useScreenSize has it: the phone's form is a
+	     screen with its own header and its own pickers, not this dialog at 390px. Everything
+	     behind both — the form state, the save path, the modals below — is this component's,
+	     so the two presentations cannot drift apart on what saving an event means. -->
+	<Dialog
+		v-if="!isMobile"
+		:open="show"
+		size="4xl"
+		bare
+		@update:open="(open) => (open ? (show = true) : leave())"
+	>
 		<template #default>
 			<!-- On a phone the dialog is the screen: 85vh of a 4xl box left the form in
 			     a letterbox with its own scrollbar inside the page's. -->
@@ -978,7 +1017,7 @@ const recurringScopeModalProps = computed(() => ({
 						<!-- date & time — one grouped card -->
 						<div class="rounded-7 border border-outline-gray-2">
 							<div class="flex items-center gap-3 border-b px-3.5 py-3">
-								<Clock :size="18" class="icon shrink-0 text-ink-gray-5" />
+								<Clock :size="FIELD_ICON_SIZE" class="icon shrink-0 text-ink-gray-5" />
 								<span class="flex-1 text-base font-medium">
 									{{ __('Date & Time') }}
 								</span>
@@ -1069,7 +1108,7 @@ const recurringScopeModalProps = computed(() => ({
 							<!-- locations -->
 							<div class="flex gap-3">
 								<MapPin
-									:size="18"
+									:size="FIELD_ICON_SIZE"
 									class="icon shrink-0 text-ink-gray-5"
 									:class="event.locations?.length ? 'mt-7' : 'mt-2'"
 								/>
@@ -1100,7 +1139,7 @@ const recurringScopeModalProps = computed(() => ({
 							<!-- alerts -->
 							<div class="flex gap-3">
 								<Bell
-									:size="18"
+									:size="FIELD_ICON_SIZE"
 									class="icon shrink-0 text-ink-gray-5"
 									:class="event.alerts?.length ? 'mt-7' : 'mt-2'"
 								/>
@@ -1116,7 +1155,7 @@ const recurringScopeModalProps = computed(() => ({
 
 							<!-- availability & visibility -->
 							<div class="flex gap-3">
-								<Briefcase :size="18" class="icon mt-7 shrink-0 text-ink-gray-5" />
+								<Briefcase :size="FIELD_ICON_SIZE" class="icon mt-7 shrink-0 text-ink-gray-5" />
 								<div class="flex min-w-0 flex-1 gap-3">
 									<FormControl
 										v-model="event.free_busy_status"
@@ -1137,7 +1176,7 @@ const recurringScopeModalProps = computed(() => ({
 
 							<!-- description -->
 							<div class="flex gap-3">
-								<AlignLeft :size="18" class="icon mt-7 shrink-0 text-ink-gray-5" />
+								<AlignLeft :size="FIELD_ICON_SIZE" class="icon mt-7 shrink-0 text-ink-gray-5" />
 								<FormControl
 									v-model="event.description"
 									:label="__('Description')"
@@ -1154,7 +1193,7 @@ const recurringScopeModalProps = computed(() => ({
 						class="w-[300px] shrink-0 overflow-y-auto border-l px-5 py-5 max-sm:w-full max-sm:overflow-visible max-sm:border-l-0 max-sm:border-t"
 					>
 						<div class="mb-3 flex items-baseline gap-2">
-							<Users :size="15" class="icon self-center text-ink-gray-5" />
+							<Users :size="FIELD_ICON_SIZE" class="icon self-center text-ink-gray-5" />
 							<span class="text-base font-medium">{{ __('Participants') }}</span>
 							<span class="text-sm text-ink-gray-4">{{ participants.length }}</span>
 						</div>
@@ -1206,6 +1245,22 @@ const recurringScopeModalProps = computed(() => ({
 			</div>
 		</template>
 	</Dialog>
+	<MobileEventForm
+		v-else-if="show"
+		:event="event"
+		:title="dialogTitle"
+		:is-new="isNew"
+		:disable-save="disableSave"
+		:participants="participants"
+		:meet-url="meetUrl"
+		:meet-link-display="meetLinkDisplay"
+		@cancel="cancel"
+		@save="handleSaveClick"
+		@toggle-repeat="toggleRepeat"
+		@set-all-day="setAllDay"
+		@set-alerts="setAlerts"
+		@join-meet="joinMeet"
+	/>
 	<EventRepeatSettingsModal
 		v-if="event?.startDate"
 		v-model="showRepeatSettings"
@@ -1215,9 +1270,20 @@ const recurringScopeModalProps = computed(() => ({
 	/>
 	<Dialog v-model:open="showDiscardModal" v-bind="DISCARD_MODAL_OPTIONS">
 		<template #actions>
-			<div class="flex justify-end space-x-2">
-				<Button :label="__('Keep editing')" @click="showDiscardModal = false" />
-				<Button :label="__('Discard')" variant="solid" theme="red" @click="discardChanges" />
+			<!-- Two answers: keep what was typed, or throw it away. Keeping it means the
+			     draft where there can be one, and only otherwise means staying in the form —
+			     "Keep editing" beside "Save as draft" offered the same thing twice, and the
+			     dialog's ✕ is already the way back. Stacked on a phone, where two buttons in
+			     a row leave each too narrow to read; least destructive first either way. -->
+			<div class="flex justify-end gap-2 max-sm:flex-col">
+				<Button
+					v-if="canKeepAsDraft"
+					:label="__('Save as draft')"
+					variant="solid"
+					@click="saveDraftFromDiscard"
+				/>
+				<Button v-else :label="__('Keep editing')" @click="showDiscardModal = false" />
+				<Button :label="__('Discard')" variant="subtle" theme="red" @click="discardChanges" />
 			</div>
 		</template>
 	</Dialog>
