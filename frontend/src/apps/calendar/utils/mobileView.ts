@@ -1,4 +1,4 @@
-import { CalendarAgendaIcon, CalendarMonthIcon } from 'frappe-ui/experimental'
+import { Grid3x3, Rows3 } from 'lucide-vue-next'
 
 /**
  * The two views the phone has — an agenda, which is home, and the month.
@@ -12,11 +12,9 @@ export type MobileView = 'agenda' | 'month'
 /** In the order the switcher lists them: home first. */
 export const MOBILE_VIEWS: MobileView[] = ['agenda', 'month']
 
-// The calendar's own glyphs, the ones the desktop's view switcher draws. A month and
-// an agenda are the same two views on either device, so they are marked by the same
-// two marks rather than by whichever lucide icons came closest.
-export const viewIcon = (view: MobileView) =>
-	view === 'month' ? CalendarMonthIcon : CalendarAgendaIcon
+// The same two the desktop's view switcher draws: each view marked by the shape of
+// what it lays out — a grid of days, a stack of rows.
+export const viewIcon = (view: MobileView) => (view === 'month' ? Grid3x3 : Rows3)
 
 export const viewLabel = (view: MobileView) =>
 	view === 'month' ? __('Month') : __('Agenda')
