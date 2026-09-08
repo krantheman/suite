@@ -471,7 +471,22 @@ const handleEventClick = ({ calendarEvent }) =>
 
 const closeEventDetail = () => {
 	const { event: _event, recurrence: _recurrence, ...query } = route.query
-	router.replace({ query })
+	return router.replace({ query })
+}
+
+/**
+ * Edit, from the detail sheet: the sheet goes first, then the form opens.
+ *
+ * Both surfaces are the same event, and the sheet is drawn over the form rather than
+ * under it — so leaving it open puts the thing being edited behind a panel describing
+ * it. Awaited rather than run together: handleOpenEvent writes `?edit=` onto the query
+ * it can see, and until the close has landed that query still carries the `?event=`
+ * this just dropped.
+ */
+const editFromDetail = async () => {
+	const calendarEvent = selectedCalendarEvent.value
+	await closeEventDetail()
+	handleOpenEvent({ calendarEvent })
 }
 
 /** "August 2026" → the month and its year apart, so the year can be set in a lighter ink. */
@@ -1002,7 +1017,7 @@ const NOTIFY_MODAL_OPTIONS = {
 		<EventDetailSheet
 			:calendar-event="selectedCalendarEvent"
 			@close="closeEventDetail"
-			@edit="handleOpenEvent({ calendarEvent: selectedCalendarEvent })"
+			@edit="editFromDetail"
 			@reload-events="reloadEvents"
 			@email-participants="emailParticipants"
 		/>
