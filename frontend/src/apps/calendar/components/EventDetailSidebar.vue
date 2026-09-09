@@ -10,13 +10,13 @@ import {
 	Mail,
 	MapPin,
 	MoreHorizontal,
-	Repeat,
 	SquarePen,
 	Text,
+	User,
 	Users,
 	X,
 } from 'lucide-vue-next'
-import { Badge, Button, Dialog, Dropdown, TabButtons, createResource, toast } from 'frappe-ui'
+import { Badge, Button, Dialog, Dropdown, TabButtons, Tooltip, createResource, toast } from 'frappe-ui'
 import { CalendarColorMap } from 'frappe-ui/experimental'
 import DOMPurify from 'dompurify'
 
@@ -360,21 +360,6 @@ const joinMeet = () => {
 	else window.open(meetUrl.value, '_blank', 'noopener')
 }
 
-// --- Details block ---
-
-// Every row of it is individually optional, so an event with nothing but a
-// title and a time has none of them — and the block would otherwise render as
-// a hollow band of padding between two dividers.
-const hasDetails = computed(
-	() =>
-		!!calendarEvent.recurrence_id ||
-		!!meetUrl.value ||
-		!!calendarEvent.locations?.length ||
-		!!calendarEvent.alerts?.length ||
-		!!calendarEvent.free_busy_status ||
-		!!calendarEvent.privacy,
-)
-
 // --- Actions dropdown (delete) ---
 
 const {
@@ -413,20 +398,26 @@ const openUrl = (location: string) => {
 		"
 	>
 		<!-- Header -->
-		<!-- h-12 matches the mail header bar's 48px, so when mail hosts this panel
-		     the two headers read as one row. Instead of a static title, it names
-		     the calendar the event belongs to: its colour dot + the organizer. -->
+		<!-- h-12 matches the mail header bar's 48px, so when mail hosts this panel the
+		     two headers read as one row. The event's name leads it, where a name belongs;
+		     the row is a fixed height, so a long one truncates rather than growing it and
+		     the tooltip carries the whole of it. -->
 		<div class="flex h-12 items-center gap-3 px-4.5">
-			<div class="flex min-w-0 flex-1 items-center gap-2">
-				<span
-					class="size-2.5 shrink-0 rounded-full"
-					:style="{ backgroundColor: dotColor }"
-				/>
-				<span class="text-ink-gray-6 truncate text-sm">
-					{{ calendarOwnerLabel }}
-				</span>
+			<!-- The calendar's colour before the name it belongs to: it is the one mark
+			     shared with the pills in the grid, so it answers "which of these is the one
+			     I clicked" before the name has to be read. -->
+			<div class="flex min-w-0 items-center gap-2">
+				<span class="size-2.5 shrink-0 rounded-full" :style="{ backgroundColor: dotColor }" />
+				<Tooltip :text="calendarEvent.title || __('Untitled event')" class="min-w-0">
+					<h3 class="text-ink-gray-8 truncate text-md font-semibold">
+						{{ calendarEvent.title || __('Untitled event') }}
+					</h3>
+				</Tooltip>
 			</div>
-			<div class="flex items-center gap-1">
+			<!-- ml-auto rather than flex-1 on the title beside it: the title is wrapped in
+			     a Tooltip, and the growing is the wrapper's to do or not — pushing from
+			     this side puts the actions on the edge whatever it decides. -->
+			<div class="ml-auto flex shrink-0 items-center gap-1">
 				<Dropdown :options="dropdownOptions">
 					<Button
 						variant="ghost"
@@ -449,28 +440,39 @@ const openUrl = (location: string) => {
 			</div>
 		</div>
 
-		<!-- Title and time, outside the scroll: what the panel is about stays put
-		     while what it says about it moves. -mt-2 eats the header's centering
-		     slack so the visual gap above the title (which also includes the header
-		     text's own centering slack and the title's half-leading) matches the pb
-		     below the date. No top padding — that slack is the gap; pb balances it
-		     below the date and keeps breathing room when a long title wraps (the
-		     block just grows). Single-line, -mt + block sum to 49px, so header (48)
-		     + block + divider match the mail header bar + screener banner (49px
-		     each) and the divider lands on the banner's border when mail hosts the
-		     panel. -->
-		<div class="-mt-2 flex shrink-0 flex-col px-4.5 pb-3">
-			<!-- leading-6 keeps wrapped titles readable while leaving the
-			     title–date gap clearly wider than the title's own line gap; the
-			     date keeps text-sm's default 1.15 line-height (14.95px), so
-			     -8 + 24 + 6 + 14.95 + 12 sums to 49 within a subpixel. -->
+		<!-- When it is and whose calendar it is on — outside the scroll, under the name
+		     in the header: what the panel is about stays put while what it says about it
+		     moves.
+
+		     No negative top margin: it was there to pull a title tight under the header,
+		     and the title is in the header now. pt-px is the last pixel of the 49 this
+		     block has to be — two 15px lines where there used to be a 24px title and a
+		     15px date leaves 1 + 15 + 6 + 15 + 12, and the 1 matters: header (48) + block
+		     (49) + divider is what the mail header bar and the screener banner under it
+		     come to (49px each), so the divider lands on the banner's border when mail
+		     hosts this panel rather than a pixel under it. -->
+		<div class="-mt-0.5 flex shrink-0 flex-col px-4.5 pb-[15px]">
+			<!-- The three numbers are solved together, not chosen. text-md is 15px at 1.15,
+			     so the title's line box is 17.25 and the header's 48 leaves 15.4 under it —
+			     more than the 12 a pb-3 put below the block, which is what left the pair
+			     sitting low. Balanced means the bottom padding equals that slack, and the
+			     49px the block has to be says the same numbers can only add to 49. Both
+			     hold at -2 / 6 / 15: -2 + 14.95 + 6 + 14.95 + 15. 15px is not a step on the
+			     scale, and is spelled out rather than rounded to 14 or 16 because it is the
+			     one value that matches a slack the header's own height fixes at 15.4. -->
 			<div class="min-w-0 space-y-1.5">
-				<h3 class="text-ink-gray-8 break-words text-md font-semibold leading-6">
-					{{ calendarEvent.title || __('Untitled event') }}
-				</h3>
 				<div class="flex items-center gap-2 text-sm text-ink-gray-6">
 					<Badge v-if="calendarEvent.isDraft" theme="gray" :label="__('Draft')" />
 					<span class="break-words">{{ dateLabel }}</span>
+				</div>
+				<!-- How often, under when: "every week on Thursday" is the rest of the
+				     sentence the date line starts, not a property of the event to be read
+				     among Busy and Public. No icon, for the same reason — the line above it
+				     has none, and one here would indent this line 22px past the start of
+				     the sentence it continues. The words name themselves. Truncated rather
+				     than wrapped: the block is a fixed 49px. -->
+				<div v-if="repeatMessage" class="min-w-0 truncate text-sm text-ink-gray-6">
+					{{ repeatMessage }}
 				</div>
 			</div>
 		</div>
@@ -479,22 +481,10 @@ const openUrl = (location: string) => {
 
 		<div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
 
-			<!-- Details. The block goes, trailing divider included, when the event
-			     carries none of these rows — the divider above it stays, so the
-			     panel reads title / date / participants. -->
-			<div v-if="hasDetails" class="flex flex-col py-2">
-				<!-- Recurrence -->
-				<!-- items-start, not items-center: a rule naming five days wraps, and
-				     an icon centred on the block then sits between the two lines rather
-				     than beside the sentence it labels. Every other row here is one
-				     line, where the two agree. text-p-sm for the same reason the icon
-				     moved — 1.15 is a line-height for a label, and this one is a
-				     sentence. -->
-				<div v-if="repeatMessage" class="flex items-start gap-2.5 px-4.5 py-2">
-					<Repeat class="icon text-ink-gray-5 mt-0.5 size-4 shrink-0" />
-					<span class="text-ink-gray-7 min-w-0 break-words text-p-sm">{{ repeatMessage }}</span>
-				</div>
-
+			<!-- Details. Every row here is optional but the calendar's: an event is
+			     always on one, which is what the block is guaranteed to carry and why it
+			     no longer asks whether it has anything to show. -->
+			<div class="flex flex-col py-2">
 				<!-- Meet link -->
 				<template v-if="meetUrl">
 					<div class="flex items-center gap-2.5 px-4.5 py-2">
@@ -578,9 +568,20 @@ const openUrl = (location: string) => {
 					<Lock class="icon text-ink-gray-5 size-4 shrink-0" />
 					<span class="text-ink-gray-7 text-sm">{{ __(calendarEvent.privacy) }}</span>
 				</div>
+
+				<!-- Whose event it is, last: the row that is always here, and the one a
+				     reader is least often after — what it is and when comes first. A person,
+				     not a calendar: the label is the organizer's address, falling back to
+				     the account's own, and only names a calendar when an event carries no
+				     organizer at all. The colour it draws in is up beside the name, where
+				     matching it against the grid starts. -->
+				<div class="flex items-center gap-2.5 px-4.5 py-2">
+					<User class="icon text-ink-gray-5 size-4 shrink-0" />
+					<span class="text-ink-gray-7 min-w-0 truncate text-sm">{{ calendarOwnerLabel }}</span>
+				</div>
 			</div>
 
-			<div v-if="hasDetails" class="border-t" />
+			<div class="border-t" />
 
 			<!-- Participants: the section's own y padding matches the header row's
 			     py-2, so it reads as evenly spaced. Counting the row's padding
