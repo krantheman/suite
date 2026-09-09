@@ -91,10 +91,15 @@ export const getRepeatMessage = (recurrenceRule: RecurrenceRule) => {
   // says nothing, rather than throwing out of the panel that was rendering it.
   if (!frequency) return ''
 
-  const message = __('Every {0} {1}', [
-    interval === 1 ? '' : interval,
-    frequency.label.toLowerCase(),
-  ])
+  // Two strings rather than one with an empty placeholder: "Every {0} {1}" with
+  // nothing for {0} leaves the spaces either side of it, so a rule that repeats
+  // every week read "Every  week". HTML collapses that and the panel never showed
+  // it; copied as plain text it survives. It also gives a translator a sentence
+  // for each case rather than one with a hole in the middle.
+  const message =
+    interval === 1
+      ? __('Every {0}', [frequency.label.toLowerCase()])
+      : __('Every {0} {1}', [interval, frequency.label.toLowerCase()])
 
   const suffix =
     getByDayMessage(recurrenceRule.byDay) ||

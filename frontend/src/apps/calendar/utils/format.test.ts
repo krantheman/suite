@@ -11,7 +11,7 @@ beforeAll(() => {
 
 describe('getRepeatMessage', () => {
 	it('describes an ordinary rule', () => {
-		expect(getRepeatMessage({ frequency: 'weekly', interval: 1 } as any)).toBe('Every  week')
+		expect(getRepeatMessage({ frequency: 'weekly', interval: 1 } as any)).toBe('Every week')
 	})
 
 	// The days arrive in whatever order the rule stored them — a series set up on a
@@ -19,14 +19,14 @@ describe('getRepeatMessage', () => {
 	it('names the days of a weekly rule in week order', () => {
 		const byDay = ['tu', 'we', 'mo', 'th', 'fr'].map((day) => ({ day }))
 		expect(getRepeatMessage({ frequency: 'weekly', interval: 1, byDay } as any)).toBe(
-			'Every  week on Monday, Tuesday, Wednesday, Thursday, Friday',
+			'Every week on Monday, Tuesday, Wednesday, Thursday, Friday',
 		)
 	})
 
 	it('starts the week on Sunday, as the grid does', () => {
 		const byDay = ['sa', 'su'].map((day) => ({ day }))
 		expect(getRepeatMessage({ frequency: 'weekly', interval: 1, byDay } as any)).toBe(
-			'Every  week on Sunday, Saturday',
+			'Every week on Sunday, Saturday',
 		)
 	})
 
@@ -45,7 +45,7 @@ describe('getRepeatMessage', () => {
 				interval: 1,
 				byDay: [{ day: 'tu', nthOfPeriod: 2 }],
 			} as any),
-		).toBe('Every  month on the 2nd Tuesday')
+		).toBe('Every month on the 2nd Tuesday')
 	})
 
 	it('says nothing about a rule it cannot read', () => {
