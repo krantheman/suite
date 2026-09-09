@@ -353,6 +353,40 @@ const copyMeetLink = async () => {
 	toast.success(__('Frappe Meet link copied.'))
 }
 
+/**
+ * The event as something to paste into a chat: what it is, when it is, and the link
+ * to join it.
+ *
+ * The link alone answers "where do I click" and nothing else — pasted into a thread
+ * a day early it is a URL with no claim about when to use it. This is the same copy
+ * with what makes it an invitation, in the reader's own zone, spelled as plain lines
+ * because everywhere it lands is plain text.
+ *
+ * The rule is there when the event has one: without it a weekly standup pastes as a
+ * single date, which is a claim that it happens once. Room and link both, when both
+ * exist — one is where the event is and the other is how to attend it, and an event
+ * can want either answered. What is left out is what a reader would not act on: the
+ * participants, the description, and who organized it, all of which are a tap away in
+ * the event the paste points at.
+ */
+const copyInvite = async () => {
+	const link = meetUrl.value && new URL(meetUrl.value, window.location.origin).href
+	const where = calendarEvent.locations
+		?.map((location) => location._name)
+		.filter(Boolean)
+		.join(', ')
+
+	const lines = [
+		calendarEvent.title || __('Untitled event'),
+		dateLabel.value,
+		repeatMessage.value,
+		where,
+		link,
+	]
+	await navigator.clipboard.writeText(lines.filter(Boolean).join('\n'))
+	toast.success(__('Invite copied.'))
+}
+
 const joinMeet = () => {
 	if (!meetUrl.value) return
 	// Same-origin paths stay in-app; foreign links open in a new tab.
@@ -381,6 +415,9 @@ const {
 
 const dropdownOptions = computed(() => [
 	{ label: __('Edit'), icon: SquarePen, onClick: () => emit('edit') },
+	// Beside Edit rather than beside the Meet row's copy: that button copies the link,
+	// which is a property of the call, where this copies the event.
+	{ label: __('Copy Invite'), icon: Copy, onClick: copyInvite },
 	deleteOption.value,
 ])
 
