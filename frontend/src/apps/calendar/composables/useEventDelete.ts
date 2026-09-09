@@ -175,9 +175,13 @@ export function useEventDelete(
 
 	// The one entry a host drops into its own dropdown. A recurring event asks
 	// which occurrences first; a one-off has nothing to ask.
+	// Red: the one item in these menus that does not come back. Every host of this
+	// option is a menu of ordinary actions, and the colour is what tells them apart
+	// before the word is read.
 	const deleteOption = computed(() => ({
 		label: __('Delete'),
 		icon: Trash2,
+		theme: 'red',
 		onClick: requestDelete,
 	}))
 
