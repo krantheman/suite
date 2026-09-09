@@ -424,6 +424,12 @@ const event = reactive({})
 const withActualTitle = (event) => ({ ...event, title: event.actualTitle })
 
 const handleOpenEvent = (e) => {
+	// Cleared on the way in rather than on the way out. Emptying it when the modal closed
+	// re-rendered the modal while it was still fading: with no calendarEvent left it read
+	// as a new event mid-animation, which enabled Save and put a remove button on every
+	// participant. What the clearing is for is not leaking one event's keys into the next,
+	// and doing it here is the same guarantee without the audience.
+	Object.keys(event).forEach((key) => delete event[key])
 	Object.assign(event, e, e.calendarEvent && { calendarEvent: withActualTitle(e.calendarEvent) })
 	showEditEvent.value = true
 
@@ -659,8 +665,9 @@ watch(
 	() => showEditEvent.value,
 	(val) => {
 		if (val) return
-		Object.keys(event).forEach((key) => delete event[key])
-		// Closing the modal drops only its own keys — the detail sidebar (?event=) stays.
+		// The form state stays until the next open clears it, so the modal has something
+		// to draw while it fades. Closing the modal drops only its own keys — the detail
+		// sidebar (?event=) stays.
 		if (route.query.edit) {
 			const { edit: _edit, editRecurrence: _rec, ...query } = route.query
 			router.replace({ query })
