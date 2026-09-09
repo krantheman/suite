@@ -16,7 +16,7 @@ import {
 	Users,
 	X,
 } from 'lucide-vue-next'
-import { Badge, Button, Dialog, Dropdown, TabButtons, Tooltip, createResource, toast } from 'frappe-ui'
+import { Button, Dialog, Dropdown, TabButtons, Tooltip, createResource, toast } from 'frappe-ui'
 import { CalendarColorMap } from 'frappe-ui/experimental'
 import DOMPurify from 'dompurify'
 
@@ -442,9 +442,28 @@ const openUrl = (location: string) => {
 		<div class="flex h-12 items-center gap-3 px-4.5">
 			<!-- The calendar's colour before the name it belongs to: it is the one mark
 			     shared with the pills in the grid, so it answers "which of these is the one
-			     I clicked" before the name has to be read. -->
+			     I clicked" before the name has to be read.
+
+			     A draft draws it as a ring rather than a disc, the way the agenda's rows
+			     do: unsent is a state of the event, and the mark that stands for the event
+			     is where a state of it belongs. It said so as a "Draft" badge on the date
+			     line under the title, which spent a line of a 49px block on a word the
+			     dot can say by being hollow.
+
+			     2px of ring against the rows' 1.5: the dot here is 10px to their 8, and a
+			     stroke that does not grow with the circle it is drawn on reads thinner on
+			     the larger one. Unbroken, as the rows draw it — at this size a dashed
+			     circle reads as a badly drawn one. Boxes are border-box, so the ring is
+			     drawn inside the dot's own 10px. -->
 			<div class="flex min-w-0 items-center gap-2">
-				<span class="size-2.5 shrink-0 rounded-full" :style="{ backgroundColor: dotColor }" />
+				<span
+					class="size-2.5 shrink-0 rounded-full"
+					:style="
+						calendarEvent.isDraft
+							? { border: `2px solid ${dotColor}` }
+							: { backgroundColor: dotColor }
+					"
+				/>
 				<Tooltip :text="calendarEvent.title || __('Untitled event')" class="min-w-0">
 					<h3 class="text-ink-gray-8 truncate text-md font-semibold">
 						{{ calendarEvent.title || __('Untitled event') }}
@@ -499,7 +518,6 @@ const openUrl = (location: string) => {
 			     one value that matches a slack the header's own height fixes at 15.4. -->
 			<div class="min-w-0 space-y-1.5">
 				<div class="flex items-center gap-2 text-sm text-ink-gray-6">
-					<Badge v-if="calendarEvent.isDraft" theme="gray" :label="__('Draft')" />
 					<span class="break-words">{{ dateLabel }}</span>
 				</div>
 				<!-- How often, under when: "every week on Thursday" is the rest of the
