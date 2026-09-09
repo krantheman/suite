@@ -137,8 +137,10 @@ watch(
 
 // Back/Forward and the account switch write the route; the phone follows it,
 // the way applyRoute has the desktop calendar follow it.
+// One string rather than a rebuilt array, for the reason applyRoute's watcher
+// below gives: an array getter fires on every route change, this one included.
 watch(
-	() => [route.name, route.params.year, route.params.month, route.params.day],
+	() => `${String(route.name)}|${route.params.year}|${route.params.month}|${route.params.day}`,
 	() => {
 		if (!isMobile.value) return
 		const date = routeDate().format('YYYY-MM-DD')
@@ -242,8 +244,15 @@ onMounted(() => {
 	if (isMobile.value) events.fetch()
 })
 
+// Watched as one string, not as an array the getter rebuilds: a getter returning
+// a fresh array is a new value to Vue every time it runs, and it runs on any
+// change to the route — so opening an event, which only writes `?event=`, read
+// as a change of date. applyRoute then found the calendar's `currentDay` (1, in
+// every view but Day and Week) against today's date, decided they differed, and
+// sent the calendar to today — which scrolled the agenda back there from
+// wherever the reader had got to.
 watch(
-	() => [route.name, route.params.year, route.params.month, route.params.day],
+	() => `${String(route.name)}|${route.params.year}|${route.params.month}|${route.params.day}`,
 	() => applyRoute(),
 )
 
@@ -353,10 +362,21 @@ let fetchedRange: { from: string; to: string } | null = null
  * page lands, the span it shows is already inside the window fetched for the
  * page before it; the fetch that follows is for the page after, and lands while
  * the reader is looking at a list that is already complete.
+ *
+ * The week of slack at either end is what makes that true of the *edge* weeks as
+ * well. Both the Month strip and the Agenda pad their span out to whole weeks,
+ * so a page beginning on the 1st is drawn from the Sunday before it — which is
+ * in the month before, outside a window that starts on a 1st. Paging back drew
+ * that week from the 1st and then grew it upwards when the fetch landed,
+ * pushing the list the reader was already reading down the page. The same week
+ * at the far end, where the span runs a few days past the month it ends in.
  */
 const windowFor = (anchor: dayjs.Dayjs) => {
 	const first = anchor.startOf('month')
-	return { from: first.subtract(1, 'month'), to: first.add(AGENDA_MONTHS, 'month').endOf('month') }
+	return {
+		from: first.subtract(1, 'month').subtract(1, 'week'),
+		to: first.add(AGENDA_MONTHS, 'month').endOf('month').add(1, 'week'),
+	}
 }
 
 const events = createResource({
@@ -1015,6 +1035,7 @@ const NOTIFY_MODAL_OPTIONS = {
 				:now="now"
 				:open-event="selectedCalendarEvent"
 				:open-row="openRow"
+				:loading="eventsPending"
 				@select-date="(date) => (mobileDate = date)"
 				@select-event="openEventRow"
 			/>
