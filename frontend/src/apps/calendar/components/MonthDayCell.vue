@@ -16,27 +16,30 @@
 	     list of calendars to fit under it. -->
 	<button
 		type="button"
-		class="flex flex-col items-center gap-0.5 rounded-3 py-0.5"
-		:class="[
-			day.isSelected && !day.isToday && 'bg-surface-gray-2',
-			!day.isSelected && !day.isToday && 'hover:bg-surface-gray-2',
-		]"
+		class="group flex flex-col items-center gap-0.5 py-0.5"
 		:aria-current="day.isSelected ? 'date' : undefined"
 		@click="emit('select', day)"
 	>
-		<!-- Today is the numeral in reverse — a filled circle the size of the
-		     numeral's own line, rather than a filled cell. A filled cell had the
-		     tick under it on a dark ground, where a calendar's colour cannot be
-		     read, so the mark that says whose became the mark that says today,
-		     twice over. -->
+		<!-- Every mark a day can wear is the same mark: a circle the size of the
+		     numeral's own line. Today's is filled dark and the numeral reverses out
+		     of it; the day the calendar is on wears the same circle in gray; a
+		     pointed-at day wears it lighter still.
+
+		     A filled *cell* said the same things at a different shape — a rounded
+		     box behind the numeral and its tick — so a marked day and a marked
+		     today were two unrelated things happening in one column. It also put
+		     the tick on a dark ground, where a calendar's colour cannot be read,
+		     which made the mark that says whose into a second mark saying today. -->
 		<span
 			class="flex size-6.5 items-center justify-center rounded-full text-sm"
 			:class="
 				day.isToday
 					? 'bg-surface-gray-10 text-ink-gray-1'
-					: day.inMonth
-						? 'text-ink-gray-8'
-						: 'text-ink-gray-3'
+					: day.isSelected
+						? 'bg-surface-gray-3 text-ink-gray-8'
+						: day.inMonth
+							? 'text-ink-gray-8 group-hover:bg-surface-gray-2'
+							: 'text-ink-gray-3 group-hover:bg-surface-gray-2'
 			"
 		>
 			{{ day.date.date() }}
