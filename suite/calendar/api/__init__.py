@@ -26,12 +26,17 @@ from suite.utils.rate_limiter import dynamic_rate_limit
 
 @frappe.whitelist()
 def get_calendars(account: str) -> list[dict[str, str]]:
-    """Returns a list of the specified account's calendars."""
+    """Returns a list of the specified account's calendars.
+
+    The colour comes with them: it is the calendar's own, set wherever its owner
+    set it, and the views draw their events and their dots in it rather than in
+    a colour assigned by position.
+    """
 
     ensure_default_alerts(account)
     calendars = fetch_calendars(account)
 
-    return [{key: cal[key] for key in ["name", "_name"]} for cal in calendars]
+    return [{key: cal[key] for key in ["name", "_name", "color"]} for cal in calendars]
 
 
 # Stalwart answers a range query one page at a time, and a window wide enough for the

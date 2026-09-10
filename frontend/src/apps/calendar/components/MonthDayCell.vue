@@ -10,7 +10,7 @@
 		to recolour the tick to survive its own dark ground. The circle is the one
 		that reads, and one cell is the only way it stays that way.
 	-->
-	<!-- 31px a row: a 22px numeral, 2px of air, the 3px tick, and 2px of padding
+	<!-- 30px a row: a 22px numeral, 2px of air, the 2px tick, and 2px of padding
 	     either side. The gaps are the smallest that still read as gaps — a card of
 	     six rows spends every one of them six times over, and the sidebar has a
 	     list of calendars to fit under it.
@@ -49,7 +49,9 @@
 		>
 			{{ day.date.date() }}
 		</span>
-		<!-- The tick steps 6 → 11 → 16px for one, a few, and many events. Its width
+		<!-- The tick steps 6 → 11 → 16px for one, a few, and many events, and is
+		     2px thick: a rule under the date rather than a bar beside it, which is
+		     what 3px read as against a numeral this size. Its width
 		     is the day's load; its colour is split into one segment per calendar
 		     with something on the day, so the silhouette reads as density and the
 		     colours say whose. Days of the neighbouring months stay bare: their
@@ -58,7 +60,7 @@
 		     It keeps its place when there is nothing to draw — the row of numerals
 		     sits where it does whether or not the days under it are busy. -->
 		<span
-			class="flex h-[3px] items-center gap-px"
+			class="flex h-0.5 items-center gap-px"
 			:class="day.load === 1 ? 'w-1.5' : day.load <= 3 ? 'w-[11px]' : 'w-4'"
 		>
 			<template v-if="day.inMonth && day.load">
@@ -66,7 +68,7 @@
 					v-for="color in day.colors"
 					:key="color"
 					class="h-full min-w-0 flex-1 rounded-full opacity-80"
-					:style="{ backgroundColor: tickColor(color) }"
+					:style="{ backgroundColor: eventColor(color) }"
 				/>
 			</template>
 		</span>
@@ -74,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { CalendarColorMap } from 'frappe-ui/experimental'
+import { eventColor } from '@/apps/calendar/utils/color'
 
 import type { GridDay } from '@/apps/calendar/composables/useMonthGrid'
 
@@ -82,5 +84,4 @@ defineProps<{ day: GridDay }>()
 
 const emit = defineEmits<{ select: [day: GridDay] }>()
 
-const tickColor = (color: string) => CalendarColorMap[color]?.color || CalendarColorMap.green.color
 </script>

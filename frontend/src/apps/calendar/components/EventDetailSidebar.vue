@@ -17,7 +17,7 @@ import {
 	X,
 } from 'lucide-vue-next'
 import { Button, Dialog, Dropdown, TabButtons, Tooltip, createResource, toast } from 'frappe-ui'
-import { CalendarColorMap } from 'frappe-ui/experimental'
+import { eventColor } from '@/apps/calendar/utils/color'
 import DOMPurify from 'dompurify'
 
 import meetLogo from '@/assets/app-logos/meet.png'
@@ -175,11 +175,8 @@ const eventCalendar = computed(
  * Mail opens this panel on events it never transformed, which have no palette
  * colour of their own; those still fall back to the calendar's own.
  */
-const dotColor = computed(
-	() =>
-		CalendarColorMap[calendarEvent.color as string]?.color ||
-		eventCalendar.value?.color ||
-		DEFAULT_EVENT_COLOR,
+const dotColor = computed(() =>
+	eventColor((calendarEvent.color as string) || eventCalendar.value?.color),
 )
 
 // The organizer beats the viewer's own address (redundant in their own panel);

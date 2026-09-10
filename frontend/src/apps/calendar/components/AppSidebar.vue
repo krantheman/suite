@@ -10,7 +10,7 @@ import {
 	SidebarSection,
 	Tooltip,
 } from 'frappe-ui'
-import { CalendarColorMap } from 'frappe-ui/experimental'
+import { eventColor } from '@/apps/calendar/utils/color'
 import { useNow, useStorage } from '@vueuse/core'
 
 import { useSessionStore } from '@/boot/session'
@@ -47,14 +47,13 @@ const emit = defineEmits<{
 	selectEvent: [event: any]
 }>()
 
-const paletteColor = (color?: string) => (CalendarColorMap[color] || CalendarColorMap.green).color
 
 // The mini month names calendars by id; the palette is assigned here, where the
 // calendars and their colours already live.
 const miniMonthColor = (calendar: string) =>
 	calendars.find((cal: any) => cal.name === calendar)?.color || 'green'
 
-const dotStyle = (color: string) => ({ background: paletteColor(color) })
+const dotStyle = (color: string) => ({ background: eventColor(color) })
 
 // A JMAP calendar is often named after its account — "Frappe Calendar
 // (akash@frappe.io)" — which never fits a sidebar row. The email moves to a
@@ -88,7 +87,8 @@ const isOpen = (event: any) =>
 	selectedEvent.id === event.id &&
 	(selectedEvent.recurrence_id ?? '') === (event.recurrence_id ?? '')
 
-const eventColor = (event: any) => paletteColor(event.color)
+/** The dot beside an upcoming event, in its calendar's colour. */
+const eventDotColor = (event: any) => eventColor(event.color)
 
 const route = useRoute()
 const router = useRouter()
@@ -232,7 +232,7 @@ const menuItems = computed(() => [
 					:events="upcoming"
 					:is-collapsed="isSidebarCollapsed"
 					:is-open
-					:event-color
+					:event-color="eventDotColor"
 					@select="(event) => emit('selectEvent', event)"
 				/>
 				<SidebarCollapseToggle />

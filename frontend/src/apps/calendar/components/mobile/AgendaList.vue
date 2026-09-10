@@ -40,7 +40,7 @@
 					</span>
 					<span
 						class="w-0.5 shrink-0 self-stretch rounded-full"
-						:style="{ backgroundColor: paletteColor(event.color) }"
+						:style="{ backgroundColor: eventColor(event.color) }"
 					/>
 					<span class="min-w-0 flex-1">
 						<span
@@ -70,7 +70,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { CalendarColorMap } from 'frappe-ui/experimental'
+import { eventColor } from '@/apps/calendar/utils/color'
 
 import dayjs from '@/apps/calendar/utils/dayjs'
 import { formatAgendaTime, nowMarkerIndex } from '@/apps/calendar/utils/agenda'
@@ -116,7 +116,5 @@ const markerIndex = (section: AgendaSection) => nowMarkerIndex(section, dayjs(pr
 
 const nowLabel = computed(() => dayjs(props.now).format('h:mm'))
 
-const paletteColor = (color?: string) =>
-	CalendarColorMap[color ?? '']?.color || CalendarColorMap.green.color
 
 </script>

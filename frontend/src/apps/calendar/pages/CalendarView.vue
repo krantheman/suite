@@ -333,12 +333,14 @@ const calendars = createResource({
 
 const visibleCalendars = ref<string[]>([])
 
-// Calendars carry no colour of their own, so each takes one from the palette by
-// position; its events and its dot in the sidebar share it.
+// A calendar's colour is its own — set wherever its owner set it, and sent with
+// the calendar. Only where it has none does one come from the palette by
+// position, which is what every calendar used to get; its events and its dot in
+// the sidebar share whichever it is.
 const PALETTE = ['green', 'blue', 'violet', 'amber', 'pink', 'cyan', 'orange']
 const calendarColor = (name: string) => {
 	const index = calendars.data?.findIndex((cal) => cal.name === name) ?? -1
-	return PALETTE[Math.max(index, 0) % PALETTE.length]
+	return calendars.data?.[index]?.color || PALETTE[Math.max(index, 0) % PALETTE.length]
 }
 const coloredCalendars = computed(
 	() => calendars.data?.map((cal) => ({ ...cal, color: calendarColor(cal.name) })) || [],
