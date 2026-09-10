@@ -10,10 +10,15 @@
 		to recolour the tick to survive its own dark ground. The circle is the one
 		that reads, and one cell is the only way it stays that way.
 	-->
-	<!-- 33px a row: a 24px numeral, 2px of air, the 3px tick, and 2px of padding
+	<!-- 31px a row: a 22px numeral, 2px of air, the 3px tick, and 2px of padding
 	     either side. The gaps are the smallest that still read as gaps — a card of
 	     six rows spends every one of them six times over, and the sidebar has a
-	     list of calendars to fit under it. -->
+	     list of calendars to fit under it.
+
+	     22 is spelled in pixels because the scale steps 20 → 24 through it: at 20
+	     a two-digit date fills its circle edge to edge and the mark reads as a
+	     ring resting on the numeral, and 24 is a disc the numeral rattles
+	     around in. -->
 	<button
 		type="button"
 		class="group flex flex-col items-center gap-0.5 py-0.5"
@@ -31,15 +36,15 @@
 		     the tick on a dark ground, where a calendar's colour cannot be read,
 		     which made the mark that says whose into a second mark saying today. -->
 		<span
-			class="flex size-6 items-center justify-center rounded-full text-sm"
+			class="flex size-[22px] items-center justify-center rounded-full text-sm"
 			:class="
 				day.isToday
 					? 'bg-surface-gray-10 text-ink-gray-1'
 					: day.isSelected
-						? 'bg-surface-gray-3 text-ink-gray-8'
+						? 'bg-surface-gray-4 text-ink-gray-8'
 						: day.inMonth
-							? 'text-ink-gray-8 group-hover:bg-surface-gray-2'
-							: 'text-ink-gray-4 group-hover:bg-surface-gray-2'
+							? 'text-ink-gray-8 group-hover:bg-surface-gray-3'
+							: 'text-ink-gray-4 group-hover:bg-surface-gray-3'
 			"
 		>
 			{{ day.date.date() }}
