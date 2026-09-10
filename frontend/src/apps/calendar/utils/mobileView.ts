@@ -10,8 +10,12 @@ import { Grid3x3, Rows3, SquareSquare } from 'lucide-vue-next'
  */
 export type MobileView = 'agenda' | 'day' | 'month'
 
-/** In the order the switcher lists them: home first, then narrower, then wider. */
-export const MOBILE_VIEWS: MobileView[] = ['agenda', 'day', 'month']
+/**
+ * In the order the switcher lists them, which is the order the desktop's own
+ * switcher does — day, month, agenda, less the week a phone cannot draw. Home
+ * leading was a second ordering to learn for the same four words.
+ */
+export const MOBILE_VIEWS: MobileView[] = ['day', 'month', 'agenda']
 
 // The icons the desktop's switcher marks the same views with, so a view is the
 // same thing to look for on either device — a stack of rows, a day's own frame,

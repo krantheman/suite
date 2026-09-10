@@ -16,7 +16,9 @@
 				class="text-ink-gray-6 flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
 				@click="openViewSheet"
 			>
-				<Menu :size="18" />
+				<!-- 24px at stroke 2, as mail's is: three strokes on their own went
+				     thin against the title beside them. -->
+				<Menu :size="24" class="[stroke-width:2]" />
 			</button>
 			<!-- The title is also the way to a date: the month grid is a tap on it away,
 			     which is the one navigation the arrows beside it cannot do — they step,
@@ -161,10 +163,14 @@
 						<ChevronRight class="size-4 text-ink-gray-7" />
 					</Button>
 				</div>
+				<!-- The circle marks a day the view is actually on, which is the day
+				     view and not the agenda: a list spanning three months is anchored
+				     on a date rather than showing one, and a circle in the grid claimed
+				     more than that. The desktop's card draws the same distinction. -->
 				<MonthGrid
 					:month="pickerMonth.month"
 					:year="pickerMonth.year"
-					:selected="selected"
+					:selected="isDay ? selected : ''"
 					:events="events"
 					@select="pickDate"
 				/>

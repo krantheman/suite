@@ -57,6 +57,7 @@ import { CalendarPlus } from 'lucide-vue-next'
 import { userStore } from '@/apps/calendar/stores/user'
 import { useViewSheet } from '@/apps/calendar/composables/useViewSheet'
 import MobileViewSheet from '@/apps/calendar/components/mobile/MobileViewSheet.vue'
+import { lastCalendarView } from '@/apps/calendar/utils/lastView'
 import { routeForView, viewForRoute, viewIcon, viewLabel } from '@/apps/calendar/utils/mobileView'
 
 const route = useRoute()
@@ -72,16 +73,26 @@ const sheetOpen = computed(
 	() => !!route.query.event || !!route.query.edit || !!route.query.new,
 )
 
-// The URL is what says which view is up. Off the calendar (on Profile) the tab
-// names where a tap lands — the agenda, which is the phone's home.
-const currentView = computed(() => viewForRoute(route.name))
-
 const profileActive = computed(() => route.name === 'calendar-profile')
+
+// The URL is what says which view is up. Off the calendar — on Profile — there
+// is no view in the URL to read, so the tab names the one a tap would land in,
+// which is the one `calendarRoute` goes to. It said "Agenda" there whatever the
+// calendar had been left in, and then opened the Day view.
+const currentView = computed(() =>
+	profileActive.value
+		? viewForRoute(lastCalendarView(true) ?? routeForView('agenda'))
+		: viewForRoute(route.name),
+)
 const calendarActive = computed(() => !profileActive.value)
 
-/** The agenda, which is the phone's home. A date-less route means today. */
+/**
+ * Back to the calendar, in the view it was left in — Profile is a trip away from
+ * the calendar, not a reason to be put back at its front door. The agenda is
+ * home only when nothing is remembered. A date-less route means today.
+ */
 const calendarRoute = () => ({
-	name: routeForView('agenda'),
+	name: lastCalendarView(true) ?? routeForView('agenda'),
 	params: { accountId: store.accountId },
 })
 

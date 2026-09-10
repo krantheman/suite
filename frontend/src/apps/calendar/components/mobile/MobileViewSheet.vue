@@ -3,9 +3,10 @@
 	     Calendar tab — where mail's folder sheet is reached from its hamburger or a
 	     re-tap of the Mail tab. Same sheet, same rows, same metrics: which list you
 	     are looking at is the same question in both apps. -->
-	<!-- Untitled: two rows, each naming itself, so a heading over them would only
-	     repeat what the sheet plainly is. -->
-	<BottomSheet v-model:open="isViewSheetOpen">
+	<!-- Titled, as mail's folder sheet is: the two are the same sheet answering
+	     the same question in the two apps, so one of them naming itself and the
+	     other not is a difference with nothing behind it. -->
+	<BottomSheet v-model:open="isViewSheetOpen" :title="__('View')">
 		<!-- BottomSheet provides the scroll container; this div only pads the content,
 		     including the home-indicator safe area. -->
 		<div class="px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
