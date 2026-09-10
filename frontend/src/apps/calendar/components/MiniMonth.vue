@@ -9,16 +9,22 @@
 	     The days are MonthDayCell, the same cell the phone's month draws, so the
 	     two cannot drift apart in how they mark today or how they show a day's
 	     load. `relative` on each, so the buttons keep painting over the week
-	     band behind their row. -->
-	<div class="rounded-5 border border-outline-gray-1 bg-surface-elevation-1 p-2">
-		<div class="mb-1 flex items-center gap-1.5 px-0.5">
+	     band behind their row.
+
+	     No card around it: a bordered white panel on the sidebar's own ground
+	     read as something laid on the sidebar rather than part of it, and the
+	     rail holds nothing else that is boxed. What is left is the padding, so
+	     the grid keeps its distance from the rail's edges and its left edge
+	     lands on the section labels under it. -->
+	<div class="p-2">
+		<div class="mb-1 flex items-center gap-1.5">
 			<span class="text-sm font-medium leading-4 text-ink-gray-9">{{ monthName }}</span>
 			<span class="text-sm leading-4 text-ink-gray-4">{{ year }}</span>
 			<span class="flex-1" />
 			<Button variant="ghost" size="sm" icon="lucide-chevron-left" @click="page(-1)" />
 			<Button variant="ghost" size="sm" icon="lucide-chevron-right" @click="page(1)" />
 		</div>
-		<div class="relative grid grid-cols-7 gap-0.5">
+		<div class="grid grid-cols-7 gap-0.5">
 			<span
 				v-for="letter in weekdays"
 				:key="letter"
@@ -26,21 +32,10 @@
 			>
 				{{ letter }}
 			</span>
-			<!-- The week the calendar shows, as a band behind its row. An absolutely
-			     positioned grid child takes its box from its grid placement, so the
-			     band covers the row exactly without pixel arithmetic — both lines
-			     spelled out, since for such a child an `auto` end line means the
-			     container's edge. The day buttons are positioned and paint over it. -->
-			<span
-				v-if="selectedRow != null"
-				class="pointer-events-none absolute inset-0 rounded-2 bg-surface-gray-2"
-				:style="{ gridRow: `${selectedRow + 2} / ${selectedRow + 3}`, gridColumn: '1 / 8' }"
-			/>
 			<MonthDayCell
 				v-for="day in days"
 				:key="day.key"
 				:day="day"
-				class="relative"
 				@select="(picked) => emit('select', picked.date.toDate())"
 			/>
 		</div>
@@ -67,7 +62,7 @@ const props = defineProps<{
 	 * calendar and has to know about months the main view never fetched.
 	 */
 	calendarColor: (calendar: string) => string
-	/** The day the calendar is on, and which view: Day marks the day, Week its whole row. */
+	/** The day the calendar is on, and which view: Day and Week mark it, Month does not. */
 	selected?: Date
 	view?: 'Month' | 'Week' | 'Day'
 }>()
@@ -98,8 +93,11 @@ const selectedKey = computed(() =>
 
 // The card, the phone's month and the phone's week strip are the same six rows
 // of days with the same density on them — only the size they are drawn at
-// differs. In Week the calendar's day is not marked here: the band behind its
-// row says where it is, and a marked day inside a marked row said it twice.
+// differs. The day the calendar is on is marked in Day and in Week: Week used
+// to say it with a band behind the whole row instead, which was a second kind
+// of highlight on a card that already has two (today's circle, the marked day)
+// and the loudest of the three. Month marks nothing — a card of one month
+// standing for a view of the same month has nothing to point at.
 const { events } = useEventDensity(
 	() => viewed.value.month,
 	() => viewed.value.year,
@@ -110,13 +108,6 @@ const days = monthDays(
 	() => viewed.value.month,
 	() => viewed.value.year,
 	() => events.value,
-	() => (props.view === 'Day' ? selectedKey.value : ''),
+	() => (props.view === 'Month' ? '' : selectedKey.value),
 )
-
-/** Row of the calendar's week on this card, when the card is showing it. */
-const selectedRow = computed(() => {
-	if (props.view !== 'Week' || !selectedKey.value) return null
-	const index = days.value.findIndex((day) => day.key === selectedKey.value)
-	return index < 0 ? null : Math.floor(index / 7)
-})
 </script>

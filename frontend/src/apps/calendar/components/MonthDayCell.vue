@@ -10,7 +10,7 @@
 		to recolour the tick to survive its own dark ground. The circle is the one
 		that reads, and one cell is the only way it stays that way.
 	-->
-	<!-- 35px a row: a 26px numeral, 2px of air, the 3px tick, and 2px of padding
+	<!-- 33px a row: a 24px numeral, 2px of air, the 3px tick, and 2px of padding
 	     either side. The gaps are the smallest that still read as gaps — a card of
 	     six rows spends every one of them six times over, and the sidebar has a
 	     list of calendars to fit under it. -->
@@ -31,7 +31,7 @@
 		     the tick on a dark ground, where a calendar's colour cannot be read,
 		     which made the mark that says whose into a second mark saying today. -->
 		<span
-			class="flex size-6.5 items-center justify-center rounded-full text-sm"
+			class="flex size-6 items-center justify-center rounded-full text-sm"
 			:class="
 				day.isToday
 					? 'bg-surface-gray-10 text-ink-gray-1'
@@ -39,7 +39,7 @@
 						? 'bg-surface-gray-3 text-ink-gray-8'
 						: day.inMonth
 							? 'text-ink-gray-8 group-hover:bg-surface-gray-2'
-							: 'text-ink-gray-3 group-hover:bg-surface-gray-2'
+							: 'text-ink-gray-4 group-hover:bg-surface-gray-2'
 			"
 		>
 			{{ day.date.date() }}
