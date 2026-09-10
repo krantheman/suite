@@ -1,10 +1,15 @@
 <template>
 	<!-- The month at a glance, on the sidebar's own type scale: nothing louder
 	     than 13px. A day wears one tick that widens with how much is on it —
-	     a density map rather than a count — today is filled in, and clicking
-	     a day takes the calendar there. Paging here only turns this card: the
-	     calendar itself moves when a day is picked, and the card follows the
-	     calendar whenever that changes month. -->
+	     a density map rather than a count — today is circled, and clicking a day
+	     takes the calendar there. Paging here only turns this card: the calendar
+	     itself moves when a day is picked, and the card follows the calendar
+	     whenever that changes month.
+
+	     The days are MonthDayCell, the same cell the phone's month draws, so the
+	     two cannot drift apart in how they mark today or how they show a day's
+	     load. `relative` on each, so the buttons keep painting over the week
+	     band behind their row. -->
 	<div class="rounded-5 border border-outline-gray-1 bg-surface-elevation-1 p-2">
 		<div class="mb-1 flex items-center gap-1.5 px-0.5">
 			<span class="text-sm font-medium leading-4 text-ink-gray-9">{{ monthName }}</span>
@@ -31,51 +36,13 @@
 				class="pointer-events-none absolute inset-0 rounded-2 bg-surface-gray-2"
 				:style="{ gridRow: `${selectedRow + 2} / ${selectedRow + 3}`, gridColumn: '1 / 8' }"
 			/>
-			<button
+			<MonthDayCell
 				v-for="day in days"
 				:key="day.key"
-				class="relative rounded-2 pb-2.5 pt-1 text-center text-xs leading-4"
-				:class="
-					day.isToday
-						? 'bg-surface-gray-10 text-ink-base'
-						: day.isSelected
-							? 'bg-surface-gray-3 text-ink-gray-9'
-							: [
-									'hover:bg-surface-gray-2',
-									// Neighbouring months fill the grid dimmed, so a week that
-									// straddles a month edge still reads as one row.
-									day.inMonth ? 'text-ink-gray-8' : 'text-ink-gray-4',
-								]
-				"
-				@click="emit('select', day.date)"
-			>
-				{{ day.date.date() }}
-				<!-- The tick sits 3px under the numerals rather than on their baseline,
-				     and steps 6 → 11 → 16px for one, a few, and many events. Its width
-				     is the day's load; its colour is split into one segment per
-				     calendar with something on the day, so the silhouette still reads
-				     as density and the colours say whose. Days of the neighbouring
-				     months stay bare: their number is orientation, not an invitation
-				     to read. -->
-				<span
-					v-if="day.inMonth && day.load"
-					class="absolute bottom-[3px] left-1/2 flex h-[3px] -translate-x-1/2 gap-px"
-					:class="[
-						day.load === 1 ? 'w-1.5' : day.load <= 3 ? 'w-[11px]' : 'w-4',
-						// The calendar colours are strong at full strength against the
-						// pale cell; on today's dark cell the tick is the surface's own
-						// ink, and dimming that only makes it look switched off.
-						day.isToday ? '' : 'opacity-80',
-					]"
-				>
-					<span
-						v-for="color in day.colors"
-						:key="color"
-						class="min-w-0 flex-1 rounded-full"
-						:style="{ background: day.isToday ? 'var(--ink-base)' : tickColor(color) }"
-					/>
-				</span>
-			</button>
+				:day="day"
+				class="relative"
+				@select="(picked) => emit('select', picked.date.toDate())"
+			/>
 		</div>
 	</div>
 </template>
@@ -83,8 +50,8 @@
 <script setup lang="ts">
 import { computed, inject, ref, watch } from 'vue'
 import { Button } from 'frappe-ui'
-import { CalendarColorMap } from 'frappe-ui/experimental'
 
+import MonthDayCell from '@/apps/calendar/components/MonthDayCell.vue'
 import { monthDays } from '@/apps/calendar/composables/useMonthGrid'
 import { useEventDensity } from '@/apps/calendar/composables/useEventDensity'
 
@@ -152,6 +119,4 @@ const selectedRow = computed(() => {
 	const index = days.value.findIndex((day) => day.key === selectedKey.value)
 	return index < 0 ? null : Math.floor(index / 7)
 })
-
-const tickColor = (color: string) => CalendarColorMap[color]?.color || CalendarColorMap.green.color
 </script>

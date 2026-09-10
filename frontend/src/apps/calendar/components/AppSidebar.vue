@@ -169,12 +169,18 @@ const menuItems = computed(() => [
 				     (they animate w-0/opacity-0; height is our axis). A fixed width
 				     — the expanded sidebar's inner 224px — keeps the seven columns
 				     from reflowing while the width is mid-transition: the rail's
-				     overflow clips the card instead. -->
+				     overflow clips the card instead.
+
+				     The open end of that fold is a clamp, not a height, so it has to
+				     clear the card rather than describe it: 384px against a card of
+				     roughly 330 once its days grew a circled numeral and a tick
+				     under it. At 288 it cut the last row of dates off, and a clamp
+				     that clips reads as a card that ends mid-month. -->
 				<div
 					v-if="month != null && year != null"
 					class="w-56 transition-all duration-300 ease-in-out"
 					:class="
-						isSidebarCollapsed ? 'mb-0 max-h-0 overflow-hidden opacity-0' : 'mb-3 mt-3 max-h-72 opacity-100'
+						isSidebarCollapsed ? 'mb-0 max-h-0 overflow-hidden opacity-0' : 'mb-3 mt-3 max-h-96 opacity-100'
 					"
 				>
 					<MiniMonth
