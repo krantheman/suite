@@ -140,9 +140,15 @@ const defaultAlert = (isAllDay: boolean, startDate: string) =>
 const defaultStartTime = (date: string) =>
 	dayjs(date).isToday() ? dayjs().add(1, 'hour').startOf('hour').format('HH:mm') : '10:00'
 
+// The formats a tapped slot arrives in. The grid hands back the hour it was read
+// in — "7 am" or "07:00" — and the half hour where the tap landed in the lower
+// half of the row, which the whole-hour formats cannot parse: 'h a' against
+// "7:30 am" reads the 7 and stops.
+const SLOT_TIME_FORMATS = ['h:mm a', 'h a', 'HH:mm']
+
 const getDefaultEventData = () => {
 	const startTime = selectedEvent?.time
-		? dayjs(selectedEvent.time, 'h a').format('HH:mm')
+		? dayjs(selectedEvent.time, SLOT_TIME_FORMATS).format('HH:mm')
 		: defaultStartTime(selectedEvent.date)
 
 	// A new event is a timed one. Only a click in the all-day lane says otherwise — that is
