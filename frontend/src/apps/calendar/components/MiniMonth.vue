@@ -1,10 +1,10 @@
 <template>
 	<!-- The month at a glance, on the sidebar's own type scale: nothing louder
-	     than 13px. A day wears one tick that widens with how much is on it —
-	     a density map rather than a count — today is circled, and clicking a day
-	     takes the calendar there. Paging here only turns this card: the calendar
-	     itself moves when a day is picked, and the card follows the calendar
-	     whenever that changes month.
+	     than the month's own name, which heads it. A day wears one tick that
+	     widens with how much is on it — a density map rather than a count —
+	     today is circled, and clicking a day takes the calendar there. Paging
+	     here only turns this card: the calendar itself moves when a day is
+	     picked, and the card follows the calendar whenever that changes month.
 
 	     The days are MonthDayCell, the same cell the phone's month draws, so the
 	     two cannot drift apart in how they mark today or how they show a day's
@@ -18,11 +18,31 @@
 	     lands on the section labels under it. -->
 	<div class="p-2">
 		<div class="mb-1 flex items-center gap-1.5">
-			<span class="text-sm font-medium leading-4 text-ink-gray-9">{{ monthName }}</span>
-			<span class="text-sm leading-4 text-ink-gray-4">{{ year }}</span>
+			<!-- The month is the card's heading and reads as one: a step up the
+			     scale, with the year left where it is. Level with the weekday letters
+			     and the dates it named nothing — a card whose loudest thing was the
+			     circle round today. -->
+			<span class="text-base font-medium leading-5 text-ink-gray-9">{{ monthName }}</span>
+			<span class="text-sm leading-5 text-ink-gray-4">{{ year }}</span>
 			<span class="flex-1" />
-			<Button variant="ghost" size="sm" icon="lucide-chevron-left" @click="page(-1)" />
-			<Button variant="ghost" size="sm" icon="lucide-chevron-right" @click="page(1)" />
+			<!-- On a phone the arrows are 40px circles, as every icon button there
+			     is — a thumb needs the target even where the row does not need the
+			     height, so `-my-2` gives the row back the 8px either side and leaves
+			     the hit area where it was. -->
+			<Button
+				variant="ghost"
+				size="sm"
+				icon="lucide-chevron-left"
+				:class="touch && '-my-2 !size-10 !rounded-full'"
+				@click="page(-1)"
+			/>
+			<Button
+				variant="ghost"
+				size="sm"
+				icon="lucide-chevron-right"
+				:class="touch && '-my-2 !size-10 !rounded-full'"
+				@click="page(1)"
+			/>
 		</div>
 		<div class="grid grid-cols-7 gap-0.5">
 			<span
@@ -65,6 +85,8 @@ const props = defineProps<{
 	/** The day the calendar is on, and which view: Day and Week mark it, Month does not. */
 	selected?: Date
 	view?: 'Month' | 'Week' | 'Day'
+	/** Drawn for a thumb rather than a pointer: the phone's picker sheet. */
+	touch?: boolean
 }>()
 
 const emit = defineEmits<{ select: [date: Date] }>()

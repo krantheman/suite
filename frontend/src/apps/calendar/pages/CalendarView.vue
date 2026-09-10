@@ -1044,7 +1044,9 @@ const NOTIFY_MODAL_OPTIONS = {
 				:open-event="selectedCalendarEvent"
 				:open-row="openRow"
 				:loading="eventsPending"
+				:calendar-color="calendarColor"
 				@select-date="(date) => (mobileDate = date)"
+				@select-view="(view) => (mobileView = view)"
 				@select-event="openEventRow"
 				@select-slot="handleOpenEvent"
 			/>

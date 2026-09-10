@@ -20,16 +20,14 @@
 				     thin against the title beside them. -->
 				<Menu :size="24" class="[stroke-width:2]" />
 			</button>
-			<!-- The title is also the way to a date: the month grid is a tap on it away,
-			     which is the one navigation the arrows beside it cannot do — they step,
-			     and a month away is twelve steps. The chevron is what says so. The month
-			     view is its own grid already, so there it is a heading and nothing more. -->
-			<component
-				:is="isMonth ? 'h1' : 'button'"
-				:type="isMonth ? undefined : 'button'"
-				:aria-label="isMonth ? undefined : __('Pick a date')"
+			<!-- The title is also the way to a date: the month card is a tap on it
+			     away, which is the one navigation the arrows beside it cannot do — they
+			     step, and a month away is twelve steps. The chevron is what says so. -->
+			<button
+				type="button"
+				:aria-label="__('Pick a date')"
 				class="flex min-w-0 flex-1 items-center gap-1 text-xl font-medium text-ink-gray-9"
-				@click="!isMonth && (isPickerOpen = true)"
+				@click="isPickerOpen = true"
 			>
 				<span class="min-w-0 truncate">
 					<template v-if="isMonth">
@@ -43,8 +41,8 @@
 					     label for it — "Sep - Nov 2026". -->
 					<template v-else>{{ agendaTitle }}</template>
 				</span>
-				<ChevronDown v-if="!isMonth" class="size-4 shrink-0 text-ink-gray-5" />
-			</component>
+				<ChevronDown class="size-4 shrink-0 text-ink-gray-5" />
+			</button>
 			<!-- The view's own navigation, on the row that names what it is showing: a
 			     step back, a step on, and the way home — a month at a time in the list,
 			     a day at a time in the day. Today is not hidden when the anchor is
@@ -57,7 +55,6 @@
 			     gives the arrows a target a thumb can hit. -->
 			<div class="flex shrink-0 items-center">
 				<Button
-					v-if="!isMonth"
 					variant="ghost"
 					class="!size-10 !rounded-full"
 					:aria-label="__('Previous')"
@@ -72,7 +69,6 @@
 					@click="goToToday"
 				/>
 				<Button
-					v-if="!isMonth"
 					variant="ghost"
 					class="!size-10 !rounded-full"
 					:aria-label="__('Next')"
@@ -83,32 +79,24 @@
 			</div>
 		</div>
 
-		<template v-if="isMonth">
-			<MonthGrid
-				:month="viewedMonth.month"
-				:year="viewedMonth.year"
-				:selected="selected"
-				:events="events"
-				@select="(date) => emit('selectDate', date)"
-			/>
-			<div class="mx-3 mt-1 border-b" />
-		</template>
 
-		<!-- The agenda and the day are the library's own, the ones the desktop reads:
-		     the list of days under the week they fall in, and the single column with its
-		     hours down the side. The phone brings its own header, so the Calendar's
-		     header slot is filled with nothing and every mode but the one wanted is
-		     turned off. Its date is this view's, pushed in whenever the header moves.
+		<!-- All three views are the library's own, the ones the desktop reads: the
+		     list of days under the week they fall in, the single column with its hours
+		     down the side, and the month — which below `sm` the library draws as a week
+		     strip over a stack of days, which is the shape a month needs at this width.
+
+		     The phone brings its own header, so the Calendar's header slot is filled
+		     with nothing and every mode but the one wanted is turned off. Its date is
+		     this view's, pushed in whenever the header moves.
+
+		     The month used to be a grid of this app's own with the selected day's list
+		     under it: a second month view to keep in step with the one the desktop
+		     draws, which had already started to drift.
 
 		     Keyed on the view: the mode a Calendar opens in is the one it is built with,
 		     so switching between them is a new Calendar rather than a message to the old
-		     one.
-
-		     The month view keeps the compact list below its grid: that list answers "what
-		     is on this day", and the library's agenda spans a month from its anchor with
-		     no way to ask it for one day. -->
+		     one. -->
 		<Calendar
-			v-if="!isMonth"
 			:key="view"
 			ref="agenda"
 			class="min-h-0 flex-1"
@@ -123,56 +111,33 @@
 			     slot empty is how that is said. -->
 			<template #header />
 		</Calendar>
-		<div v-else class="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-			<AgendaList
-				:sections="sections"
-				:now="now"
-				:open-event="openEvent"
-				:open-row="openRow"
-				:empty-label="__('Nothing on this day')"
-				@select="(event, date) => emit('selectEvent', event, date)"
-			/>
-		</div>
-
 		<!-- The date picker: the phone's own month grid, in the sheet every other
 		     switcher on this app uses. Its dots come from the events already fetched,
 		     so a month paged past the fetched window draws its dates and no density —
 		     picking a day there is what fetches it. -->
+		<!-- The date picker: the sidebar's own month card, in a sheet. A picker is
+		     the same object on either device — a month, two arrows and a day to tap —
+		     and a header of this view's own meant two copies of the paging and the
+		     title, free to drift apart. `touch` is the one thing the two do
+		     differently.
+
+		     Its density is its own fetch, so a month paged past the window this view
+		     has loaded still says which of its days are busy. -->
 		<BottomSheet v-model:open="isPickerOpen">
-			<div class="pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-				<div class="flex items-center gap-1 px-3 pb-1">
-					<span class="flex-1 truncate text-base font-medium text-ink-gray-8">
-						{{ pickerTitle }}
-					</span>
-					<!-- The header's own arrows, at the header's own size: an icon button on
-					     this app's phone is a 40px circle, wherever it is drawn. -->
-					<Button
-						variant="ghost"
-						class="!size-10 !rounded-full"
-						:aria-label="__('Previous month')"
-						@click="pagePicker(-1)"
-					>
-						<ChevronLeft class="size-4 text-ink-gray-7" />
-					</Button>
-					<Button
-						variant="ghost"
-						class="!size-10 !rounded-full"
-						:aria-label="__('Next month')"
-						@click="pagePicker(1)"
-					>
-						<ChevronRight class="size-4 text-ink-gray-7" />
-					</Button>
-				</div>
+			<div class="px-2 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
 				<!-- The circle marks a day the view is actually on, which is the day
-				     view and not the agenda: a list spanning three months is anchored
-				     on a date rather than showing one, and a circle in the grid claimed
-				     more than that. The desktop's card draws the same distinction. -->
-				<MonthGrid
+				     view and not the agenda or the month: a list spanning three months is
+				     anchored on a date rather than showing one, and a circle in the grid
+				     claimed more than that. `Month` is how the card is told to mark
+				     nothing. -->
+				<MiniMonth
 					:month="pickerMonth.month"
 					:year="pickerMonth.year"
-					:selected="isDay ? selected : ''"
-					:events="events"
-					@select="pickDate"
+					:calendar-color="calendarColor"
+					:selected="isDay ? dayjs(selected).toDate() : undefined"
+					:view="isDay ? 'Day' : 'Month'"
+					touch
+					@select="(date) => pickDate(dayjs(date).format('YYYY-MM-DD'))"
 				/>
 			</div>
 		</BottomSheet>
@@ -187,9 +152,7 @@ import { ChevronDown, ChevronLeft, ChevronRight, Menu } from 'lucide-vue-next'
 
 import dayjs from '@/apps/calendar/utils/dayjs'
 import { useViewSheet } from '@/apps/calendar/composables/useViewSheet'
-import { groupEventsByDay } from '@/apps/calendar/utils/agenda'
-import AgendaList from '@/apps/calendar/components/mobile/AgendaList.vue'
-import MonthGrid from '@/apps/calendar/components/mobile/MonthGrid.vue'
+import MiniMonth from '@/apps/calendar/components/MiniMonth.vue'
 
 import type { AgendaEvent } from '@/apps/calendar/utils/agenda'
 import type { MobileView } from '@/apps/calendar/utils/mobileView'
@@ -205,6 +168,8 @@ const props = defineProps<{
 	openRow?: string
 	/** Whether the events for the visible range are still on their way. */
 	loading?: boolean
+	/** Palette colour per calendar id, for the picker's density ticks. */
+	calendarColor: (calendar: string) => string
 }>()
 
 const emit = defineEmits<{
@@ -212,6 +177,8 @@ const emit = defineEmits<{
 	selectEvent: [event: AgendaEvent, date: string]
 	/** An empty slot in the day grid: the hour tapped, or its all-day row. */
 	selectSlot: [slot: { date: Date | string; time: string; isFullDay: boolean }]
+	/** The library moved to another of its views, and the route should follow. */
+	selectView: [view: MobileView]
 }>()
 
 // The sheet itself is mounted by the tab bar, which is also allowed to open it.
@@ -260,7 +227,11 @@ const pickDate = (date: string) => {
  * box: it is the page here, not a pane on one.
  */
 const config = computed(() => {
-	const mode = isDay.value ? ('Day' as const) : ('Agenda' as const)
+	const mode = isMonth.value
+		? ('Month' as const)
+		: isDay.value
+			? ('Day' as const)
+			: ('Agenda' as const)
 	return {
 		defaultMode: mode,
 		disableModes: (['Agenda', 'Day', 'Week', 'Month'] as const).filter(
@@ -272,13 +243,37 @@ const config = computed(() => {
 	}
 })
 
-// Whichever of the two library views is mounted — the list or the day.
+// Whichever of the library's views is mounted.
 const agenda = useTemplateRef<{
 	setCalendarDate: (date: string) => void
 	currentMonthYear: string
+	activeView: 'Day' | 'Week' | 'Month' | 'Agenda'
 	decrement: () => void
 	increment: () => void
 }>('agenda')
+
+/**
+ * The library switching views on its own account, which is this shell's business:
+ * on a phone the view is the route, and the route is what the tab bar, the title
+ * and the fetch window read.
+ *
+ * It happens where a view offers a way into another — the month's "+n more" and
+ * its date numbers open the day. Left alone, the Calendar drew a day while
+ * everything round it still said month.
+ */
+const VIEW_BY_MODE: Record<string, MobileView> = {
+	Day: 'day',
+	Month: 'month',
+	Agenda: 'agenda',
+}
+
+watch(
+	() => agenda.value?.activeView,
+	(mode) => {
+		const view = mode && VIEW_BY_MODE[mode]
+		if (view && view !== props.view) emit('selectView', view)
+	},
+)
 
 // The library's own name for the span it is listing. Empty for the first tick, before
 // the list has mounted to be asked — the month's own title stands in until then.
@@ -298,18 +293,22 @@ const dayTitle = computed(() => dayjs(props.selected).format('dddd, D MMM'))
 /**
  * A step back or on: a month in the list, a day in the day view.
  *
- * The day steps by moving the date this view is on, not by asking the Calendar to
- * increment itself — the date is what the route, the title and the fetch window all
+ * The day and the month step by moving the date this view is on, not by asking the
+ * Calendar to increment itself — the date is what the route, the title and the fetch window all
  * read, and a Calendar that walked off on its own would leave the three of them
  * behind. The list is the other way round: it is scrolled rather than dated, so its
  * own increment is what moves it, and its title comes back from the same place.
  */
 const step = (delta: number) => {
-	if (!isDay.value) {
-		delta < 0 ? agenda.value?.decrement() : agenda.value?.increment()
+	if (isMonth.value) {
+		emit('selectDate', dayjs(props.selected).add(delta, 'month').format('YYYY-MM-DD'))
 		return
 	}
-	emit('selectDate', dayjs(props.selected).add(delta, 'day').format('YYYY-MM-DD'))
+	if (isDay.value) {
+		emit('selectDate', dayjs(props.selected).add(delta, 'day').format('YYYY-MM-DD'))
+		return
+	}
+	delta < 0 ? agenda.value?.decrement() : agenda.value?.increment()
 }
 
 // This view owns the date; the library's follows it. Immediate, because a Calendar
@@ -336,14 +335,4 @@ const title = computed(() => {
 	return { month: day.format('MMMM'), year: day.format('YYYY') }
 })
 
-/**
- * The list under the month grid: only the day the grid has selected. The grid is the
- * overview, so the list answers the narrower question — what is on this day. The
- * agenda view has no sections of its own any more; the library's list groups its own.
- */
-const sections = computed(() =>
-	groupEventsByDay(props.events, { from: props.selected, today: todayKey.value }).filter(
-		(section) => section.date === props.selected,
-	),
-)
 </script>
