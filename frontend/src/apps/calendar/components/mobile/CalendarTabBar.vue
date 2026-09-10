@@ -57,7 +57,7 @@ import { CalendarPlus } from 'lucide-vue-next'
 import { userStore } from '@/apps/calendar/stores/user'
 import { useViewSheet } from '@/apps/calendar/composables/useViewSheet'
 import MobileViewSheet from '@/apps/calendar/components/mobile/MobileViewSheet.vue'
-import { viewIcon, viewLabel } from '@/apps/calendar/utils/mobileView'
+import { routeForView, viewForRoute, viewIcon, viewLabel } from '@/apps/calendar/utils/mobileView'
 
 const route = useRoute()
 const router = useRouter()
@@ -74,14 +74,14 @@ const sheetOpen = computed(
 
 // The URL is what says which view is up. Off the calendar (on Profile) the tab
 // names where a tap lands — the agenda, which is the phone's home.
-const currentView = computed(() => (route.name === 'calendar-month' ? 'month' : 'agenda'))
+const currentView = computed(() => viewForRoute(route.name))
 
 const profileActive = computed(() => route.name === 'calendar-profile')
 const calendarActive = computed(() => !profileActive.value)
 
 /** The agenda, which is the phone's home. A date-less route means today. */
 const calendarRoute = () => ({
-	name: 'calendar-day',
+	name: routeForView('agenda'),
 	params: { accountId: store.accountId },
 })
 

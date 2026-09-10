@@ -26,13 +26,13 @@ const resolveShortcut = (
 	// Home is the view the calendar was last left in. Failing that — nothing
 	// remembered, or a view this device cannot draw — the month grid on a desktop
 	// and the agenda on a phone, where a month of columns has nothing legible in
-	// it; the phone renders the day route as its own agenda (see CalendarView's
-	// phone shell), which is a different surface from the desktop
-	// 'calendar-agenda' view.
+	// it. The phone draws its own agenda, day and month on those three routes;
+	// they are the same routes the desktop uses, at phone width.
 	const { isMobile } = useScreenSize()
 	const defaultRoute = {
 		name:
-			lastCalendarView(isMobile.value) ?? (isMobile.value ? 'calendar-day' : 'calendar-month'),
+			lastCalendarView(isMobile.value) ??
+			(isMobile.value ? 'calendar-agenda' : 'calendar-month'),
 		params: { accountId },
 	}
 

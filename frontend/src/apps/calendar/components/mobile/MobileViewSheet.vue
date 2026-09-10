@@ -32,7 +32,13 @@ import { BottomSheet } from 'frappe-ui'
 
 import dayjs from '@/apps/calendar/utils/dayjs'
 import { useViewSheet } from '@/apps/calendar/composables/useViewSheet'
-import { MOBILE_VIEWS, viewIcon, viewLabel } from '@/apps/calendar/utils/mobileView'
+import {
+	MOBILE_VIEWS,
+	routeForView,
+	viewForRoute,
+	viewIcon,
+	viewLabel,
+} from '@/apps/calendar/utils/mobileView'
 import { userStore } from '@/apps/calendar/stores/user'
 
 import type { MobileView } from '@/apps/calendar/utils/mobileView'
@@ -42,9 +48,7 @@ const router = useRouter()
 const store = userStore()
 const { isViewSheetOpen, closeViewSheet } = useViewSheet()
 
-const currentView = computed<MobileView>(() =>
-	route.name === 'calendar-month' ? 'month' : 'agenda',
-)
+const currentView = computed<MobileView>(() => viewForRoute(route.name))
 
 /** A route without a date means today, the way the view writes it. */
 const routeDate = () => {
@@ -62,7 +66,7 @@ const select = (view: MobileView) => {
 
 	const day = routeDate()
 	router.push({
-		name: view === 'month' ? 'calendar-month' : 'calendar-day',
+		name: routeForView(view),
 		params: {
 			accountId: store.accountId,
 			year: String(day.year()),

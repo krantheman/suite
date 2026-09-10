@@ -23,9 +23,18 @@ describe('rememberCalendarView', () => {
 
 	// A phone cannot draw Week, but the laptop it was chosen on still can.
 	it('remembers a desktop-only view even when it will not fit every device', () => {
-		rememberCalendarView('calendar-agenda')
-		expect(lastCalendarView(false)).toBe('calendar-agenda')
+		rememberCalendarView('calendar-week')
+		expect(lastCalendarView(false)).toBe('calendar-week')
 		expect(lastCalendarView(true)).toBeNull()
+	})
+
+	// The phone draws the agenda, the day and the month, each on the route it is
+	// named after — a view remembered on one device opens on the other.
+	it('hands the phone any of the three it draws', () => {
+		for (const name of ['calendar-agenda', 'calendar-day', 'calendar-month']) {
+			rememberCalendarView(name)
+			expect(lastCalendarView(true)).toBe(name)
+		}
 	})
 })
 

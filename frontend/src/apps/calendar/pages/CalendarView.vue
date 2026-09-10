@@ -30,6 +30,9 @@ import EventModal from '@/apps/calendar/components/Modals/EventModal.vue'
 import RecurringScopeModal from '@/apps/calendar/components/Modals/RecurringScopeModal.vue'
 import EventDetailSheet from '@/apps/calendar/components/mobile/EventDetailSheet.vue'
 import MobileCalendar from '@/apps/calendar/components/mobile/MobileCalendar.vue'
+import { routeForView, viewForRoute } from '@/apps/calendar/utils/mobileView'
+
+import type { MobileView } from '@/apps/calendar/utils/mobileView'
 
 const dayjs = inject('$dayjs')
 
@@ -72,7 +75,7 @@ const viewForRouteName = (name) => ROUTE_TO_VIEW[name as keyof typeof ROUTE_TO_V
 
 /** The day the phone is on. The desktop's equivalent lives inside the Calendar. */
 const mobileDate = ref(routeDate().format('YYYY-MM-DD'))
-const mobileView = ref<'agenda' | 'month'>(route.name === 'calendar-month' ? 'month' : 'agenda')
+const mobileView = ref<MobileView>(viewForRoute(route.name))
 
 // Drives the now-line and the "Today" affordance. Half a minute is as often as
 // a clock reading h:mm can say anything new.
@@ -101,13 +104,13 @@ const pageTitle = computed(() => {
 usePageMeta(() => appPageMeta(pageTitle.value, 'Calendar'))
 
 // The phone writes its day into the route the way the desktop calendar does, so
-// a deep link opens on it and Back walks the days visited. The view rides along:
-// agenda is the day route, month the month one.
+// a deep link opens on it and Back walks the days visited. The view rides along,
+// each on the route it is named after.
 watch([mobileDate, mobileView], ([date, view], [previousDate]) => {
 	if (!isMobile.value) return
 
 	const day = dayjs(date)
-	const name = view === 'month' ? 'calendar-month' : 'calendar-day'
+	const name = routeForView(view)
 	const params = {
 		accountId: store.accountId,
 		year: String(day.year()),
@@ -145,7 +148,7 @@ watch(
 		if (!isMobile.value) return
 		const date = routeDate().format('YYYY-MM-DD')
 		if (date !== mobileDate.value) mobileDate.value = date
-		mobileView.value = route.name === 'calendar-month' ? 'month' : 'agenda'
+		mobileView.value = viewForRoute(route.name)
 	},
 )
 
@@ -927,8 +930,11 @@ const NOTIFY_MODAL_OPTIONS = {
 
 <template>
 	<!-- h-full, not a viewport unit: on a phone the layout owns the height and hands
-	     this view what is left above the tab bar; on a desktop it is the page. -->
-	<div class="flex h-full min-h-0 w-full min-w-0 flex-col max-sm:h-dvh sm:h-screen">
+	     this view what is left above the tab bar; on a desktop it is the page. A dvh
+	     here made the view a whole viewport tall inside a box that was a tab bar
+	     shorter, so its last 60px sat under the bar — which in the day grid is where
+	     11 pm is, scrolled to and never arriving. -->
+	<div class="flex h-full min-h-0 w-full min-w-0 flex-col sm:h-screen">
 		<div v-if="!isMobile" class="flex min-h-0 min-w-0 flex-1">
 			<AppSidebar
 				:calendars="coloredCalendars"
@@ -1038,6 +1044,7 @@ const NOTIFY_MODAL_OPTIONS = {
 				:loading="eventsPending"
 				@select-date="(date) => (mobileDate = date)"
 				@select-event="openEventRow"
+				@select-slot="handleOpenEvent"
 			/>
 		</template>
 	</div>

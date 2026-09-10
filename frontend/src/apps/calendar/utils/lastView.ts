@@ -22,12 +22,11 @@ const DESKTOP_VIEWS = [
 ] as const
 
 /**
- * What the phone offers. A month of columns has nothing legible in it at that
- * width, and the phone renders the day route as its own agenda — so those two
- * routes are the whole of its view switcher, and a remembered `calendar-week`
- * would land it somewhere it cannot draw.
+ * What the phone offers: the three its switcher lists. A week of columns has
+ * nothing legible in it at that width, so a remembered `calendar-week` would
+ * land the phone somewhere it cannot draw.
  */
-const MOBILE_VIEWS = ['calendar-month', 'calendar-day'] as const
+const MOBILE_VIEWS = ['calendar-month', 'calendar-day', 'calendar-agenda'] as const
 
 export type CalendarViewRoute = (typeof DESKTOP_VIEWS)[number]
 
