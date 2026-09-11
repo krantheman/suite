@@ -18,261 +18,279 @@
 		class="fixed inset-x-0 z-30 flex flex-col overflow-hidden bg-surface-base"
 		:style="{ top: `${keyboardTop}px`, height: `${viewportHeight}px` }"
 	>
-		<!-- One header for both screens, so the mark on the left and the title beside
-		     it land on the same two pixels either way — two headers with the same
-		     numbers written twice is a thing that stays aligned only until one of them
-		     is edited.
+		<!-- The two screens, each a page: header and body in one box, one shown at a
+		     time and the other sliding through. The participants page comes in from
+		     the right and goes back out to it; the form goes out to the left and comes
+		     back from there — a push both ways, the way the detail sheet turns its
+		     pages. The one on its way out is lifted out of the flow so the arriving
+		     one has the box from the first frame, and the fixed root clips the pair;
+		     see the style block. v-show, not v-if, so the form keeps its scroll
+		     position and any field mid-edit while the reader is away. -->
+		<template v-for="s in SCREENS" :key="s">
+			<Transition :name="s === 'form' ? 'screen-form' : 'screen-participants'">
+				<div v-show="screen === s" class="flex min-h-0 flex-1 flex-col">
+					<!-- Each screen is a whole page, header and all, so the two slide as pages: the
+					     participants come in from the right with their own header and the form goes
+					     out to the left with its own. The header is written once and rendered for
+					     each screen, so the mark on the left and the title beside it land on the
+					     same two pixels either way — two headers with the same numbers written twice
+					     is a thing that stays aligned only until one of them is edited.
 
-		     What differs is the mark and what it does. The form is a surface over the
-		     calendar and leaving it discards the event, which is a cross; the
-		     participants screen is pushed from the form and steps back to it, which is
-		     a chevron. Reading the same mark on both would leave no way to tell whether
-		     going back returns to the form or throws the whole event away. -->
-		<header
-			class="flex shrink-0 items-center justify-between gap-2 px-4 pb-2.5 pt-[calc(env(safe-area-inset-top)+0.875rem)]"
-		>
-			<div class="flex min-w-0 items-center gap-1">
-				<!-- -ml-1.5, not -ml-2: an icon-only Button is a 32px square with no padding
-				     of its own, so its 20px glyph sits 6px in. Pulling the square 6px left
-				     of the header's own 16px margin puts the glyph on that margin — the
-				     line the cards below it start on. -->
-				<!-- Keyed on the screen so each gets its own element. A tap latches :hover onto
-				     what it touched until something else is touched, and the ghost Button paints
-				     that hover: coming back from the participants screen, the form's ✕ was
-				     wearing the highlight for a tap the reader made on the chevron. Blurring
-				     doesn't reach it — it isn't focus. A button that didn't exist when the tap
-				     happened can't be the one holding it. -->
-				<Button
-					:key="screen"
-					variant="ghost"
-					class="-ml-1.5"
-					:aria-label="screen === 'form' ? __('Close') : __('Back')"
-					@click="leaveScreen"
-				>
-					<template #icon>
-						<X v-if="screen === 'form'" class="size-5 text-ink-gray-7" />
-						<ChevronLeft v-else class="size-5 text-ink-gray-7" />
-					</template>
-				</Button>
-				<h2 class="truncate text-xl font-medium text-ink-gray-9">
-					{{ screen === 'form' ? title : __('Participants') }}
-				</h2>
-			</div>
-			<!-- Two words and a button, as the design has it. Keeping a draft is what
-			     leaving offers when there is something to keep, and deleting a saved event
-			     is the detail sheet's ⋯ — neither needs a menu of its own up here.
+					     What differs is the mark and what it does. The form is a surface over the
+					     calendar and leaving it discards the event, which is a cross; the
+					     participants screen is pushed from the form and steps back to it, which is
+					     a chevron. Reading the same mark on both would leave no way to tell whether
+					     going back returns to the form or throws the whole event away. -->
+					<header
+						class="flex shrink-0 items-center justify-between gap-2 px-4 pb-2.5 pt-[calc(env(safe-area-inset-top)+0.875rem)]"
+					>
+						<div class="flex min-w-0 items-center gap-1">
+							<!-- -ml-1.5, not -ml-2: an icon-only Button is a 32px square with no padding
+							     of its own, so its 20px glyph sits 6px in. Pulling the square 6px left
+							     of the header's own 16px margin puts the glyph on that margin — the
+							     line the cards below it start on. -->
+							<!-- Each screen's own element, not one shared and re-labelled. A tap latches
+							     :hover onto what it touched until something else is touched, and the ghost
+							     Button paints that hover: coming back from the participants screen, a
+							     shared ✕ wore the highlight for a tap the reader made on the chevron.
+							     Blurring doesn't reach it — it isn't focus. A button that didn't take the
+							     tap can't be the one holding it. -->
+							<Button
+								variant="ghost"
+								class="-ml-1.5"
+								:aria-label="s === 'form' ? __('Close') : __('Back')"
+								@click="leaveScreen"
+							>
+								<template #icon>
+									<X v-if="s === 'form'" class="size-5 text-ink-gray-7" />
+									<ChevronLeft v-else class="size-5 text-ink-gray-7" />
+								</template>
+							</Button>
+							<h2 class="truncate text-xl font-medium text-ink-gray-9">
+								{{ s === 'form' ? title : __('Participants') }}
+							</h2>
+						</div>
+						<!-- Two words and a button, as the design has it. Keeping a draft is what
+						     leaving offers when there is something to keep, and deleting a saved event
+						     is the detail sheet's ⋯ — neither needs a menu of its own up here.
 
-			     Nothing on the right of the participants screen: the list is bound with
-			     v-model, so it is the event's the moment it changes and there is no commit
-			     left to offer. -->
-			<Button
-				v-if="screen === 'form'"
-				variant="solid"
-				class="!rounded-9 shrink-0"
-				:label="__('Save')"
-				:disabled="disableSave"
-				@click="emit('save')"
-			/>
-		</header>
-
-		<div v-show="screen === 'form'" class="min-h-0 flex-1 overflow-y-auto pb-10">
-			<!-- The title is the one field that isn't a row: it reads as the event's name,
-			     the way the desktop dialog's lead title does, and carries the caret on a
-			     new event. -->
-			<!-- The 16px margin belongs to the wrapper, not to the field: as the field's own
-			     padding it left the underline running the full width of the screen while the
-			     text sat inset from it, and a rule that reaches further than anything above or
-			     below it reads as the edge of a section rather than the bottom of a field. -->
-			<div class="mb-3 mt-1 px-4">
-				<input
-					v-model="event.title"
-					:autofocus="isNew"
-					:placeholder="__('Add title')"
-					class="w-full border-0 border-b border-outline-gray-1 bg-transparent px-0 pb-2.5 pt-2 text-xl font-medium text-ink-gray-9 placeholder:font-normal placeholder:text-ink-gray-3 focus:border-outline-gray-2 focus:ring-0"
-				/>
-			</div>
-
-			<!-- when -->
-			<div :class="GROUP">
-				<div :class="ROW">
-					<Clock :class="ICON" />
-					<span class="flex-1">{{ __('All day') }}</span>
-					<Switch
-						:model-value="event.isAllDay"
-						@update:model-value="(value: boolean) => emit('setAllDay', value)"
-					/>
-				</div>
-				<div :class="ROW">
-					<CalendarDays :class="ICON" />
-					<span class="flex-1">{{ __('Starts') }}</span>
-					<!-- Native date and time inputs: the value opens the platform's own picker,
-					     which is the control a phone already has for this and the one the reader
-					     knows. The desktop's popover pickers stay on the desktop. -->
-					<div :class="[PILL_PAIR, event.isAllDay ? 'w-32' : 'w-54']">
-						<input v-model="event.startDate" type="date" :class="[PILL, PILL_DATE]" />
-						<input
-							v-if="!event.isAllDay"
-							v-model="event.startTime"
-							type="time"
-							:class="[PILL, PILL_TIME]"
+						     Nothing on the right of the participants screen: the list is bound with
+						     v-model, so it is the event's the moment it changes and there is no commit
+						     left to offer. -->
+						<Button
+							v-if="s === 'form'"
+							variant="solid"
+							class="!rounded-9 shrink-0"
+							:label="__('Save')"
+							:disabled="disableSave"
+							@click="emit('save')"
 						/>
-					</div>
-				</div>
-				<div :class="ROW">
-					<!-- The calendar is drawn once for the pair: Starts and Ends are one
-					     fact read in two rows, and a second glyph made them two facts that
-					     happened to share a group. Same as the alerts below, where only the
-					     first of them carries the bell. -->
-					<span :class="ICON_BLANK" />
-					<span class="flex-1">{{ __('Ends') }}</span>
-					<div :class="[PILL_PAIR, event.isAllDay ? 'w-32' : 'w-54']">
-						<input v-model="event.endDate" type="date" :class="[PILL, PILL_DATE]" />
-						<input
-							v-if="!event.isAllDay"
-							v-model="event.endTime"
-							type="time"
-							:class="[PILL, PILL_TIME]"
-						/>
-					</div>
-				</div>
-				<button :class="ROW" @click="emit('toggleRepeat')">
-					<Repeat :class="ICON" />
-					<span class="shrink-0">{{ __('Repeat') }}</span>
-					<span :class="VALUE_LONG">{{ repeatValue }}</span>
-					<ChevronRight :class="CHEVRON" />
-				</button>
-			</div>
+					</header>
+					<template v-if="s === 'form'">
+						<div class="min-h-0 flex-1 overflow-y-auto pb-10">
+							<!-- The title is the one field that isn't a row: it reads as the event's name,
+							     the way the desktop dialog's lead title does, and carries the caret on a
+							     new event. -->
+							<!-- The 16px margin belongs to the wrapper, not to the field: as the field's own
+							     padding it left the underline running the full width of the screen while the
+							     text sat inset from it, and a rule that reaches further than anything above or
+							     below it reads as the edge of a section rather than the bottom of a field. -->
+							<div class="mb-3 mt-1 px-4">
+								<input
+									v-model="event.title"
+									:autofocus="isNew"
+									:placeholder="__('Add title')"
+									class="w-full border-0 border-b border-outline-gray-1 bg-transparent px-0 pb-2.5 pt-2 text-xl font-medium text-ink-gray-9 placeholder:font-normal placeholder:text-ink-gray-3 focus:border-outline-gray-2 focus:ring-0"
+								/>
+							</div>
 
-			<div :class="GROUP">
-				<button :class="ROW" @click="screen = 'participants'">
-					<Users :class="ICON" />
-					<span class="flex-1">{{ __('Participants') }}</span>
-					<!-- The ring separates each avatar from the one behind it. An outline
-					     colour rather than the row's own background: the background notches
-					     them apart where they overlap but is invisible on a single avatar,
-					     which is the common case here. `ring-outline-*` is also the only
-					     ring colour the preset registers — `ring-surface-gray-1` compiled to
-					     nothing and fell through to Tailwind's default ring, which is blue. -->
-					<div v-if="participants.length" class="flex items-center pl-2">
-						<Avatar
-							v-for="participant in participants.slice(0, 3)"
-							:key="participant.email"
-							:image="participant.user_image"
-							:label="participant._name || participant.email"
-							size="sm"
-							class="-ml-2 ring-1 ring-outline-gray-2 first:ml-0"
-						/>
-					</div>
-					<span :class="VALUE">{{ participants.length }}</span>
-					<ChevronRight :class="CHEVRON" />
-				</button>
-			</div>
+							<!-- when -->
+							<div :class="GROUP">
+								<div :class="ROW">
+									<Clock :class="ICON" />
+									<span class="flex-1">{{ __('All day') }}</span>
+									<Switch
+										:model-value="event.isAllDay"
+										@update:model-value="(value: boolean) => emit('setAllDay', value)"
+									/>
+								</div>
+								<div :class="ROW">
+									<CalendarDays :class="ICON" />
+									<span class="flex-1">{{ __('Starts') }}</span>
+									<!-- Native date and time inputs: the value opens the platform's own picker,
+									     which is the control a phone already has for this and the one the reader
+									     knows. The desktop's popover pickers stay on the desktop. -->
+									<div :class="[PILL_PAIR, event.isAllDay ? 'w-32' : 'w-54']">
+										<input v-model="event.startDate" type="date" :class="[PILL, PILL_DATE]" />
+										<input
+											v-if="!event.isAllDay"
+											v-model="event.startTime"
+											type="time"
+											:class="[PILL, PILL_TIME]"
+										/>
+									</div>
+								</div>
+								<div :class="ROW">
+									<!-- The calendar is drawn once for the pair: Starts and Ends are one
+									     fact read in two rows, and a second glyph made them two facts that
+									     happened to share a group. Same as the alerts below, where only the
+									     first of them carries the bell. -->
+									<span :class="ICON_BLANK" />
+									<span class="flex-1">{{ __('Ends') }}</span>
+									<div :class="[PILL_PAIR, event.isAllDay ? 'w-32' : 'w-54']">
+										<input v-model="event.endDate" type="date" :class="[PILL, PILL_DATE]" />
+										<input
+											v-if="!event.isAllDay"
+											v-model="event.endTime"
+											type="time"
+											:class="[PILL, PILL_TIME]"
+										/>
+									</div>
+								</div>
+								<button :class="ROW" @click="emit('toggleRepeat')">
+									<Repeat :class="ICON" />
+									<span class="shrink-0">{{ __('Repeat') }}</span>
+									<span :class="VALUE_LONG">{{ repeatValue }}</span>
+									<ChevronRight :class="CHEVRON" />
+								</button>
+							</div>
 
-			<!-- where — a room and a video call are two answers to the same question, so they
-			     are read as one group. -->
-			<div ref="locationsEl" :class="GROUP">
-				<div :class="ROW">
-					<img :src="meetLogo" :alt="__('Frappe Meet')" class="size-4 shrink-0" />
-					<template v-if="meetUrl">
-						<span class="min-w-0 flex-1 truncate">{{ meetLinkDisplay }}</span>
-						<Button :label="__('Join')" size="sm" @click="emit('joinMeet')" />
+							<div :class="GROUP">
+								<button :class="ROW" @click="screen = 'participants'">
+									<Users :class="ICON" />
+									<span class="flex-1">{{ __('Participants') }}</span>
+									<!-- The ring separates each avatar from the one behind it. An outline
+									     colour rather than the row's own background: the background notches
+									     them apart where they overlap but is invisible on a single avatar,
+									     which is the common case here. `ring-outline-*` is also the only
+									     ring colour the preset registers — `ring-surface-gray-1` compiled to
+									     nothing and fell through to Tailwind's default ring, which is blue. -->
+									<div v-if="participants.length" class="flex items-center pl-2">
+										<Avatar
+											v-for="participant in participants.slice(0, 3)"
+											:key="participant.email"
+											:image="participant.user_image"
+											:label="participant._name || participant.email"
+											size="sm"
+											class="-ml-2 ring-1 ring-outline-gray-2 first:ml-0"
+										/>
+									</div>
+									<span :class="VALUE">{{ participants.length }}</span>
+									<ChevronRight :class="CHEVRON" />
+								</button>
+							</div>
+
+							<!-- where — a room and a video call are two answers to the same question, so they
+							     are read as one group. -->
+							<div ref="locationsEl" :class="GROUP">
+								<div :class="ROW">
+									<img :src="meetLogo" :alt="__('Frappe Meet')" class="size-4 shrink-0" />
+									<template v-if="meetUrl">
+										<span class="min-w-0 flex-1 truncate">{{ meetLinkDisplay }}</span>
+										<Button :label="__('Join')" size="sm" @click="emit('joinMeet')" />
+									</template>
+									<template v-else>
+										<span class="flex-1">{{ __('Add Frappe Meet video call') }}</span>
+										<Switch v-model="event.addMeetLink" />
+									</template>
+								</div>
+								<div v-for="(_, i) in event.locations" :key="i" :class="ROW">
+									<MapPin v-if="i === 0" :class="ICON" />
+									<span v-else :class="ICON_BLANK" />
+									<input
+										v-model="event.locations[i]"
+										:placeholder="__('Meeting location {0}', [i + 1])"
+										class="min-w-0 flex-1 border-0 bg-transparent p-0 text-p-base text-ink-gray-8 placeholder:text-ink-gray-4 focus:ring-0"
+									/>
+									<button
+										class="shrink-0 text-ink-gray-4"
+										:aria-label="__('Remove location')"
+										@click="event.locations.splice(i, 1)"
+									>
+										<X class="size-4" />
+									</button>
+								</div>
+								<button v-if="canAddLocation" :class="ROW" @click="addLocation">
+									<MapPin v-if="!event.locations.length" :class="ICON" />
+									<span v-else :class="ICON_BLANK" />
+									<span class="flex-1 text-ink-gray-4">{{ __('Add location') }}</span>
+								</button>
+							</div>
+
+							<!-- alerts. Each reads as a phrase and opens a sheet holding the fields that
+							     built it — the same fields the desktop keeps on screen at all times, which
+							     at 390px would be five controls on a row with room for two. -->
+							<div :class="GROUP">
+								<button
+									v-for="(alert, i) in event.alerts"
+									:key="i"
+									:class="ROW"
+									@click="editingAlert = i"
+								>
+									<Bell v-if="i === 0" :class="ICON" />
+									<span v-else :class="ICON_BLANK" />
+									<span class="min-w-0 flex-1 truncate">{{ formatAlertPhrase(alert) }}</span>
+									<!-- A chevron, not a ✕: the row leads to the sheet, and removing is one
+									     of the things that sheet offers rather than a second control here
+									     competing for the same corner. -->
+									<ChevronRight :class="CHEVRON" />
+								</button>
+								<button v-if="event.alerts.length < 3" :class="ROW" @click="addAlert">
+									<Bell v-if="!event.alerts.length" :class="ICON" />
+									<span v-else :class="ICON_BLANK" />
+									<span class="flex-1 text-ink-gray-4">{{ __('Add alert') }}</span>
+								</button>
+							</div>
+
+							<!-- how it reads to everyone else -->
+							<div :class="GROUP">
+								<button :class="ROW" @click="showAvailabilitySheet = true">
+									<Briefcase :class="ICON" />
+									<span class="flex-1">{{ __('Availability') }}</span>
+									<span :class="VALUE">{{ availabilityLabel }}</span>
+									<ChevronRight :class="CHEVRON" />
+								</button>
+								<button :class="ROW" @click="showVisibilitySheet = true">
+									<Eye :class="ICON" />
+									<span class="flex-1">{{ __('Visibility') }}</span>
+									<span :class="VALUE">{{ visibilityLabel }}</span>
+									<ChevronRight :class="CHEVRON" />
+								</button>
+							</div>
+
+							<div :class="GROUP">
+								<textarea
+									v-model="event.description"
+									rows="3"
+									:placeholder="__('Add description')"
+									class="w-full resize-none border-0 bg-transparent px-3.5 py-3 text-p-base text-ink-gray-8 placeholder:text-ink-gray-4 focus:ring-0"
+								/>
+							</div>
+						</div>
 					</template>
 					<template v-else>
-						<span class="flex-1">{{ __('Add Frappe Meet video call') }}</span>
-						<Switch v-model="event.addMeetLink" />
+
+						<!-- The participants screen is pushed rather than layered: it owns the search field
+						     and the keyboard while it is up, and the way back returns to the form with the
+						     list as it now stands. v-show, not v-if, so the form keeps its scroll position and any
+						     field mid-edit while the reader is away. -->
+						<!-- pt-1, the same 4px the form's title field takes above itself: the header
+						     supplies the separation, and both screens start their content the same
+						     distance under it. py-3 here had the field sitting 8px lower than anything
+						     does on the form. -->
+						<div class="min-h-0 flex-1 overflow-y-auto px-4 pb-3 pt-1">
+							<ParticipantSelector
+								v-model="event.participants"
+								:account="store.accountId"
+								:display-participants="participants"
+								label=""
+								variant="inline"
+							/>
+						</div>
 					</template>
 				</div>
-				<div v-for="(_, i) in event.locations" :key="i" :class="ROW">
-					<MapPin v-if="i === 0" :class="ICON" />
-					<span v-else :class="ICON_BLANK" />
-					<input
-						v-model="event.locations[i]"
-						:placeholder="__('Meeting location {0}', [i + 1])"
-						class="min-w-0 flex-1 border-0 bg-transparent p-0 text-p-base text-ink-gray-8 placeholder:text-ink-gray-4 focus:ring-0"
-					/>
-					<button
-						class="shrink-0 text-ink-gray-4"
-						:aria-label="__('Remove location')"
-						@click="event.locations.splice(i, 1)"
-					>
-						<X class="size-4" />
-					</button>
-				</div>
-				<button v-if="canAddLocation" :class="ROW" @click="addLocation">
-					<MapPin v-if="!event.locations.length" :class="ICON" />
-					<span v-else :class="ICON_BLANK" />
-					<span class="flex-1 text-ink-gray-4">{{ __('Add location') }}</span>
-				</button>
-			</div>
-
-			<!-- alerts. Each reads as a phrase and opens a sheet holding the fields that
-			     built it — the same fields the desktop keeps on screen at all times, which
-			     at 390px would be five controls on a row with room for two. -->
-			<div :class="GROUP">
-				<button
-					v-for="(alert, i) in event.alerts"
-					:key="i"
-					:class="ROW"
-					@click="editingAlert = i"
-				>
-					<Bell v-if="i === 0" :class="ICON" />
-					<span v-else :class="ICON_BLANK" />
-					<span class="min-w-0 flex-1 truncate">{{ formatAlertPhrase(alert) }}</span>
-					<!-- A chevron, not a ✕: the row leads to the sheet, and removing is one
-					     of the things that sheet offers rather than a second control here
-					     competing for the same corner. -->
-					<ChevronRight :class="CHEVRON" />
-				</button>
-				<button v-if="event.alerts.length < 3" :class="ROW" @click="addAlert">
-					<Bell v-if="!event.alerts.length" :class="ICON" />
-					<span v-else :class="ICON_BLANK" />
-					<span class="flex-1 text-ink-gray-4">{{ __('Add alert') }}</span>
-				</button>
-			</div>
-
-			<!-- how it reads to everyone else -->
-			<div :class="GROUP">
-				<button :class="ROW" @click="showAvailabilitySheet = true">
-					<Briefcase :class="ICON" />
-					<span class="flex-1">{{ __('Availability') }}</span>
-					<span :class="VALUE">{{ availabilityLabel }}</span>
-					<ChevronRight :class="CHEVRON" />
-				</button>
-				<button :class="ROW" @click="showVisibilitySheet = true">
-					<Eye :class="ICON" />
-					<span class="flex-1">{{ __('Visibility') }}</span>
-					<span :class="VALUE">{{ visibilityLabel }}</span>
-					<ChevronRight :class="CHEVRON" />
-				</button>
-			</div>
-
-			<div :class="GROUP">
-				<textarea
-					v-model="event.description"
-					rows="3"
-					:placeholder="__('Add description')"
-					class="w-full resize-none border-0 bg-transparent px-3.5 py-3 text-p-base text-ink-gray-8 placeholder:text-ink-gray-4 focus:ring-0"
-				/>
-			</div>
-		</div>
-
-		<!-- The participants screen is pushed rather than layered: it owns the search field
-		     and the keyboard while it is up, and the way back returns to the form with the
-		     list as it now stands. v-show, not v-if, so the form keeps its scroll position and any
-		     field mid-edit while the reader is away. -->
-		<!-- pt-1, the same 4px the form's title field takes above itself: the header
-		     supplies the separation, and both screens start their content the same
-		     distance under it. py-3 here had the field sitting 8px lower than anything
-		     does on the form. -->
-		<div v-show="screen === 'participants'" class="min-h-0 flex-1 overflow-y-auto px-4 pb-3 pt-1">
-			<ParticipantSelector
-				v-model="event.participants"
-				:account="store.accountId"
-				:display-participants="participants"
-				label=""
-				variant="inline"
-			/>
-		</div>
+			</Transition>
+		</template>
 	</div>
 
 	<!-- The alert's own fields, on the sheet a tap on its row opens: a row per field,
@@ -435,8 +453,9 @@ const emit = defineEmits<{
 const store = userStore()
 const { height: viewportHeight, top: keyboardTop } = useKeyboardInsets()
 
+const SCREENS = ['form', 'participants'] as const
 /** Which of the two screens is up. Participants is pushed from the form and returns to it. */
-const screen = ref<'form' | 'participants'>('form')
+const screen = ref<(typeof SCREENS)[number]>('form')
 
 // The mark in the header is one button on both screens, so a tap that goes back leaves its
 // focus on the button the form then shows: a ✕ sitting highlighted for something the reader
@@ -728,3 +747,36 @@ const updateAlert = (index: number, field: string, value: string | number) =>
 const showAvailabilitySheet = ref(false)
 const showVisibilitySheet = ref(false)
 </script>
+
+<style scoped>
+/* The screen slide: a push, both screens moving at once, the leaving one lifted
+   out of the flow so the arriving one has the box from the first frame. The
+   detail sheet's page turn, to the millisecond. */
+.screen-form-enter-active,
+.screen-form-leave-active,
+.screen-participants-enter-active,
+.screen-participants-leave-active {
+	transition: transform 200ms ease;
+}
+.screen-form-leave-active,
+.screen-participants-leave-active {
+	position: absolute;
+	inset: 0;
+}
+.screen-form-enter-from,
+.screen-form-leave-to {
+	transform: translateX(-100%);
+}
+.screen-participants-enter-from,
+.screen-participants-leave-to {
+	transform: translateX(100%);
+}
+@media (prefers-reduced-motion: reduce) {
+	.screen-form-enter-active,
+	.screen-form-leave-active,
+	.screen-participants-enter-active,
+	.screen-participants-leave-active {
+		transition: none;
+	}
+}
+</style>
