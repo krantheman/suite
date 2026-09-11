@@ -23,16 +23,13 @@ const resolveShortcut = (
 	params: Params,
 	accountId: string,
 ) => {
-	// Home is the view the calendar was last left in. Failing that — nothing
-	// remembered, or a view this device cannot draw — the month grid on a desktop
-	// and the agenda on a phone, where a month of columns has nothing legible in
-	// it. The phone draws its own agenda, day and month on those three routes;
-	// they are the same routes the desktop uses, at phone width.
+	// Home is the view the calendar was last left in. Failing that, the month grid
+	// on a desktop and the agenda on a phone, which is where each device starts.
+	// The phone draws all four views on the same routes the desktop uses, at phone
+	// width, so a remembered view opens wherever it was remembered.
 	const { isMobile } = useScreenSize()
 	const defaultRoute = {
-		name:
-			lastCalendarView(isMobile.value) ??
-			(isMobile.value ? 'calendar-agenda' : 'calendar-month'),
+		name: lastCalendarView() ?? (isMobile.value ? 'calendar-agenda' : 'calendar-month'),
 		params: { accountId },
 	}
 

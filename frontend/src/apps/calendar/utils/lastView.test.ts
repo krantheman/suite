@@ -21,19 +21,17 @@ describe('rememberCalendarView', () => {
 		expect(localStorage.getItem(KEY)).toBe('calendar-week')
 	})
 
-	// A phone cannot draw Week, but the laptop it was chosen on still can.
-	it('remembers a desktop-only view even when it will not fit every device', () => {
-		rememberCalendarView('calendar-week')
-		expect(lastCalendarView(false)).toBe('calendar-week')
-		expect(lastCalendarView(true)).toBeNull()
-	})
-
-	// The phone draws the agenda, the day and the month, each on the route it is
-	// named after — a view remembered on one device opens on the other.
-	it('hands the phone any of the three it draws', () => {
-		for (const name of ['calendar-agenda', 'calendar-day', 'calendar-month']) {
+	// Every view is drawn on both devices, each on the route it is named after —
+	// a view remembered on one opens on the other.
+	it('hands back any of the four views', () => {
+		for (const name of [
+			'calendar-agenda',
+			'calendar-day',
+			'calendar-week',
+			'calendar-month',
+		]) {
 			rememberCalendarView(name)
-			expect(lastCalendarView(true)).toBe(name)
+			expect(lastCalendarView()).toBe(name)
 		}
 	})
 })
@@ -42,25 +40,19 @@ describe('lastCalendarView', () => {
 	beforeEach(() => localStorage.clear())
 
 	it('has nothing to say before a view has been opened', () => {
-		expect(lastCalendarView(false)).toBeNull()
-		expect(lastCalendarView(true)).toBeNull()
+		expect(lastCalendarView()).toBeNull()
 	})
 
 	it('returns what was remembered', () => {
 		rememberCalendarView('calendar-day')
-		expect(lastCalendarView(false)).toBe('calendar-day')
-		expect(lastCalendarView(true)).toBe('calendar-day')
+		expect(lastCalendarView()).toBe('calendar-day')
 	})
 
 	// Storage is shared with whatever else runs on the origin, and a key can
 	// outlive the routes it named.
-	it('declines a value that is not a view this device draws', () => {
+	it('declines a value that is not a view', () => {
 		localStorage.setItem(KEY, 'calendar-timeline')
-		expect(lastCalendarView(false)).toBeNull()
-
-		localStorage.setItem(KEY, 'calendar-week')
-		expect(lastCalendarView(true)).toBeNull()
-		expect(lastCalendarView(false)).toBe('calendar-week')
+		expect(lastCalendarView()).toBeNull()
 	})
 
 	// A private window, or a browser set to block site data: the accessor itself
@@ -74,7 +66,7 @@ describe('lastCalendarView', () => {
 		})
 
 		expect(() => rememberCalendarView('calendar-week')).not.toThrow()
-		expect(lastCalendarView(false)).toBeNull()
+		expect(lastCalendarView()).toBeNull()
 
 		getItem.mockRestore()
 		setItem.mockRestore()

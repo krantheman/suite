@@ -81,7 +81,7 @@ const profileActive = computed(() => route.name === 'calendar-profile')
 // calendar had been left in, and then opened the Day view.
 const currentView = computed(() =>
 	profileActive.value
-		? viewForRoute(lastCalendarView(true) ?? routeForView('agenda'))
+		? viewForRoute(lastCalendarView() ?? routeForView('agenda'))
 		: viewForRoute(route.name),
 )
 const calendarActive = computed(() => !profileActive.value)
@@ -92,7 +92,7 @@ const calendarActive = computed(() => !profileActive.value)
  * home only when nothing is remembered. A date-less route means today.
  */
 const calendarRoute = () => ({
-	name: lastCalendarView(true) ?? routeForView('agenda'),
+	name: lastCalendarView() ?? routeForView('agenda'),
 	params: { accountId: store.accountId },
 })
 

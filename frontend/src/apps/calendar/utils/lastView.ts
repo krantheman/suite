@@ -13,33 +13,25 @@
 
 const STORAGE_KEY = 'calendar-view'
 
-/** Every view the desktop offers. */
-const DESKTOP_VIEWS = [
+/**
+ * Every view the calendar offers, on either device: the phone draws the same
+ * four, on the same routes, at its own width. It drew three for a while — a week
+ * of seven columns had nothing legible in it until the week learnt to be narrow
+ * — and a preference for the one it was missing had to be declined at the door.
+ */
+const VIEWS = [
 	'calendar-month',
 	'calendar-week',
 	'calendar-day',
 	'calendar-agenda',
 ] as const
 
-/**
- * What the phone offers: the three its switcher lists. A week of columns has
- * nothing legible in it at that width, so a remembered `calendar-week` would
- * land the phone somewhere it cannot draw.
- */
-const MOBILE_VIEWS = ['calendar-month', 'calendar-day', 'calendar-agenda'] as const
-
-export type CalendarViewRoute = (typeof DESKTOP_VIEWS)[number]
-
-const viewsFor = (isMobile: boolean): readonly string[] =>
-	isMobile ? MOBILE_VIEWS : DESKTOP_VIEWS
+export type CalendarViewRoute = (typeof VIEWS)[number]
 
 /** Remembers `name`, if it is a view route at all. */
 export const rememberCalendarView = (name: unknown) => {
 	if (typeof name !== 'string') return
-	if (!DESKTOP_VIEWS.includes(name as CalendarViewRoute)) return
-	// A device the view does not fit is still worth remembering for the device it
-	// does: someone who works in Week on a laptop and picks up their phone has not
-	// stopped preferring Week.
+	if (!VIEWS.includes(name as CalendarViewRoute)) return
 	try {
 		localStorage.setItem(STORAGE_KEY, name)
 	} catch {
@@ -49,11 +41,11 @@ export const rememberCalendarView = (name: unknown) => {
 }
 
 /**
- * The remembered view, or null — nothing stored, something else stored, or a
- * view this device cannot draw. The caller supplies the default it wants
- * instead, since that differs between the phone and the desktop.
+ * The remembered view, or null — nothing stored, or something stored that is not
+ * a view. The caller supplies the default it wants instead, since that differs
+ * between the phone and the desktop.
  */
-export const lastCalendarView = (isMobile: boolean): CalendarViewRoute | null => {
+export const lastCalendarView = (): CalendarViewRoute | null => {
 	let stored: string | null = null
 	try {
 		stored = localStorage.getItem(STORAGE_KEY)
@@ -61,5 +53,5 @@ export const lastCalendarView = (isMobile: boolean): CalendarViewRoute | null =>
 		return null
 	}
 	if (!stored) return null
-	return viewsFor(isMobile).includes(stored) ? (stored as CalendarViewRoute) : null
+	return VIEWS.includes(stored as CalendarViewRoute) ? (stored as CalendarViewRoute) : null
 }

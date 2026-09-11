@@ -196,3 +196,23 @@ export const formatAlertPhrase = (alert: {
       : __('{0} {1} before start', [number, unit]))
   )
 }
+
+/**
+ * The days a week is named by — "Sep 7 – 13", or "Aug 30 – Sep 5" where the week
+ * straddles two months — rather than a month the week only partly belongs to.
+ *
+ * The year comes back on its own, as the month title's does, so a header can set
+ * it in its own ink: it is the part of a date a reader checks rather than reads.
+ *
+ * One label for both devices. The desktop names the range the calendar reports;
+ * the phone names the week its date falls in — the same seven days, arrived at
+ * from either end.
+ */
+export const weekSpanLabel = (start: string | Date, end: string | Date) => {
+  const from = dayjs(start)
+  const to = dayjs(end)
+  return {
+    label: `${from.format('MMM D')} – ${to.format(to.isSame(from, 'month') ? 'D' : 'MMM D')}`,
+    year: to.format('YYYY'),
+  }
+}

@@ -1,10 +1,13 @@
 <template>
-	<!-- The calendar at phone width. The desktop week grid does not survive
-	     390px — seven columns leave nothing to write in — so the phone has three
-	     views instead: an agenda, which is home; a day, which is one column and
-	     fits; and the month. All three are the same events read at a different
-	     range, and two of them are the library's own views, told to draw no
-	     header and one mode. -->
+	<!-- The calendar at phone width: the same four views the desktop has — a day,
+	     a week, the month, and an agenda, which is home — each of them the
+	     library's own, told to draw no header and one mode. They are one set of
+	     events read at four ranges.
+
+	     The week was the last of them to arrive. Seven columns at 390px leave a
+	     pill some 40px wide, which is nothing to write a title in until the pills
+	     give up what the grid around them already says — their time, which is
+	     where they are drawn, and their colour bar, which is their fill. -->
 	<div class="flex min-h-0 flex-1 flex-col">
 		<!-- A flat h-14 title row on mail's geometry — hamburger, then the period,
 		     then actions — so on a phone the two apps share one top edge. The
@@ -30,8 +33,11 @@
 				@click="isPickerOpen = true"
 			>
 				<span class="min-w-0 truncate">
-					<template v-if="isMonth">
-						{{ title.month }}
+					<!-- A month names itself and a week names its days — "Sep 7 – 13" —
+					     both with the year behind them in lighter ink, which is the part
+					     of a date a reader checks rather than reads. -->
+					<template v-if="isMonth || isWeek">
+						{{ title.label }}
 						<span class="text-ink-gray-4 font-normal">{{ title.year }}</span>
 					</template>
 					<!-- A day names itself, weekday first: it is the one view whose title a
@@ -44,8 +50,8 @@
 				<ChevronDown class="size-4 shrink-0 text-ink-gray-5" />
 			</button>
 			<!-- The view's own navigation, on the row that names what it is showing: a
-			     step back, a step on, and the way home — a month at a time in the list,
-			     a day at a time in the day. Today is not hidden when the anchor is
+			     step back, a step on, and the way home — by whatever the view is showing,
+			     a month or a week or a day. Today is not hidden when the anchor is
 			     already today: a list scrolls, so "on today" and "looking at today" are
 			     different things, and it is the second one this answers. -->
 			<!-- 40px targets, round, the size the hamburger opposite them is: a 28px
@@ -80,10 +86,10 @@
 		</div>
 
 
-		<!-- All three views are the library's own, the ones the desktop reads: the
+		<!-- All four views are the library's own, the ones the desktop reads: the
 		     list of days under the week they fall in, the single column with its hours
-		     down the side, and the month — which below `sm` the library draws as a week
-		     strip over a stack of days, which is the shape a month needs at this width.
+		     down the side, the seven of those columns the week draws narrow, and the
+		     month grid.
 
 		     The phone brings its own header, so the Calendar's header slot is filled
 		     with nothing and every mode but the one wanted is turned off. Its date is
@@ -125,17 +131,17 @@
 		     has loaded still says which of its days are busy. -->
 		<BottomSheet v-model:open="isPickerOpen">
 			<div class="px-2 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-				<!-- The circle marks a day the view is actually on, which is the day
-				     view and not the agenda or the month: a list spanning three months is
-				     anchored on a date rather than showing one, and a circle in the grid
-				     claimed more than that. `Month` is how the card is told to mark
-				     nothing. -->
+				<!-- The circle marks a day the view is actually on — the day, and the
+				     week, whose own date is the day it is drawn around. Not the agenda or
+				     the month: a list spanning three months is anchored on a date rather
+				     than showing one, and a circle in the grid claimed more than that.
+				     `Month` is how the card is told to mark nothing. -->
 				<MiniMonth
 					:month="pickerMonth.month"
 					:year="pickerMonth.year"
 					:calendar-color="calendarColor"
-					:selected="isDay ? dayjs(selected).toDate() : undefined"
-					:view="isDay ? 'Day' : 'Month'"
+					:selected="isDay || isWeek ? dayjs(selected).toDate() : undefined"
+					:view="isDay ? 'Day' : isWeek ? 'Week' : 'Month'"
 					touch
 					@select="(date) => pickDate(dayjs(date).format('YYYY-MM-DD'))"
 				/>
@@ -152,6 +158,7 @@ import { ChevronDown, ChevronLeft, ChevronRight, Menu } from 'lucide-vue-next'
 
 import dayjs from '@/apps/calendar/utils/dayjs'
 import { useViewSheet } from '@/apps/calendar/composables/useViewSheet'
+import { weekSpanLabel } from '@/apps/calendar/utils/format'
 import MiniMonth from '@/apps/calendar/components/MiniMonth.vue'
 
 import type { AgendaEvent } from '@/apps/calendar/utils/agenda'
@@ -185,6 +192,7 @@ const emit = defineEmits<{
 const { openViewSheet } = useViewSheet()
 
 const isMonth = computed(() => props.view === 'month')
+const isWeek = computed(() => props.view === 'week')
 const isDay = computed(() => props.view === 'day')
 
 /**
@@ -229,9 +237,11 @@ const pickDate = (date: string) => {
 const config = computed(() => {
 	const mode = isMonth.value
 		? ('Month' as const)
-		: isDay.value
-			? ('Day' as const)
-			: ('Agenda' as const)
+		: isWeek.value
+			? ('Week' as const)
+			: isDay.value
+				? ('Day' as const)
+				: ('Agenda' as const)
 	return {
 		defaultMode: mode,
 		disableModes: (['Agenda', 'Day', 'Week', 'Month'] as const).filter(
@@ -258,11 +268,12 @@ const agenda = useTemplateRef<{
  * and the fetch window read.
  *
  * It happens where a view offers a way into another — the month's "+n more" and
- * its date numbers open the day. Left alone, the Calendar drew a day while
- * everything round it still said month.
+ * its date numbers open the day, and so does a tap on the week's own date heads.
+ * Left alone, the Calendar drew a day while everything round it still said month.
  */
 const VIEW_BY_MODE: Record<string, MobileView> = {
 	Day: 'day',
+	Week: 'week',
 	Month: 'month',
 	Agenda: 'agenda',
 }
@@ -285,27 +296,24 @@ const goToToday = () => {
 	agenda.value?.setCalendarDate(todayKey.value)
 }
 
-const agendaTitle = computed(() => agenda.value?.currentMonthYear || title.value.month)
+const agendaTitle = computed(() => agenda.value?.currentMonthYear || title.value.label)
 
 /** "Wednesday, 9 Sep" — the day this view is one of. */
 const dayTitle = computed(() => dayjs(props.selected).format('dddd, D MMM'))
 
 /**
- * A step back or on: a month in the list, a day in the day view.
+ * A step back or on, by whatever the view is showing: a month, a week, a day.
  *
- * The day and the month step by moving the date this view is on, not by asking the
+ * The three of them step by moving the date this view is on, not by asking the
  * Calendar to increment itself — the date is what the route, the title and the fetch window all
  * read, and a Calendar that walked off on its own would leave the three of them
  * behind. The list is the other way round: it is scrolled rather than dated, so its
  * own increment is what moves it, and its title comes back from the same place.
  */
 const step = (delta: number) => {
-	if (isMonth.value) {
-		emit('selectDate', dayjs(props.selected).add(delta, 'month').format('YYYY-MM-DD'))
-		return
-	}
-	if (isDay.value) {
-		emit('selectDate', dayjs(props.selected).add(delta, 'day').format('YYYY-MM-DD'))
+	const unit = isMonth.value ? 'month' : isWeek.value ? 'week' : isDay.value ? 'day' : null
+	if (unit) {
+		emit('selectDate', dayjs(props.selected).add(delta, unit).format('YYYY-MM-DD'))
 		return
 	}
 	delta < 0 ? agenda.value?.decrement() : agenda.value?.increment()
@@ -330,9 +338,20 @@ const viewedMonth = computed(() => {
 	return { month: day.month(), year: day.year() }
 })
 
+/**
+ * The period named, and its year, which the header sets in lighter ink.
+ *
+ * The week names its days rather than the month it is mostly in — the desktop's
+ * header does the same, from the same helper, so a week is read the same way on
+ * either device. It is worked out from the day the view is on rather than asked
+ * of the library: the date is what this shell owns, and the library's week is
+ * the one that date falls in.
+ */
 const title = computed(() => {
 	const day = dayjs(props.selected)
-	return { month: day.format('MMMM'), year: day.format('YYYY') }
+	if (isWeek.value)
+		return weekSpanLabel(day.startOf('week').toDate(), day.endOf('week').toDate())
+	return { label: day.format('MMMM'), year: day.format('YYYY') }
 })
 
 </script>

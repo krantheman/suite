@@ -21,6 +21,7 @@ import { reanchoredRule } from '@/apps/calendar/utils/recurrence'
 import { isFirstOccurrence, scopeOptions } from '@/apps/calendar/utils/recurringScope'
 import type { RecurringScope } from '@/apps/calendar/utils/recurringScope'
 import { eventDescription, eventGoing, eventPlace } from '@/apps/calendar/utils/eventMeta'
+import { weekSpanLabel } from '@/apps/calendar/utils/format'
 import { userStore } from '@/apps/calendar/stores/user'
 import { invalidateEventDensity } from '@/apps/calendar/composables/useEventDensity'
 import { rememberCalendarView } from '@/apps/calendar/utils/lastView'
@@ -566,10 +567,7 @@ watch(visibleRange, (range) => {
 const headerTitle = (title: string) => {
 	const range = visibleRange.value
 	if (range?.view !== 'Week') return splitYear(title)
-	const start = dayjs(range.startDate)
-	const end = dayjs(range.endDate)
-	const endLabel = end.isSame(start, 'month') ? end.format('D') : end.format('MMM D')
-	return { label: `${start.format('MMM D')} – ${endLabel}`, year: end.format('YYYY') }
+	return weekSpanLabel(range.startDate, range.endDate)
 }
 
 // The header's "+ Event" opens on the period in view: starting an event while
