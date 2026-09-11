@@ -987,7 +987,10 @@ const NOTIFY_MODAL_OPTIONS = {
 								</div>
 							</div>
 							<div class="flex items-center gap-x-2">
+								<!-- md, like the buttons either side of it: at the default sm the
+								     switcher sat 4px shorter than the Event button beside it. -->
 								<TabButtons
+									size="md"
 									:options="enabledModes"
 									:model-value="activeView"
 									@update:model-value="(view) => updateActiveView(view)"
