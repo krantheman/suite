@@ -5,6 +5,7 @@ import {
   meetLogo,
   sheetsLogo,
   slidesLogo,
+  suiteLogo,
   writerLogo,
 } from '@/platform/brand'
 
@@ -13,6 +14,8 @@ const APP_LOGOS: Record<string, string> = {
   Drive: driveLogo,
   Mail: mailLogo,
   Meet: meetLogo,
+  // People has no product logo of its own yet, so its tab shows the suite's.
+  People: suiteLogo,
   Sheets: sheetsLogo,
   Slides: slidesLogo,
   Writer: writerLogo,
