@@ -22,3 +22,10 @@ including whether "screening" survives as a concept, what it is called, and
 how it relates to a clean inbox (ticket 010), junk and blocking.
 
 Source: the user's pain list (2026-10-09). Ours shipped in frappe/suite#965.
+
+## Inputs
+
+From [merged problems](../references/merged-problems.md) (ticket 003):
+- C19 What screening is and what its buttons do (A31, A34 to A37).
+- C20 A decision about a sender doesn't reach mail you already have (I19,
+  A26).

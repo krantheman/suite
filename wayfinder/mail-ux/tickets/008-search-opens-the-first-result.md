@@ -16,3 +16,8 @@ chosen, on desktop and on a phone, and how the keyboard moves through them.
 Check it against how opening a mailbox behaves, so the two agree.
 
 Source: the user's pain list (2026-10-09).
+
+## Inputs
+
+From [merged problems](../references/merged-problems.md) (ticket 003):
+- C28 Search opens a result you didn't pick (A51).

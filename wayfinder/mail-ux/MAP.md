@@ -38,6 +38,39 @@ Mail settings.
   then new features, then settings and polish. Within each group, the user's
   biggest pains first. The user marked two pains as most important: a clean
   inbox and finding a specific mail; their tickets lead the work.
+- Every decision is shown as several distinct options before one is
+  chosen. Questions of look and feel get variants in the running app with a
+  switcher panel; questions of behaviour or model get options laid out with
+  their trade-offs, and a small demo where the behaviour is hard to picture.
+- Problems with an obvious fix skip the tickets and live in
+  [fixes.md](fixes.md), grouped so each group ships as one PR.
+- **Order of work**, agreed 2026-10-09, overriding lowest-number-first:
+  [A clean inbox](tickets/010-a-clean-inbox.md),
+  [Finding a specific mail](tickets/011-finding-a-specific-mail.md),
+  [Layout, hierarchy and use of space](tickets/012-layout-and-hierarchy.md),
+  [Your own mail and unread](tickets/015-your-own-mail-and-unread.md),
+  [Forwards leave the conversation](tickets/006-forwards-leave-the-thread.md),
+  [Who a reply goes to](tickets/016-reply-defaults.md),
+  [When mail counts as read](tickets/017-skimming-marks-read.md),
+  [Folders, labels, or both](tickets/004-folders-and-labels.md),
+  [Dealing with mail from unknown senders](tickets/013-unknown-senders.md),
+  [Which account a mail belongs to and goes out from](tickets/018-which-account.md),
+  [Trusting that a draft is saved](tickets/019-draft-safety.md),
+  [What Outbox is for](tickets/020-what-outbox-is-for.md),
+  [Search opens the first result](tickets/008-search-opens-the-first-result.md),
+  [Which signature is added](tickets/021-which-signature.md),
+  [Templates and snippets](tickets/022-templates.md),
+  [Shared inboxes and delegation](tickets/023-shared-inboxes.md),
+  [Notifications for the mail you care about](tickets/024-notifications.md),
+  [Discussing a mail with colleagues](tickets/025-team-comments.md),
+  [AI and translation](tickets/026-ai-and-translation.md),
+  [Mail without a connection](tickets/027-offline.md),
+  [Asking for a read receipt](tickets/028-read-receipts.md),
+  [Private notes on a thread](tickets/029-private-notes.md),
+  [The words Mail uses](tickets/030-the-apps-words.md),
+  [The shortcut set](tickets/031-shortcuts.md),
+  [How Mail settings are organised](tickets/032-settings-organisation.md).
+  Take the first open, unblocked, unclaimed ticket in this list.
 - Settled terms go in `suite/mail/CONTEXT.md` (glossary only), listed in
   `CONTEXT-MAP.md`. Sessions consult the `grilling` and `domain-modeling`
   skills; UI questions use `prototype` (variants in the running app with a
@@ -49,6 +82,14 @@ Mail settings.
   [references/inventory.md](references/inventory.md).
 
 ## Decisions so far
+
+- [The user's pain list](tickets/003-pain-list.md): all four sources merged into
+  50 problems; 33 decisions became tickets or inputs, 17 obvious fixes went
+  to fixes.md, and the order of work is set.
+
+- [How others handle unknown senders](tickets/014-unknown-sender-handling-elsewhere.md):
+  only HEY and Spark gate first contact; classifiers lose it too; HEY's
+  screener costs effort and loses resets and receipts.
 
 - [Sent mail shows as unread](tickets/007-sent-mail-shows-unread.md): actions
   like Mark as Unread un-read your own mail, and Sent shows a count; the 24 on
@@ -71,12 +112,8 @@ Mail settings.
 
 ## Not yet specified
 
-- Features missing today that the survey will weigh: snooze, templates,
-  unsubscribe, print, reactions (a picker mode exists, unused), a visual rule
-  builder over Sieve, requesting read receipts, offline.
-- Known debt: one composer at a time; draft edits not shown in the list until
-  the editor closes; sender stacks rarely group mailing lists.
-- Mobile-specific flows beyond what the audit finds.
+- Phone-specific flows beyond what the audit found: gestures, the bottom
+  nav's space, and whether the phone list should differ from the desktop's.
 
 ## Out of scope
 
@@ -84,3 +121,10 @@ Mail settings.
   import and export job pages, and the sign-in, sign-up and password-reset
   pages.
 - Calendar. It gets its own map later.
+- Pixel tracking of when recipients open mail (survey G16): privacy-hostile
+  and recommended against. Ruled out in
+  [The user's pain list](tickets/003-pain-list.md).
+- Calendar beside mail (G27): Calendar gets its own map; RSVP in the thread
+  exists, and creating an event from a mail is in fixes.md.
+- Merging threads, renaming subjects, replying to many at once (G28): low
+  value, and needs a Suite layer over threads the server computes.

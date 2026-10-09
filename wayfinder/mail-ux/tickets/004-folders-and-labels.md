@@ -13,3 +13,8 @@ A thread can sit in several folders at once, which is how labels behave, but
 the UI only says "folders". Decide the model the user sees: folders, labels,
 or both. Settle what Move, Archive and drag-and-drop mean under it, how the
 sidebar presents it, and where categories would fit.
+
+## Inputs
+
+From [merged problems](../references/merged-problems.md) (ticket 003):
+- C11 Folders behave like labels (A23, A55, A58, I05, I06, G09).

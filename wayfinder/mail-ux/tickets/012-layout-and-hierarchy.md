@@ -21,3 +21,14 @@ It has to sit inside the unified shell's rail, panel and content pane
 prototype ticket to follow once the problems are pinned.
 
 Source: the user's pain list (2026-10-09).
+
+## Inputs
+
+From [merged problems](../references/merged-problems.md) (ticket 003):
+- C04 The screen doesn't use its space well (A04, A05, A06, A86, A89, I24).
+- C08 A row doesn't describe its thread: which message represents a thread
+  in each view (I02).
+- C10 Thread menus overlap and mix routine, risky and technical items (A24,
+  A25, A33).
+- C29 Compose covers the mail you're answering (A38, I14).
+- C40 No context on who you're writing to: a sender pane (G13).

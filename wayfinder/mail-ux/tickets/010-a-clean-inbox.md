@@ -21,3 +21,12 @@ the unknown-sender flow, rules (G10), and sender stacks. Graduate each
 piece the answer keeps into its own ticket.
 
 Source: the user's pain list (2026-10-09), marked important.
+
+## Inputs
+
+From [merged problems](../references/merged-problems.md) (ticket 003):
+- C01 The Inbox is buried under bulk mail (I04, G05, G06, G07, G08, A30).
+- C02 Clearing the Inbox takes too many steps (A07, A13, A20, A90, G21).
+- C03 Sorting mail automatically means writing Sieve (G10, A75).
+- C34 Mail you can't act on yet gets lost: snooze, follow-up, reply later,
+  pin (G01 to G04).
