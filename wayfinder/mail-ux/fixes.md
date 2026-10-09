@@ -11,9 +11,12 @@ separately. If a fix turns out to need a real choice, move it to a ticket.
 
 ## Daily friction
 
-- [ ] **All accounts works like a single account's list** (C12; A02, A03,
-  A32, A56): checkboxes and select-all, the unknown-sender marker, the
-  subject in the tab title, Outbox and New Folder. One shared list, not two.
+- [x] **All accounts works like a single account's list** (C12; A02, A03,
+  A32): checkboxes and select-all, the unknown-sender marker, the subject in
+  the tab title, through selection shared by both lists.
+  [frappe/suite#977](https://github.com/frappe/suite/pull/977). Outbox and
+  New Folder in All accounts (A56) need a choice of account, so they moved
+  to [Which account a mail belongs to and goes out from](tickets/018-which-account.md).
 - [ ] **Mail looks as the sender sent it** (C13; A27, I07, I08): wide HTML
   fits the pane, a regression set of real messages for rendering, and a way
   to show a message as sent when dark mode spoils it.
