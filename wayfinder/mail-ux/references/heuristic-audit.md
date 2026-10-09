@@ -8,7 +8,7 @@
 - Frequency: daily, weekly or rare, for a work-mail user. Severity: 1 cosmetic, 2 minor, 3 major, 4 blocks the task.
 - No mail content, subjects or real names appear here. Problems are described generically.
 
-**Exercised:** All Inboxes and single-account lists (split and full width); the filter menu; the account switcher; More; hover row actions; group and bulk selection (cleared again); opening threads; thread and message menus; the hidden-images and unknown-sender banners (looked at, not answered); compose as modal, docked and minimised; recipient suggestions; Cc/Bcc; the Send menu; the From menu; the search palette, instant results, the results page and advanced filters; every Mail settings tab (no saves); Notifications; Outbox (list and detail); Drafts, Trash, Junk and Sent; the shortcuts modal; j/k; Esc; ⌘K. On phone: list, folder sheet, thread, thread action sheet, Account sheet, Profile page (by URL), full-page compose and its menu, search, avatar-tap selection.
+**Exercised:** All accounts and single-account lists (split and full width); the filter menu; the account switcher; More; hover row actions; group and bulk selection (cleared again); opening threads; thread and message menus; the hidden-images and unknown-sender banners (looked at, not answered); compose as modal, docked and minimised; recipient suggestions; Cc/Bcc; the Send menu; the From menu; the search palette, instant results, the results page and advanced filters; every Mail settings tab (no saves); Notifications; Outbox (list and detail); Drafts, Trash, Junk and Sent; the shortcuts modal; j/k; Esc; ⌘K. On phone: list, folder sheet, thread, thread action sheet, Account sheet, Profile page (by URL), full-page compose and its menu, search, avatar-tap selection.
 
 **Not exercised:** sending; the schedule picker (blocked by the session's permission check); answering the unknown-sender banner, including its Yes menu (blocked too); block or trust; archive, trash, junk and the Undo toasts that follow them; Delete Now; permanent delete; settings saves; calendar RSVP; the delivery-status banner; attachment preview; drag and drop; push notifications; dark mode; offline and server-error states.
 
@@ -16,17 +16,17 @@
 
 ---
 
-## Mailbox list and All Inboxes
+## Mailbox list and All accounts
 
-**A01. In All Inboxes, rows don't say which account they belong to.** Rows of the default account carry no marker. Only rows of the other account get a small blue "· in ‹local part›" suffix after the sender, styled like a link. So whether a row is marked depends on which account is the default, not on anything the user picked. H1, H4; wrong-account risk. Daily, severity 3. *Hint: a symmetric marker on every row (colour chip or initial) once there are two or more accounts.*
+**A01. In All accounts, rows don't say which account they belong to.** Rows of the default account carry no marker. Only rows of the other account get a small blue "· in ‹local part›" suffix after the sender, styled like a link. So whether a row is marked depends on which account is the default, not on anything the user picked. H1, H4; wrong-account risk. Daily, severity 3. *Hint: a symmetric marker on every row (colour chip or initial) once there are two or more accounts.*
 
-**A02. All Inboxes has no row checkboxes or select-all.** The single-account view shows a checkbox on every row and in the toolbar; All Inboxes shows none. Bulk work there is mouse-invisible (shortcuts only). H4, H7. Daily, severity 3. *Hint: one list component for both views.*
+**A02. All accounts has no row checkboxes or select-all.** The single-account view shows a checkbox on every row and in the toolbar; All accounts shows none. Bulk work there is mouse-invisible (shortcuts only). H4, H7. Daily, severity 3. *Hint: one list component for both views.*
 
-**A03. All Inboxes doesn't mark unknown senders in the list.** The single-account Inbox shows the unknown-sender icon after the name; the same rows in All Inboxes show nothing. The banner does still appear inside the thread. H4, H1. Daily, severity 2.
+**A03. All accounts doesn't mark unknown senders in the list.** The single-account Inbox shows the unknown-sender icon after the name; the same rows in All accounts show nothing. The banner does still appear inside the thread. H4, H1. Daily, severity 2.
 
 **A04. Split-view rows are tall.** Each split-view row is three lines and 89px high, so about seven threads fit on an 855px screen; day headers take more space on top. Full width uses one line per row, which is much denser. There is no density setting. H7, H8. Daily, severity 2.
 
-**A05. Checkboxes eat the narrow list column.** In the single-account view, an always-visible checkbox takes about 30px from a list column of about 350px. Long sender names truncate earlier than in All Inboxes. H8. Daily, severity 1.
+**A05. Checkboxes eat the narrow list column.** In the single-account view, an always-visible checkbox takes about 30px from a list column of about 350px. Long sender names truncate earlier than in All accounts. H8. Daily, severity 1.
 
 **A06. Sparse folders turn into a stack of day headers.** Every day group gets a 48px header with its own checkbox and collapse chevron. In Trash and Junk, most headers sit over a single row. H8. Weekly, severity 1.
 
@@ -76,19 +76,19 @@
 
 **A28. Thread and list show different time formats.** The thread shows relative time ("5 hours ago") while the list shows clock time for the same message. H4. Daily, severity 1.
 
-**A29. The receiving account is invisible in an All Inboxes thread.** The header shows "to ‹alias›", but nothing says which of the user's accounts got the mail. That matters when it came through a group alias, and the reply's From isn't visible until the composer opens. H1; wrong-account risk. Daily, severity 3.
+**A29. The receiving account is invisible in an All accounts thread.** The header shows "to ‹alias›", but nothing says which of the user's accounts got the mail. That matters when it came through a group alias, and the reply's From isn't visible until the composer opens. H1; wrong-account risk. Daily, severity 3.
 
 **A30. Unsubscribe isn't surfaced.** For newsletters, the only way out is the sender's link in the footer. H7. Weekly, severity 2 (feature gap already listed in the map).
 
 **A31. The images banner only shows them once.** The hidden-images banner offers "Show" for this time only. There's no "always for this sender" except by answering Yes on the unknown-sender banner, which only exists for unknown senders. H7. Weekly, severity 1.
 
-**A32. The tab title differs between views.** The browser tab shows the subject in the single-account view but just "Mail" for the same thread opened from All Inboxes. H4. Rare, severity 1.
+**A32. The tab title differs between views.** The browser tab shows the subject in the single-account view but just "Mail" for the same thread opened from All accounts. H4. Rare, severity 1.
 
 **A33. View in Desk shows up in an end-user menu.** For admins, "View in Desk" appears in the message menu, a Frappe admin term (code: shown to System Managers). H2, H8. Rare, severity 1.
 
 ## Unknown senders
 
-**A34. The unknown-sender marker is a faint 12px icon.** It sits after the sender name in grey, and its meaning only appears in a hover tooltip, so there's no way to learn it on touch. Full-width rows in All Inboxes show no marker at all (see A03). H6, H10. Daily, severity 2.
+**A34. The unknown-sender marker is a faint 12px icon.** It sits after the sender name in grey, and its meaning only appears in a hover tooltip, so there's no way to learn it on touch. Full-width rows in All accounts show no marker at all (see A03). H6, H10. Daily, severity 2.
 
 **A35. The banner's No doesn't say what it does.** "Do you want mail from ‹sender›?" with No and Yes. Per the code, No moves the whole thread, mail from known senders included, to Junk and refuses the sender, with an Undo toast. Yes also lets their images in for good. The banner states neither. H1, H5. Weekly, severity 3. *Hint: name the outcome on the button or a sub-line.*
 
@@ -108,7 +108,7 @@
 
 **A42. Recipient suggestions make picking the wrong address easy.** Suggestions show the name large and the address small and grey. The same person at two domains appears as two near-identical rows, and the list covers the Subject field. H5. Daily, severity 3.
 
-**A43. From doesn't stand out across accounts.** A new message from All Inboxes defaults From to the default account, shown as a grey chip like any other field. Nothing draws attention to it when several accounts exist. H1; wrong-account risk. Daily, severity 2.
+**A43. From doesn't stand out across accounts.** A new message from All accounts defaults From to the default account, shown as a grey chip like any other field. Nothing draws attention to it when several accounts exist. H1; wrong-account risk. Daily, severity 2.
 
 **A44. Discard sits next to Send and is styled inconsistently.** On desktop it's a neutral button of the same size with a trash icon, directly left of Send. On phone it's red inside the ⋮ sheet. Whether it confirms wasn't exercised. H5, H4. Daily, severity 2.
 
@@ -122,7 +122,7 @@
 
 ## Search
 
-**A49. Search doesn't show its scope.** The palette says only "Search" and doesn't state which account it covers. "Search across all accounts" is a toggle deep in advanced filters, off by default even from All Inboxes, so results can silently miss the other account. H1. Weekly, severity 2.
+**A49. Search doesn't show its scope.** The palette says only "Search" and doesn't state which account it covers. "Search across all accounts" is a toggle deep in advanced filters, off by default even from All accounts, so results can silently miss the other account. H1. Weekly, severity 2.
 
 **A50. Instant results don't show why they matched.** When the match is in the body, the result shows no highlight or snippet. H1. Weekly, severity 2.
 
@@ -236,13 +236,13 @@
 
 | # | ID | Finding | Sev | Freq |
 |---|----|---------|-----|------|
-| 1 | A01 | All Inboxes rows don't say which account they belong to | 3 | daily |
-| 2 | A29 | Thread in All Inboxes doesn't show the receiving account | 3 | daily |
+| 1 | A01 | All accounts rows don't say which account they belong to | 3 | daily |
+| 2 | A29 | Thread in All accounts doesn't show the receiving account | 3 | daily |
 | 3 | A22 | The only quick-reply icon is Reply All | 3 | daily |
 | 4 | A20 | Archive and Trash buried in the thread "…" menu | 3 | daily |
 | 5 | A42 | Recipient suggestions make the wrong address easy to pick | 3 | daily |
 | 6 | A27 | Wide HTML mail clipped (desktop) or panned (phone) | 3 | daily |
-| 7 | A02 | All Inboxes has no checkboxes or select-all | 3 | daily |
+| 7 | A02 | All accounts has no checkboxes or select-all | 3 | daily |
 | 8 | A35 | Unknown-sender "No" doesn't say it junks the thread | 3 | weekly |
 | 9 | A69 | Mail settings don't say which account they change | 3 | weekly |
 | 10 | A18 | Delete Now confirm doesn't say count or permanence | 3 | weekly |
@@ -256,7 +256,7 @@
 
 | Surface | Findings |
 |---------|----------|
-| Mailbox list and All Inboxes | 19 (A01–A19) |
+| Mailbox list and All accounts | 19 (A01–A19) |
 | Thread view | 14 (A20–A33) |
 | Unknown senders | 4 (A34–A37) |
 | Compose | 11 (A38–A48) |

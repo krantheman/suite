@@ -23,7 +23,7 @@ Facts from the code, `frontend/src/apps/mail/` (`M/` below). Admin screens are o
 
 ## Features
 
-- Present: scheduled send, undo send, undo last action, folders (colour, icon, auto-star, auto-read, per-folder push mute, sender auto-move), multiple accounts and All Inboxes, keyboard shortcuts (`ShortcutsModal.vue`), drag and drop, bulk actions, conversation threading, push notifications, attachment preview, remote image blocking, delivery tracking, unknown-sender screening, block sender, trust a domain, junk, star, mark unread from here, .eml download and MIME source, calendar RSVP, mailto links, dark-mode rendering, import and export.
+- Present: scheduled send, undo send, undo last action, folders (colour, icon, auto-star, auto-read, per-folder push mute, sender auto-move), multiple accounts and All accounts, keyboard shortcuts (`ShortcutsModal.vue`), drag and drop, bulk actions, conversation threading, push notifications, attachment preview, remote image blocking, delivery tracking, unknown-sender screening, block sender, trust a domain, junk, star, mark unread from here, .eml download and MIME source, calendar RSVP, mailto links, dark-mode rendering, import and export.
 - Partial: labels (a thread can be in several folders; no label UI), filters (raw Sieve plus folder sender rules), read receipts (seen in Outbox; can't be requested).
 - Backend only: categories (Primary, Promotions, Social, Updates, Forums, by headers).
 - Absent: snooze, templates, unsubscribe, print, reactions (picker mode unused), PGP/S-MIME, offline, several composers at once (#407).

@@ -291,10 +291,10 @@ Date: 2026-10-09. Answers [ticket 005](../tickets/005-github-issues-survey.md).
 
 **I24 You can't size the reading pane**
 - [suite#47](https://github.com/frappe/suite/issues/47) Allow resizing reading pane (open)
-- [suite#412](https://github.com/frappe/suite/issues/412) All Inboxes should support the split view
+- [suite#412](https://github.com/frappe/suite/issues/412) All accounts should support the split view
 - [mail#243](https://github.com/frappe/mail/issues/243) Store current view locally
 - [mail#470](https://github.com/frappe/mail/issues/470) Remove date separation other than Today
-- Still happens: **partly**. All Inboxes has the split view and date grouping is a setting, but no Mail component has a resize handle.
+- Still happens: **partly**. All accounts has the split view and date grouping is a setting, but no Mail component has a resize handle.
 - Frequency: daily, low severity.
 
 ### Fixed (kept so they aren't reported again)

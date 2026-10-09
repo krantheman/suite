@@ -25,7 +25,7 @@ Findings: [references/heuristic-audit.md](../references/heuristic-audit.md),
 frame, so touch-only behaviour was confirmed in code. Not exercised: the
 schedule-send picker and the arrow menu beside Yes.
 
-Most pressing: All Inboxes never says which account a row or open thread
+Most pressing: All accounts never says which account a row or open thread
 belongs to (A01, A29), and has no selection (A02); the only quick reply is
 Reply All (A22); Archive and Trash hide in menus on desktop (A20, A13);
 recipient suggestions make the wrong address easy to pick (A42); wide HTML

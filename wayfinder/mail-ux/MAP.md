@@ -12,7 +12,7 @@ and specified well enough to build as its own PR. Building happens outside
 this map, one PR per decision, and can start as soon as a ticket closes.
 
 Scope, decided 2026-10-09: everything an end user touches in Mail, on desktop
-and mobile web: the mailbox lists and All Inboxes, the thread view, compose,
+and mobile web: the mailbox lists and All accounts, the thread view, compose,
 search, the sidebar and folders, notifications, the unknown-sender flow,
 contacts as Mail uses them (picker and recipient suggestions), Outbox, and
 Mail settings.
@@ -50,8 +50,16 @@ Mail settings.
 
 ## Decisions so far
 
+- [Sent mail shows as unread](tickets/007-sent-mail-shows-unread.md): actions
+  like Mark as Unread un-read your own mail, and Sent shows a count; the 24 on
+  `ih` are old.
+
+- [Search inside attachments](tickets/009-search-inside-attachments.md):
+  text attachments are searched already; PDF and Office need extraction in
+  Stalwart; Suite shows no snippets.
+
 - [Heuristic audit of the running app](tickets/001-heuristic-audit.md): 95
-  findings; worst are no account shown in All Inboxes, Reply All as the only
+  findings; worst are no account shown in All accounts, Reply All as the only
   quick reply, Archive and Trash hidden on desktop, risky recipient picks.
 
 - [Feature gap survey](tickets/002-feature-gap-survey.md): 29 gaps; top are
