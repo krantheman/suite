@@ -42,12 +42,20 @@ Mail settings.
   chosen. Questions of look and feel get variants in the running app with a
   switcher panel; questions of behaviour or model get options laid out with
   their trade-offs, and a small demo where the behaviour is hard to picture.
+- **Process**, agreed 2026-10-12: two tracks in parallel. Deciding: one
+  ticket per session here, in the order below. Building: each closed ticket
+  is split into PR-sized slices, each built in its own session off `develop`
+  and opened as a PR to frappe/suite; the groups in fixes.md ship whenever.
+  Decisions don't wait on merges. Where a later ticket reshapes what an
+  earlier one builds on (Layout, hierarchy and use of space around the
+  category tabs), decide it before building.
 - Problems with an obvious fix skip the tickets and live in
   [fixes.md](fixes.md), grouped so each group ships as one PR.
 - **Order of work**, agreed 2026-10-09, overriding lowest-number-first:
   [A clean inbox](tickets/010-a-clean-inbox.md),
   [Finding a specific mail](tickets/011-finding-a-specific-mail.md),
   [Layout, hierarchy and use of space](tickets/012-layout-and-hierarchy.md),
+  [Clearing the Inbox quickly](tickets/037-clearing-the-inbox-quickly.md),
   [Your own mail and unread](tickets/015-your-own-mail-and-unread.md),
   [Forwards leave the conversation](tickets/006-forwards-leave-the-thread.md),
   [Who a reply goes to](tickets/016-reply-defaults.md),
@@ -59,6 +67,10 @@ Mail settings.
   [What Outbox is for](tickets/020-what-outbox-is-for.md),
   [Search opens the first result](tickets/008-search-opens-the-first-result.md),
   [Which signature is added](tickets/021-which-signature.md),
+  [Unsubscribing and the subscriptions you get](tickets/033-unsubscribe.md),
+  [Sorting mail without writing Sieve](tickets/035-rules-without-sieve.md),
+  [Mail you can't act on yet](tickets/036-mail-you-cant-act-on-yet.md),
+  [Muting a thread](tickets/034-mute-thread.md),
   [Templates and snippets](tickets/022-templates.md),
   [Shared inboxes and delegation](tickets/023-shared-inboxes.md),
   [Notifications for the mail you care about](tickets/024-notifications.md),
@@ -109,9 +121,15 @@ Mail settings.
 - [Mail problems reported on GitHub](tickets/005-github-issues-survey.md): 134
   issues in 29 problem groups; worst are rows misdescribing threads, verdicts
   not reaching old mail, late updates, drafts losing work.
+- [A clean inbox](tickets/010-a-clean-inbox.md): bulk mail goes to category
+  tabs between the header and the toolbar, picked per person and switchable
+  in place; misfiles are fixed per sender; a tab clears in one click;
+  unsubscribe, mute, rules, snooze and quick clearing graduated.
 
 ## Not yet specified
 
+- Bundling bursts of similar mail (I04), once category tabs exist: what is
+  left in Primary or a tab that a burst still buries.
 - Phone-specific flows beyond what the audit found: gestures, the bottom
   nav's space, and whether the phone list should differ from the desktop's.
 

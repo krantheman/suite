@@ -14,3 +14,9 @@ per-thread rules, no quiet hours; the rail dot disagrees with an empty
 Notifications panel; the push switch lives only in Mail settings; a tap may
 open the wrong place. Decide what notifies, how a user tunes it, and where
 those controls live. Inputs: C37 in [merged problems](../references/merged-problems.md) (G22, G29, A59, A61, I22).
+
+## Inputs from other tickets
+
+- [A clean inbox](010-a-clean-inbox.md) splits the Inbox into category tabs
+  the person picks. Likely default to weigh: only Primary notifies; mail in
+  Updates, Forums, Promotions and Social does not.
