@@ -131,6 +131,9 @@ Mail settings.
 
 - Bundling bursts of similar mail (I04), once category tabs exist: what is
   left in Primary or a tab that a burst still buries.
+- Whether people miss a single "All mail" view once the Inbox has category
+  tabs (Apple Mail added one after complaints); left out of
+  [A clean inbox](tickets/010-a-clean-inbox.md) for now.
 - Phone-specific flows beyond what the audit found: gestures, the bottom
   nav's space, and whether the phone list should differ from the desktop's.
 

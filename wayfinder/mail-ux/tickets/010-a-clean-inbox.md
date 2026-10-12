@@ -61,8 +61,11 @@ visible at every width.
 - **Counts:** unread threads, as frappe-ui's default `Badge`, on every tab
   but Primary. The sidebar's Inbox count and the page title count Primary.
 - **Which tabs:** the person picks, per person (User Settings, beside the
-  layout preferences), for every account and All accounts. Default Primary,
-  Updates, Forums, Promotions; Social off. A category turned off flows back
+  layout preferences), for every account and All accounts. Default: all
+  five, Primary, Updates, Forums, Promotions, Social (Social was off until
+  2026-10-12; on, so a message moved to Social lands in a tab). No "All
+  mail" tab: it would undo the split, and the plain Inbox is every category
+  turned off. A category turned off flows back
   into Primary; every category off is the plain Inbox, with no tab row. Set
   in Mail settings, and in place: an icon button at the right end of the tab
   row opens a menu with a switch per category (Primary has none).
