@@ -14,8 +14,8 @@ _Avoid_: All Inboxes, Unified inbox, Combined inbox
 **Category**:
 A kind of mail the Inbox is split into by what it is: Primary, Updates,
 Forums, Promotions or Social. Each person picks which categories get a tab of
-their own; mail of a category without one stays in Primary. A person can put
-a sender in a category, and that sender's mail, old and new, follows.
+their own; mail of a category without one stays in Primary. A person can move
+a message to another category, and keep that sender's future mail there.
 _Avoid_: Label, Bundle, Smart folder, Tab (the tab is how a category shows)
 
 **Primary**:

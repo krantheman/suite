@@ -123,7 +123,8 @@ Mail settings.
   not reaching old mail, late updates, drafts losing work.
 - [A clean inbox](tickets/010-a-clean-inbox.md): bulk mail goes to category
   tabs between the header and the toolbar, picked per person and switchable
-  in place; misfiles are fixed per sender; a tab clears in one click;
+  in place; a misfiled message is moved, with its sender offered; a tab
+  clears in one click;
   unsubscribe, mute, rules, snooze and quick clearing graduated.
 
 ## Not yet specified

@@ -69,11 +69,17 @@ visible at every width.
 - **Primary** is the Inbox's mail in none of the person's turned-on
   categories, so mail not classified yet, and mail of a category turned off,
   is in Primary.
-- **Fixing a misfile is per sender** (exact address): "Move this sender to
-  Updates" from the thread menu, the row menu, or by dragging a row onto a
-  tab, with Undo. It moves the sender's existing mail and all future mail
-  (I19: a sender decision must reach mail already received). The person's
-  sender choices are consulted before the header rules.
+- **Fixing a misfile is per message, with the sender offered:** "Move to
+  Category" in a message's menu moves it, and the toast after offers "Always
+  for This Sender", which keeps that sender's future mail in that category.
+  Moving one message says nothing about the next, so remembering the sender
+  is offered rather than assumed. The menu offers all five categories.
+  Sender rules name an address or a domain, and come from the account (the
+  user's), the site (an admin's) or the app (defaults synced on migrate,
+  which a site may switch off); the nearest wins, and they outrank the
+  header rules. This is Sagar's design on
+  `s-aga-r/feat/mail-classification-rules`, kept on 2026-10-12 over an
+  earlier pick here (a per-sender move reaching existing mail too).
 - **Clearing a tab:** every tab but Primary has a one-click "Mark all read",
   and "Archive all" in its menu, so a skimmed tab clears in a click and its
   count means "new since I last looked". Both act on the whole category on
@@ -87,9 +93,10 @@ headers only; a JMAP keyword `category_<name>` per message; the site-wide
 `enable_email_classification` stays as the admin's off switch). Needed:
 a category filter and per-category unread counts on the thread routes (one
 batch of collapsed `Email/query` totals); the person's tab choice in User
-Settings; a per-person store of sender choices, applied at classification
-and, when set, re-keying that sender's mail in each of the person's
-accounts; bulk mark-read and archive by category; and classification of
+Settings; the sender rules and per-message move of
+`s-aga-r/feat/mail-classification-rules`, ported onto the HTTP contract and
+with the move refetching the tab counts; bulk mark-read and archive by
+category; and classification of
 newly arrived mail before it is first listed, so counts are right.
 
 **Graduated.**
