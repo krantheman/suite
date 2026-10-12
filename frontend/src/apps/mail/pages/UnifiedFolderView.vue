@@ -43,6 +43,7 @@
             :tabs="inboxTabs"
             :active="inboxTab"
             :route-for="routeForTab"
+            :clear-target="{ folder }"
           />
 
           <MailListToolbar
@@ -52,7 +53,14 @@
             :fetching="isFetching"
             :loading="threads.isFetching"
             @refresh="refreshThreads()"
-          />
+          >
+            <template v-if="clearableTab && protoPlacement === 'toolbar'" #actions>
+              <TabClearActions :category="clearableTab" :target="{ folder }" />
+            </template>
+            <template v-if="clearableTab && protoPlacement === 'toolbar'" #mobile-actions>
+              <TabClearActions :category="clearableTab" :target="{ folder }" />
+            </template>
+          </MailListToolbar>
 
           <!-- Mail list -->
           <div ref="mailList" class="h-full overflow-y-auto overscroll-contain max-sm:pb-20">
@@ -184,6 +192,9 @@
   </div>
 
   <Dialog v-model:open="showDelete" v-bind="deleteOptions" />
+
+  <!-- PROTOTYPE: where the menu that clears a tab sits -->
+  <ClearMenuTweaks v-if="inboxTab" />
 </template>
 
 <script setup lang="ts">
@@ -202,12 +213,15 @@ import MailListToolbar from '@/apps/mail/components/MailListToolbar.vue'
 import MailThread from '@/apps/mail/components/MailThread.vue'
 import MobileTitleHeader from '@/apps/mail/components/mobile/MobileTitleHeader.vue'
 import StackListItem from '@/apps/mail/components/StackListItem.vue'
+import TabClearActions from '@/apps/mail/components/TabClearActions.vue'
 import ThreadPane from '@/apps/mail/components/ThreadPane.vue'
 import { closeComposeWindowFor } from '@/apps/mail/composables/useComposeWindow'
 import { useInboxTabs } from '@/apps/mail/composables/useInboxTabs'
 import { useListRows } from '@/apps/mail/composables/useListRows'
 import { useMailRemoval } from '@/apps/mail/composables/useMailRemoval'
 import { PAGE_LENGTH, usePaginatedThreads } from '@/apps/mail/composables/usePaginatedThreads'
+import { placement as protoPlacement } from '@/apps/mail/prototype/clearMenuPlacement'
+import ClearMenuTweaks from '@/apps/mail/prototype/ClearMenuTweaks.vue'
 import { userStore } from '@/apps/mail/stores/user'
 import type { Mail, Mailbox, MailboxData, Thread, UnifiedFolder } from '@/apps/mail/types'
 import {
@@ -335,6 +349,10 @@ const openTabLabel = computed(
 // Once the Inbox is showing, its tabs stay up while another tab loads: the list loads inline rather
 // than the whole view giving way to the spinner.
 const tabSwitched = ref(false)
+// The open tab, when it can be cleared in one go: any but Primary.
+const clearableTab = computed(() =>
+  inboxTab.value && inboxTab.value !== 'primary' ? inboxTab.value : undefined,
+)
 watch(inboxTab, (tab, previous) => {
   tabSwitched.value = !!(tab && previous && tab !== previous)
   if (tabSwitched.value) resetThreads()

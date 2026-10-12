@@ -88,6 +88,7 @@
               :tabs="inboxTabs"
               :active="inboxTab"
               :route-for="routeForTab"
+              :clear-target="{ account: accountId, mailbox }"
             />
 
             <!-- Both toolbar variants share h-12 so toggling selection mode doesn't shift the list. -->
@@ -117,7 +118,14 @@
               v-else-if="mailbox !== 'search'"
               :title="title"
               :filter-options="FILTER_OPTIONS"
-            />
+            >
+              <template v-if="clearableTab && protoPlacement === 'toolbar'" #mobile-actions>
+                <TabClearActions
+                  :category="clearableTab"
+                  :target="{ account: accountId, mailbox }"
+                />
+              </template>
+            </MailListToolbar>
 
             <!-- Loading bar -->
             <LoadingBar v-if="activeThreads.isFetching" />
@@ -128,6 +136,7 @@
             :tabs="inboxTabs"
             :active="inboxTab"
             :route-for="routeForTab"
+            :clear-target="{ account: accountId, mailbox }"
           />
 
           <!-- Toolbar/Actions -->
@@ -159,6 +168,11 @@
             </template>
 
             <template #actions>
+              <TabClearActions
+                v-if="clearableTab && !selections.length && protoPlacement === 'toolbar'"
+                :category="clearableTab"
+                :target="{ account: accountId, mailbox }"
+              />
               <template v-if="selections.length">
                 <Dropdown v-if="showReadingPane" :options="selectActions">
                   <Button variant="ghost" :tooltip="__('Actions')">
@@ -427,6 +441,9 @@
       />
     </div>
   </Teleport>
+
+  <!-- PROTOTYPE: where the menu that clears a tab sits -->
+  <ClearMenuTweaks v-if="inboxTab" />
 </template>
 <script setup lang="ts">
 import {
@@ -471,12 +488,15 @@ import MailThread from '@/apps/mail/components/MailThread.vue'
 import MobileTitleHeader from '@/apps/mail/components/mobile/MobileTitleHeader.vue'
 import SearchResultsHeader from '@/apps/mail/components/SearchResultsHeader.vue'
 import StackListItem from '@/apps/mail/components/StackListItem.vue'
+import TabClearActions from '@/apps/mail/components/TabClearActions.vue'
 import ThreadPane from '@/apps/mail/components/ThreadPane.vue'
 import { useInboxTabs } from '@/apps/mail/composables/useInboxTabs'
 import { useListRows, type NavRow } from '@/apps/mail/composables/useListRows'
 import { PAGE_LENGTH, usePaginatedThreads } from '@/apps/mail/composables/usePaginatedThreads'
 import { useScreener } from '@/apps/mail/composables/useScreener'
 import { useThreadDrag } from '@/apps/mail/composables/useThreadDrag'
+import { placement as protoPlacement } from '@/apps/mail/prototype/clearMenuPlacement'
+import ClearMenuTweaks from '@/apps/mail/prototype/ClearMenuTweaks.vue'
 import { userStore, type MailboxRole } from '@/apps/mail/stores/user'
 import type { Thread } from '@/apps/mail/types'
 import {
@@ -1064,6 +1084,10 @@ const {
 // Once the Inbox is showing, its tabs stay up while another tab loads: the list loads inline, as a
 // search does, rather than the whole view giving way to the spinner.
 const tabSwitched = ref(false)
+// The open tab, when it can be cleared in one go: any but Primary.
+const clearableTab = computed(() =>
+  inboxTab.value && inboxTab.value !== 'primary' ? inboxTab.value : undefined,
+)
 watch(inboxTab, (tab, previous) => {
   tabSwitched.value = !!(tab && previous && tab !== previous)
   if (tabSwitched.value) resetThreads(false)
@@ -1119,6 +1143,9 @@ const isLoading = computed(() => {
   if (!isMailboxLoaded.value) return true
   if (emptyMailbox.isPending) return true
   if (refillPending.value) return true
+  // A split Inbox keeps its tabs up while an emptied tab refills (an Undo, a refresh): the list loads
+  // inline rather than the whole view giving way to the spinner.
+  if (inboxTab.value) return false
   return !threadRows.value.length && activeThreads.value.isFetching
 })
 

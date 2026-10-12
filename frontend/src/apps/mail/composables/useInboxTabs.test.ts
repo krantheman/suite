@@ -31,9 +31,21 @@ vi.mock('@/api', () => ({
     },
   },
 }))
-vi.mock('@/apps/mail/utils', () => ({ raiseToast: (message: string) => toasts.push(message) }))
+vi.mock('@/apps/mail/utils', () => ({
+  raiseToast: (message: string) => toasts.push(message),
+  raiseOptimisticToast: async (done: Promise<unknown>, message: string) => {
+    await done
+    toasts.push(message)
+  },
+}))
+// Mail's one undo slot, as the toast's Undo and Cmd/Ctrl+Z both reach it.
+const undoSlot = vi.hoisted(() => ({ action: undefined as (() => unknown) | undefined }))
 vi.mock('@/apps/mail/utils/composables', () => ({
   useSettings: () => ({ openSettings: () => {} }),
+  useUndo: () => ({
+    setUndoAction: (action?: () => unknown) => (undoSlot.action = action),
+    undo: () => undoSlot.action?.(),
+  }),
 }))
 
 const INBOX = { name: 'mail-mailbox', params: { accountId: 'ih', mailbox: 'inbox' } }
@@ -135,13 +147,17 @@ describe('the Inbox tabs', () => {
     expect(toasts).toEqual([])
   })
 
-  it('turn off altogether, saying how to get them back', async () => {
+  it('turn off altogether, saying how to get them back, and Undo turns them on again', async () => {
     const { setSplit } = useTabChoice()
 
     await setSplit(false)
-
     expect(saved).toEqual([{ split_inbox: 0 }])
-    expect(toasts).toEqual(['Categories are off.'])
+    expect(toasts).toEqual(['Categories turned off.'])
+
+    // What the toast's Undo and Cmd/Ctrl+Z both run.
+    await undoSlot.action?.()
+    expect(saved).toEqual([{ split_inbox: 0 }, { split_inbox: 1 }])
+    expect(toasts).toEqual(['Categories turned off.', 'Categories turned on.'])
   })
 
   it('build each switch on the last, while the earlier saves are still on their way', async () => {

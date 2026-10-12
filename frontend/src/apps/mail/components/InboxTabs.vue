@@ -74,35 +74,79 @@
                 'after:transition-opacity after:duration-300 motion-reduce:after:transition-none',
             ]"
           >
-            <span class="flex min-w-0 items-center">
-              <span :class="[tab.icon, 'size-4 shrink-0']" aria-hidden="true" />
-              <!-- A grid column eases between nothing and the name's own width. -->
-              <span
-                class="grid min-w-0"
-                :class="[
-                  iconOnly(tab)
-                    ? 'ml-0 grid-cols-[0fr] opacity-0'
-                    : 'ml-2 grid-cols-[1fr] opacity-100',
-                  animated &&
-                    'transition-[grid-template-columns,margin,opacity] duration-300 ease-in-out motion-reduce:transition-none',
-                ]"
-              >
-                <!-- Clipped, not ellipsed, while it opens or closes: an ellipsis is for a name that
-                     won't fit, not one still growing. -->
+            <!-- PROTOTYPE (clear-menu placement "Right-click"): a tab other than Primary opens its clear
+                   menu on right-click or long-press. -->
+            <component
+              :is="protoPlacement === 'context' && clearable(tab) ? ContextMenu : Passthrough"
+              v-bind="
+                protoPlacement === 'context' && clearable(tab)
+                  ? { options: clearMenu(tab.category) }
+                  : {}
+              "
+            >
+              <span class="flex min-w-0 items-center">
+                <span :class="[tab.icon, 'size-4 shrink-0']" aria-hidden="true" />
+                <!-- A grid column eases between nothing and the name's own width. -->
                 <span
-                  class="min-w-0 overflow-hidden whitespace-nowrap"
-                  :class="settling ? 'text-clip' : 'text-ellipsis'"
+                  class="grid min-w-0"
+                  :class="[
+                    iconOnly(tab)
+                      ? 'ml-0 grid-cols-[0fr] opacity-0'
+                      : 'ml-2 grid-cols-[1fr] opacity-100',
+                    animated &&
+                      'transition-[grid-template-columns,margin,opacity] duration-300 ease-in-out motion-reduce:transition-none',
+                  ]"
                 >
-                  {{ tab.label }}
+                  <!-- Clipped, not ellipsed, while it opens or closes: an ellipsis is for a name that
+                     won't fit, not one still growing. -->
+                  <span
+                    class="min-w-0 overflow-hidden whitespace-nowrap"
+                    :class="settling ? 'text-clip' : 'text-ellipsis'"
+                  >
+                    {{ tab.label }}
+                  </span>
+                </span>
+                <Badge v-if="countShown(tab)" size="sm" class="ml-2 shrink-0">{{
+                  tab.unread
+                }}</Badge>
+                <!-- PROTOTYPE (clear-menu placement "On tab"): the open tab carries its clear menu. -->
+                <span
+                  v-if="protoPlacement === 'tab' && clearable(tab) && tab.category === active"
+                  class="ml-0.5 flex shrink-0 items-center"
+                  @click.stop.prevent
+                >
+                  <Dropdown :options="clearMenu(tab.category)">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      :tooltip="__('Clear {0}', [tab.label])"
+                      :aria-label="__('Clear {0}', [tab.label])"
+                    >
+                      <template #icon>
+                        <span class="lucide-chevron-down icon" aria-hidden="true" />
+                      </template>
+                    </Button>
+                  </Dropdown>
                 </span>
               </span>
-              <Badge v-if="countShown(tab)" size="sm" class="ml-2 shrink-0">{{ tab.unread }}</Badge>
-            </span>
+            </component>
           </TabTrigger>
         </Tooltip>
         <!-- Which categories get a tab, and categories off altogether, in place (as in Mail settings). -->
         <!-- Pulled out by as much as the toolbar's own buttons, so it lines up with Refresh below. -->
-        <div class="-mr-1.5 ml-auto flex shrink-0 items-center pl-2">
+        <div class="-mr-1.5 ml-auto flex shrink-0 items-center gap-1 pl-2">
+          <!-- PROTOTYPE (clear-menu placement "Row end"): the open tab's clear menu at the row's end. -->
+          <Dropdown
+            v-if="protoPlacement === 'row' && clearTarget && active !== 'primary'"
+            :options="clearMenu(active)"
+            align="end"
+          >
+            <Button variant="ghost" :tooltip="__('More')" :aria-label="__('More')">
+              <template #icon>
+                <span class="lucide-ellipsis icon" aria-hidden="true" />
+              </template>
+            </Button>
+          </Dropdown>
           <Dropdown :options="choiceMenu" align="end">
             <!-- Drawn as the toolbar's Refresh is, with Mail's .icon, so the two match. -->
             <Button
@@ -123,21 +167,26 @@
 
 <script setup lang="ts">
 import { useElementSize } from '@vueuse/core'
-import { Badge, Button, Dropdown, TabList, Tabs, TabTrigger, Tooltip } from 'frappe-ui'
-import { computed, onMounted, ref, useTemplateRef, watch } from 'vue'
+import { Badge, Button, ContextMenu, Dropdown, TabList, Tabs, TabTrigger, Tooltip } from 'frappe-ui'
+import { computed, onMounted, ref, useTemplateRef, watch, type FunctionalComponent } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 
 import {
   useTabChoice,
+  useTabClearMenu,
+  type ClearTarget,
   type InboxCategory,
   type InboxTab,
 } from '@/apps/mail/composables/useInboxTabs'
+import { placement as protoPlacement } from '@/apps/mail/prototype/clearMenuPlacement'
 import { useScreenSize } from '@/apps/mail/utils/composables'
 
-const { tabs, active, routeFor } = defineProps<{
+const { tabs, active, routeFor, clearTarget } = defineProps<{
   tabs: InboxTab[]
   active: InboxCategory
   routeFor: (category: InboxCategory) => RouteLocationRaw
+  /** PROTOTYPE: what the tabs' clear menu acts on, for the placements in the tab row. */
+  clearTarget?: ClearTarget
 }>()
 
 const { isMobile } = useScreenSize()
@@ -230,4 +279,9 @@ const choiceMenu = computed(() => {
 
 // Primary's unread is the Inbox's own, counted beside it in the sidebar.
 const countShown = (tab: InboxTab) => tab.category !== 'primary' && tab.unread > 0
+
+// PROTOTYPE: the clear menu, for the placements in the tab row (see prototype/clearMenuPlacement).
+const clearMenu = useTabClearMenu(() => clearTarget!)
+const clearable = (tab: InboxTab) => !!clearTarget && tab.category !== 'primary'
+const Passthrough: FunctionalComponent = (_, { slots }) => slots.default?.()
 </script>

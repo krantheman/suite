@@ -13,6 +13,8 @@
         <ChevronDown class="text-ink-gray-5 h-4 w-4 shrink-0" />
       </button>
     </AdaptiveDropdown>
+    <!-- Actions on the list as a whole, such as clearing an Inbox tab. -->
+    <div class="-mr-1.5 ml-auto flex items-center"><slot name="mobile-actions" /></div>
     <LoadingBar v-if="loading" />
   </div>
 
