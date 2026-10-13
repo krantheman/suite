@@ -55,6 +55,7 @@ Mail settings.
   [A clean inbox](tickets/010-a-clean-inbox.md),
   [Finding a specific mail](tickets/011-finding-a-specific-mail.md),
   [Layout, hierarchy and use of space](tickets/012-layout-and-hierarchy.md),
+  [Layout of the thread, compose and sidebar](tickets/038-thread-compose-and-sidebar-layout.md),
   [Clearing the Inbox quickly](tickets/037-clearing-the-inbox-quickly.md),
   [Your own mail and unread](tickets/015-your-own-mail-and-unread.md),
   [Forwards leave the conversation](tickets/006-forwards-leave-the-thread.md),
@@ -126,6 +127,11 @@ Mail settings.
   in place; a misfiled message is moved, with its sender offered; a tab
   clears in one click;
   unsubscribe, mute, rules, snooze and quick clearing graduated.
+- [Layout, hierarchy and use of space](tickets/012-layout-and-hierarchy.md),
+  for the list: tabs in the title bar for a split Inbox, filter pills that
+  fold into one selector, quiet 36px date headers grouped by day, week and
+  month, a View menu beside Compose, tighter rows; the thread, compose and
+  sidebar moved to their own ticket.
 
 ## Not yet specified
 

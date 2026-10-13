@@ -46,7 +46,9 @@ not sectioned, not sidebar entries, and never folded into a menu: the counts
 on the tabs are what make moving mail out of Primary safe, so the tabs stay
 visible at every width.
 
-- **Where:** the Inbox only (each account's and All accounts'). A row of its
+- **Where** (the tab row and Primary's count were since reworked by
+  [Layout, hierarchy and use of space](012-layout-and-hierarchy.md): the
+  tabs now stand in the title bar, and Primary counts too): the Inbox only (each account's and All accounts'). A row of its
   own between the header (folder name) and the toolbar (select all, filter,
   refresh), so scope reads before the controls that act on it. Ruled out:
   tabs in the header in place of or after the name, a header made of tabs in
