@@ -47,6 +47,10 @@ the Folders tick menu adds or takes away one folder, Trash gets rid of it.
 | Out of Trash to X | Goes to X | Goes to X and back to Sent | — |
 | Unarchive (proposed, 037) | Archive → Inbox, other folders kept | Stays in Sent | Stays in Drafts |
 
+Archived from Junk or Trash, received mail leaves those too and loses the junk
+mark — found in review of the build (frappe/suite#1013): otherwise it gained
+Archive and stayed hidden where it was.
+
 The decisions, in the order they were made (some replaced earlier ones the
 same day, as noted):
 
