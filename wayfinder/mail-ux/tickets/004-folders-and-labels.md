@@ -62,6 +62,14 @@ From [merged problems](../references/merged-problems.md) (ticket 003):
   is moved out of Drafts. (This replaced, the same day, rules under which
   Move left only the folder you were in, and from Starred or Search left only
   Inbox and otherwise just added the target.)
+- 2026-10-15, the user: **Trash takes the whole conversation, your own mail
+  included, from any view.** It isn't filing but getting rid of something, so
+  unlike Archive and Move it takes your sent replies out of Sent too: trashing
+  from Sent trashes your sent mail, and trashing from Inbox takes your replies
+  with the rest. As today (`movesAll` sends every message to Trash). Drafts
+  are the exception: there it is Discard, deleted for good behind an Undo. A
+  conversation taken back out of Trash should land each message where it was,
+  Sent included; check that when building.
 - 2026-10-15, the user: **drag is a plain Move.** Dropping a conversation on a
   folder follows the Move rule; no modifier files it as well. The Folders tick
   menu is the only way to file it in several.
