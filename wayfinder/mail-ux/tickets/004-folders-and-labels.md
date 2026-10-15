@@ -48,13 +48,13 @@ From [merged problems](../references/merged-problems.md) (ticket 003):
   when the conversation holds received mail; a conversation of nothing but
   your own sent mail has nothing to archive.
 - 2026-10-15, the user: **Move, from a folder, takes a mail out of the folder
-  you're in, not every folder.** From Inbox, a category tab, Archive or a
-  folder of your own, the conversation's messages in that folder leave it for
+  you're in, not every folder.** From Inbox (All Inboxes being each account's
+  Inbox), a category tab, Archive or a folder of your own, the conversation's messages in that folder leave it for
   the target, and every other folder they're in is kept. Today a move replaces
   every folder (`move_messages_to_mailbox`, `replace_mailboxes=True`), which
   loses the other filings; that changes.
 - 2026-10-15, the user: **Move, from a view that isn't a folder, puts the mail
-  in the target and only there.** From Starred, Search, Sent or All Inboxes,
+  in the target and only there.** From Starred, Search or Sent,
   where you can't see where a mail is filed, it leaves Inbox, Archive and every
   folder of yours for the target. Sent and Drafts are never left: your own
   mail stays there. A mail deliberately filed in two folders loses the other;
