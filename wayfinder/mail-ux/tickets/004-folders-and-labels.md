@@ -47,7 +47,9 @@ From [merged problems](../references/merged-problems.md) (ticket 003):
 - 2026-10-15, the user: **a draft is stored only in Drafts, and is seen
   wherever its conversation is.** Archive and Move never take a draft out of
   Drafts. Drafts offers only Discard (and Send from the editor); Archive, Junk,
-  Move, Folders and Mark as unread go there. A reply draft still shows in its
+  Move, Folders, Star and Mark as unread go there — today Archive shows on a
+  draft's row, in its toolbar and on E, and files the draft out of Drafts. A
+  conversation's star elsewhere still works; it stars the mail received. A reply draft still shows in its
   conversation and on the conversation's row in Inbox, Archive or any folder,
   as it does today, since a conversation is drawn from every folder its
   messages are in.
