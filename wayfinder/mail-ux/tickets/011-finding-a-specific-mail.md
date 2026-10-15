@@ -35,3 +35,22 @@ From [merged problems](../references/merged-problems.md) (ticket 003):
   [Folders, labels, or both](004-folders-and-labels.md) builds on: actions on
   a result act on the whole conversation. Left to decide here is how a
   conversation row shows which of its messages matched.
+
+## Decisions so far
+
+- 2026-10-15, the user: **search rows are conversations**, one row each, as
+  [Folders, labels, or both](004-folders-and-labels.md) decided (actions on a
+  result act on the whole conversation). How such a row reads:
+  - **It describes the newest matching message**: sender, date and snippet
+    come from it, so the snippet holds the highlighted words and the date is
+    when the match happened. Not the conversation's newest message, whose
+    snippet may not contain the search at all.
+  - **Its count is the conversation's message count**, the same grey number
+    the list shows. A count of matching messages was weighed and turned down:
+    the same-looking number would have meant something else here.
+  - **Opening it lands on the newest matching message**, unfolded, with the
+    search words highlighted in its body; the rest fold as usual. As opening
+    a thread from Drafts lands on the draft.
+  - **Its folder tags say where the received mail is** (Inbox, Archive, a
+    folder of yours): up to two, then "+N". Sent is left out unless the
+    conversation is only your own sent mail, where it is the one answer.
