@@ -144,3 +144,12 @@ messages is, whichever folders they are stored in.
   is done; come back to it then. The sidebar needs nothing new here: its
   layout was settled in
   [Layout of the thread, compose and sidebar](038-thread-compose-and-sidebar-layout.md).
+
+- **Deleting a folder that still has mail in it.** Today it destroys the mail
+  that is only in that folder (`delete_mailboxes`,
+  `onDestroyRemoveEmails=True`): not to Trash, no Undo. Mail also filed
+  elsewhere just loses the folder, so the dialog's "Mails in this folder will
+  be permanently removed" overstates it; your sent mail is always kept in
+  Sent. Proposed: move mail that's only in the folder to Archive, reword the
+  dialog ("Its mail moves to Archive"), and leave emptying it into Trash first
+  for anyone who wants the mail gone. Left for later by the user, 2026-10-15.
