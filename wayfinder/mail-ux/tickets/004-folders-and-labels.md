@@ -31,6 +31,8 @@ messages is, whichever folders they are stored in.
 | Archive | Inbox → Archive (Archive added if not in Inbox) | Stays in Sent | Stays in Drafts |
 | Move to X | Leaves everywhere, goes to X | Goes to X, keeps Sent | Stays in Drafts |
 | Folders ticks | Adds or removes one folder | Adds or removes one folder; Sent stays | Not offered |
+| Junk | Leaves every folder for Junk, marked junk | Stays in Sent | Stays in Drafts |
+| Not junk | Junk → Inbox, junk mark cleared | Untouched | Untouched |
 | Trash | Goes to Trash | Goes to Trash | Discarded |
 | Out of Trash to X | Goes to X | Goes to X and back to Sent | — |
 
@@ -93,6 +95,16 @@ messages is, whichever folders they are stored in.
   folder, received mail goes there and your sent mail goes there and back into
   Sent, as any Move. Left in Trash, it goes for good after 30 days or on
   Delete forever.
+- 2026-10-15, the user: **Junk takes only the mail you received.** It leaves
+  every folder for Junk and is marked junk (training the filter, and the
+  block-sender prompt where the account asks for it, as today); your sent mail
+  stays in Sent and a reply draft in Drafts. Not junk puts the received mail
+  back in Inbox and clears the mark; your own mail, never moved, needs nothing.
+  Undo right away restores every message exactly. In Sent, Junk is offered
+  only when the conversation holds received mail; Drafts never offers it.
+  Today both directions take every message (`set_spam_status`,
+  `replace_mailboxes=True`): Junk files your sent replies in Junk, and Not
+  junk puts them in Inbox rather than Sent.
 - 2026-10-15, the user: **drag is a plain Move.** Dropping a conversation on a
   folder follows the Move rule; no modifier files it as well. The Folders tick
   menu is the only way to file it in several.
