@@ -122,7 +122,9 @@ messages is, whichever folders they are stored in.
   applies them to that message alone: a sent message keeps Sent, a draft stays
   in Drafts, Trash takes it whatever it is. Moving a conversation back to
   Inbox (Move To → Inbox) is the Move rule too: it leaves Archive and every
-  folder of yours.
+  folder of yours. Unarchive, proposed for Archive's toolbar in
+  [Clearing the Inbox quickly](037-clearing-the-inbox-quickly.md), is Archive
+  reversed instead: Archive → Inbox, every other folder kept.
 - 2026-10-15, the user: **drag is a plain Move.** Dropping a conversation on a
   folder follows the Move rule; no modifier files it as well. The Folders tick
   menu is the only way to file it in several.

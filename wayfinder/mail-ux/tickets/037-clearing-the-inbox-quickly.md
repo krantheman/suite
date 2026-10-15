@@ -32,10 +32,13 @@ Source: graduated from [A clean inbox](010-a-clean-inbox.md).
 
 - **A one-click way back to Inbox from Archive** (the user, 2026-10-15). In
   Archive the Archive button is hidden, the mail being there already; that
-  place could hold "Move to Inbox", the one common action on archived mail.
-  Today it takes Move To → Inbox. It is a plain Move under
-  [Folders, labels, or both](004-folders-and-labels.md), so it needs no rule
-  of its own.
+  place could hold Unarchive, the one common action on archived mail. It is
+  Archive reversed, not a Move: it swaps Archive for Inbox on the mail you
+  received and leaves every other folder (and your sent mail) as it was, so
+  archiving and unarchiving round-trips. Named Unarchive rather than "Move to
+  Inbox", since Move To → Inbox stays a plain Move that leaves every folder
+  (see [Folders, labels, or both](004-folders-and-labels.md)). Today it takes
+  Move To → Inbox.
 
 - The stack row and its opened threads as of 2026-10-15
   (`StackListItem.vue`), from the user.
