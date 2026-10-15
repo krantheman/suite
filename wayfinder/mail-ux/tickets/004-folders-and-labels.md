@@ -29,45 +29,41 @@ From [merged problems](../references/merged-problems.md) (ticket 003):
   were changed to say folder on fix/thread-view.
 - 2026-10-15, the user: **a mail can still sit in more than one folder.** The
   Folders tick menu stays as the one deliberate way to file it somewhere else
-  as well. Move, drag and Archive stay moves.
-- 2026-10-15, the user: **Move and Archive take a mail out of the folder
-  you're in, not every folder.** Archive from Inbox leaves Inbox for Archive
-  and keeps any other folder it was filed in. Today a move replaces every
-  folder (`move_messages_to_mailbox`, `replace_mailboxes=True`), which loses
-  the other filings; that changes.
-- 2026-10-15, the user: **one rule for Archive in every view: it takes the
-  conversation out of Inbox.** In a folder of your own it also takes it out of
-  that folder. Sent, Starred, Search, All Inboxes and the category tabs all
-  follow it; nothing ever leaves Sent. Today Archive from Inbox moves every
-  message, your sent replies included, and replaces their other folders, while
-  Archive from Sent only adds Archive and leaves the conversation in Inbox.
-  Move follows the same shape: out of the folder you're in where that is a
-  folder of yours or Inbox, otherwise out of Inbox if it's there, otherwise
-  only added to the target.
+  as well.
+- 2026-10-15, the user: **Archive swaps Inbox for Archive, in every view.** A
+  mail in Inbox leaves Inbox for Archive; a mail not in Inbox just gets
+  Archive added. No other folder is ever touched — not the folder you're in,
+  not Sent — in Inbox, a category tab, a folder of your own, Sent, Starred,
+  Search or All Inboxes alike. Where nothing left Inbox the row doesn't move,
+  so the toast says "Added to Archive" rather than "Archived". Today Archive
+  from Inbox moves every message, your sent replies included, and replaces
+  their other folders, while Archive from Sent only adds Archive and leaves
+  the conversation in Inbox. (This replaced, the same day, a rule under which
+  Archive also took mail out of a folder of your own you archived it from;
+  taking mail out of a folder is Move's job.)
+- 2026-10-15, the user: **Move takes a mail out of the folder you're in, not
+  every folder.** From Inbox or a folder of your own it leaves that folder for
+  the target and keeps any other folder; from a view that isn't a folder it
+  leaves Inbox if it's there, and otherwise is only added to the target.
+  Today a move replaces every folder (`move_messages_to_mailbox`,
+  `replace_mailboxes=True`), which loses the other filings; that changes.
+- 2026-10-15, the user: **drag is a plain Move.** Dropping a conversation on a
+  folder follows the Move rule; no modifier files it as well. The Folders tick
+  menu is the only way to file it in several.
 - 2026-10-15, the user: **a draft is stored only in Drafts, and is seen
   wherever its conversation is.** Archive and Move never take a draft out of
   Drafts. Drafts offers only Discard (and Send from the editor); Archive, Junk,
   Move, Folders, Star and Mark as unread go there — today Archive shows on a
   draft's row, in its toolbar and on E, and files the draft out of Drafts. A
-  conversation's star elsewhere still works; it stars the mail received.
+  reply draft still shows in its conversation and on the conversation's row in
+  Inbox, Archive or any folder, as it does today, since a conversation is
+  drawn from every folder its messages are in.
 - 2026-10-15, the user: **a draft can't be starred anywhere**, Search results
   included. A star on a draft didn't last: every save replaces the draft with
   one built with only `$draft` and `$seen` (`build_email_draft`), so the star
   went at the next autosave and never reached the sent mail. The thread's own
-  star already skips drafts (`lastMessageOf`). A reply draft still shows in its
-  conversation and on the conversation's row in Inbox, Archive or any folder,
-  as it does today, since a conversation is drawn from every folder its
-  messages are in.
-- 2026-10-15, the user: **drag is a plain Move.** Dropping a conversation on a
-  folder follows the Move rule; no modifier files it as well. The Folders tick
-  menu is the only way to file it in several.
-- 2026-10-15, the user: **in a view that isn't a folder, Archive on mail that
-  isn't in Inbox just adds Archive.** From Starred, a mail in Projects and
-  Clients ends up in Projects, Clients and Archive, and stays in Starred while
-  starred. Archive stays offered there; since the row doesn't move, the toast
-  says "Added to Archive" rather than "Archived". From a folder of your own,
-  Archive takes the mail out of that folder (and Inbox) and keeps any other
-  folder it's in.
+  star already skips drafts (`lastMessageOf`); a conversation's star elsewhere
+  stars the mail received.
 
 ## Still open
 
