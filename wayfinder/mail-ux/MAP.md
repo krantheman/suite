@@ -68,6 +68,7 @@ Mail settings.
   [What Outbox is for](tickets/020-what-outbox-is-for.md),
   [Cleaning up Outbox](tickets/039-cleaning-up-outbox.md),
   [Mail on a phone](tickets/040-mail-on-a-phone.md),
+  [The top of the sidebar and the account switcher](tickets/041-the-sidebars-head.md),
   [Search opens the first result](tickets/008-search-opens-the-first-result.md),
   [Which signature is added](tickets/021-which-signature.md),
   [Unsubscribing and the subscriptions you get](tickets/033-unsubscribe.md),
