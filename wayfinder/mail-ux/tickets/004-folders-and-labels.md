@@ -61,6 +61,13 @@ From [merged problems](../references/merged-problems.md) (ticket 003):
 - 2026-10-15, the user: **drag is a plain Move.** Dropping a conversation on a
   folder follows the Move rule; no modifier files it as well. The Folders tick
   menu is the only way to file it in several.
+- 2026-10-15, the user: **in a view that isn't a folder, Archive on mail that
+  isn't in Inbox just adds Archive.** From Starred, a mail in Projects and
+  Clients ends up in Projects, Clients and Archive, and stays in Starred while
+  starred. Archive stays offered there; since the row doesn't move, the toast
+  says "Added to Archive" rather than "Archived". From a folder of your own,
+  Archive takes the mail out of that folder (and Inbox) and keeps any other
+  folder it's in.
 
 ## Still open
 
