@@ -62,6 +62,8 @@ Mail settings.
   [Who a reply goes to](tickets/016-reply-defaults.md),
   [When mail counts as read](tickets/017-skimming-marks-read.md),
   [Folders, labels, or both](tickets/004-folders-and-labels.md),
+  [Deleting a folder with mail in it](tickets/043-deleting-a-folder-with-mail.md),
+  [Categories and folders](tickets/042-categories-and-folders.md),
   [Dealing with mail from unknown senders](tickets/013-unknown-senders.md),
   [Which account a mail belongs to and goes out from](tickets/018-which-account.md),
   [Trusting that a draft is saved](tickets/019-draft-safety.md),
@@ -135,6 +137,11 @@ Mail settings.
   fold into one selector, quiet 36px date headers grouped by day, week and
   month, a View menu beside Compose, tighter rows; the thread, compose and
   sidebar moved to their own ticket.
+- [Folders, labels, or both](tickets/004-folders-and-labels.md): folders
+  everywhere; Archive clears Inbox, Move says where a conversation lives, the
+  tick menu adds one folder, Trash removes; your own mail stays in Sent and
+  Drafts; Search acts on conversations; categories and folder deletion
+  graduated.
 
 ## Not yet specified
 

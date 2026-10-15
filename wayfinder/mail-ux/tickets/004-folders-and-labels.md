@@ -2,8 +2,8 @@
 id: 004
 title: Folders, labels, or both
 label: wayfinder:grilling
-status: open
-assignee:
+status: closed
+assignee: claude (agent, 2026-10-15), with Akash
 blocked-by: []
 ---
 
@@ -19,12 +19,22 @@ sidebar presents it, and where categories would fit.
 From [merged problems](../references/merged-problems.md) (ticket 003):
 - C11 Folders behave like labels (A23, A55, A58, I05, I06, G09).
 
-## Decisions so far
+## Answer
 
-In short: mail you received goes wherever you file it; your own mail has a
+Resolved 2026-10-15 with Akash, as a grilling of the model and its trade-offs.
+
+**The problem.** A conversation could sit in several folders, which is how
+labels behave, while the UI said "folders" and the actions undid it: Move and
+Archive replaced every folder a mail was in, took your sent replies along,
+and treated Sent, Drafts, Starred and Search each their own way. The model
+people see had to be one thing, and each action had to mean one thing.
+
+**The shape.** Folders, everywhere. In short: mail you received goes wherever you file it; your own mail has a
 home it isn't filed out of (sent mail in Sent, a draft in Drafts), and only
 deleting takes it out. A conversation shows in full wherever any of its
-messages is, whichever folders they are stored in.
+messages is, whichever folders they are stored in. Each tool means one
+thing: Archive clears your Inbox, Move says where a conversation lives now,
+the Folders tick menu adds or takes away one folder, Trash gets rid of it.
 
 | Action | Mail you received | Your sent mail | Your draft |
 |---|---|---|---|
@@ -35,6 +45,10 @@ messages is, whichever folders they are stored in.
 | Not junk | Junk → Inbox, junk mark cleared | Untouched | Untouched |
 | Trash | Goes to Trash | Goes to Trash | Discarded |
 | Out of Trash to X | Goes to X | Goes to X and back to Sent | — |
+| Unarchive (proposed, 037) | Archive → Inbox, other folders kept | Stays in Sent | Stays in Drafts |
+
+The decisions, in the order they were made (some replaced earlier ones the
+same day, as noted):
 
 - 2026-10-15, the user: **folders, everywhere.** People are told these are
   folders, in every screen and message; "mailbox" stays only where it means a
@@ -143,22 +157,22 @@ messages is, whichever folders they are stored in.
   star already skips drafts (`lastMessageOf`); a conversation's star elsewhere
   stars the mail received.
 
-## Still open
+## Graduated
 
-- **Where categories fit.** Proposed: categories stay parts of the Inbox,
-  never folders. They are left out of the Folders tick menu, and moving a mail
-  between them re-sorts it (the per-message category move and its sender
-  rule) rather than filing it. Archive from a category tab already follows the
-  one rule above. Held on 2026-10-15 at the user's request until Sagar's work
-  is done; come back to it then. The sidebar needs nothing new here: its
-  layout was settled in
-  [Layout of the thread, compose and sidebar](038-thread-compose-and-sidebar-layout.md).
+- [Categories and folders](042-categories-and-folders.md): where the Inbox's
+  categories fit in this model, held until Sagar's work is done.
+- [Deleting a folder with mail in it](043-deleting-a-folder-with-mail.md):
+  today it destroys the mail that is only in that folder.
 
-- **Deleting a folder that still has mail in it.** Today it destroys the mail
-  that is only in that folder (`delete_mailboxes`,
-  `onDestroyRemoveEmails=True`): not to Trash, no Undo. Mail also filed
-  elsewhere just loses the folder, so the dialog's "Mails in this folder will
-  be permanently removed" overstates it; your sent mail is always kept in
-  Sent. Proposed: move mail that's only in the folder to Archive, reword the
-  dialog ("Its mail moves to Archive"), and leave emptying it into Trash first
-  for anyone who wants the mail gone. Left for later by the user, 2026-10-15.
+## Building
+
+Not built yet; split into PR slices off `forge/drive-layer`. The folder
+wording ("this folder", "Folder Not Found", the move/add/remove failures) is
+done and stashed on `fix/thread-view`. Still to build: Move and Archive on the
+server as decided (received mail only, Sent kept, drafts never filed), the
+"Added to Archive" toast, Archive and Junk offered in Sent only with received
+mail, Drafts' actions cut to Discard and Send, no star on drafts, a draft
+discarded with its trashed conversation, sent mail back to Sent out of Trash,
+Search acting on whole conversations (with
+[Finding a specific mail](011-finding-a-specific-mail.md)'s conversation
+rows).
