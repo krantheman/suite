@@ -21,6 +21,19 @@ From [merged problems](../references/merged-problems.md) (ticket 003):
 
 ## Decisions so far
 
+In short: mail you received goes wherever you file it; your own mail has a
+home it isn't filed out of (sent mail in Sent, a draft in Drafts), and only
+deleting takes it out. A conversation shows in full wherever any of its
+messages is, whichever folders they are stored in.
+
+| Action | Mail you received | Your sent mail | Your draft |
+|---|---|---|---|
+| Archive | Inbox → Archive (Archive added if not in Inbox) | Stays in Sent | Stays in Drafts |
+| Move to X | Leaves everywhere, goes to X | Goes to X, keeps Sent | Stays in Drafts |
+| Folders ticks | Adds or removes one folder | Adds or removes one folder; Sent stays | Not offered |
+| Trash | Goes to Trash | Goes to Trash | Discarded |
+| Out of Trash to X | Goes to X | Goes to X and back to Sent | — |
+
 - 2026-10-15, the user: **folders, everywhere.** People are told these are
   folders, in every screen and message; "mailbox" stays only where it means a
   whole account (an admin giving someone a mailbox). Labels are not offered.
@@ -47,29 +60,39 @@ From [merged problems](../references/merged-problems.md) (ticket 003):
   because a thread is drawn from every folder. In Sent, Archive is offered only
   when the conversation holds received mail; a conversation of nothing but
   your own sent mail has nothing to archive.
+- 2026-10-15, the user: **Sent always keeps what you sent; only Trash takes it
+  out.** Sent mail can be filed — Move puts it in the target, the Folders tick
+  menu adds or removes folders of yours on it — but never leaves Sent, whose
+  tick can't be cleared. So a conversation of only your own outreach can still
+  be moved to a folder, and Sent stays the full record of what you sent.
+  Letting Move take mail out of Sent was weighed and turned down: Move carries
+  whole conversations, so filing one from Inbox would have taken your replies
+  out of Sent without your noticing.
 - 2026-10-15, the user: **Move puts a conversation in the target, and only
   there, from any view.** The mail you received leaves Inbox, Archive and
-  every folder of yours for the target. Your own mail is never moved, as it is
-  never archived: a sent reply stays only in Sent (leaving any folder of yours
-  it was in) and a draft only in Drafts. The whole conversation moves, so a newer reply waiting in Inbox goes
+  every folder of yours for the target. Your sent mail goes into the target
+  too but never leaves Sent (see below), and a draft stays only in Drafts. The
+  whole conversation moves, so a newer reply waiting in Inbox goes
   with it (still unread). A mail deliberately filed in two folders loses the
   other; the Folders tick menu is how to add or take away one folder and leave
   the rest. So each tool means one thing: Archive, out of Inbox into Archive;
   Move, it lives here now; the tick menu, one folder more or less. Today a
   move already replaces every folder (`move_messages_to_mailbox`,
-  `replace_mailboxes=True`), so the change is your own mail: today your sent
-  replies are filed in the target too (Sent re-added afterwards), and a draft
-  is moved out of Drafts. (This replaced, the same day, rules under which
+  `replace_mailboxes=True`) and re-adds Sent to your sent mail, so the change
+  is drafts: today a draft is moved out of Drafts. (This replaced, the same day, rules under which
   Move left only the folder you were in, and from Starred or Search left only
   Inbox and otherwise just added the target.)
 - 2026-10-15, the user: **Trash takes the whole conversation, your own mail
   included, from any view.** It isn't filing but getting rid of something, so
   unlike Archive and Move it takes your sent replies out of Sent too: trashing
   from Sent trashes your sent mail, and trashing from Inbox takes your replies
-  with the rest. As today (`movesAll` sends every message to Trash). Drafts
-  are the exception: there it is Discard, deleted for good behind an Undo. A
-  conversation taken back out of Trash should land each message where it was,
-  Sent included; check that when building.
+  with the rest. As today (`movesAll` sends every message to Trash). A reply
+  draft in a trashed conversation is discarded with it, not put in Trash; in
+  Drafts it is Discard, deleted for good behind an Undo. Undo right away puts
+  every message back exactly where it was. Moved out of Trash later to a
+  folder, received mail goes there and your sent mail goes there and back into
+  Sent, as any Move. Left in Trash, it goes for good after 30 days or on
+  Delete forever.
 - 2026-10-15, the user: **drag is a plain Move.** Dropping a conversation on a
   folder follows the Move rule; no modifier files it as well. The Folders tick
   menu is the only way to file it in several.
