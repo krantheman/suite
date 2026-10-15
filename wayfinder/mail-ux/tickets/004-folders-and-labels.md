@@ -41,6 +41,12 @@ From [merged problems](../references/merged-problems.md) (ticket 003):
   the conversation in Inbox. (This replaced, the same day, a rule under which
   Archive also took mail out of a folder of your own you archived it from;
   taking mail out of a folder is Move's job.)
+- 2026-10-15, the user: **your own mail is never archived.** Archive touches
+  only the mail you received; your sent mail stays only in Sent, as a draft
+  stays only in Drafts, and the archived conversation still reads in full
+  because a thread is drawn from every folder. In Sent, Archive is offered only
+  when the conversation holds received mail; a conversation of nothing but
+  your own sent mail has nothing to archive.
 - 2026-10-15, the user: **Move takes a mail out of the folder you're in, not
   every folder.** From Inbox or a folder of your own it leaves that folder for
   the target and keeps any other folder; from a view that isn't a folder it
