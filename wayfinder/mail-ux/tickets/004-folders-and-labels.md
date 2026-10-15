@@ -47,20 +47,19 @@ From [merged problems](../references/merged-problems.md) (ticket 003):
   because a thread is drawn from every folder. In Sent, Archive is offered only
   when the conversation holds received mail; a conversation of nothing but
   your own sent mail has nothing to archive.
-- 2026-10-15, the user: **Move, from a folder, takes a mail out of the folder
-  you're in, not every folder.** From Inbox (All Inboxes being each account's
-  Inbox), a category tab, Archive or a folder of your own, the conversation's messages in that folder leave it for
-  the target, and every other folder they're in is kept. Today a move replaces
-  every folder (`move_messages_to_mailbox`, `replace_mailboxes=True`), which
-  loses the other filings; that changes.
-- 2026-10-15, the user: **Move, from a view that isn't a folder, puts the mail
-  in the target and only there.** From Starred, Search or Sent,
-  where you can't see where a mail is filed, it leaves Inbox, Archive and every
-  folder of yours for the target. Sent and Drafts are never left: your own
-  mail stays there. A mail deliberately filed in two folders loses the other;
-  the Folders tick menu is how to add one. (This replaced, the same day, a
-  rule under which Move there left only Inbox and otherwise just added the
-  target, which made a move from Starred act as a copy.)
+- 2026-10-15, the user: **Move puts a conversation in the target, and only
+  there, from any view.** Its messages leave Inbox, Archive and every folder of
+  yours for the target; Sent and Drafts are never left, so your own mail stays
+  there. The whole conversation moves, so a newer reply waiting in Inbox goes
+  with it (still unread). A mail deliberately filed in two folders loses the
+  other; the Folders tick menu is how to add or take away one folder and leave
+  the rest. So each tool means one thing: Archive, out of Inbox into Archive;
+  Move, it lives here now; the tick menu, one folder more or less. Today a
+  move replaces every folder (`move_messages_to_mailbox`,
+  `replace_mailboxes=True`) but takes your sent replies along, and Sent only
+  by re-adding it afterwards. (This replaced, the same day, rules under which
+  Move left only the folder you were in, and from Starred or Search left only
+  Inbox and otherwise just added the target.)
 - 2026-10-15, the user: **drag is a plain Move.** Dropping a conversation on a
   folder follows the Move rule; no modifier files it as well. The Folders tick
   menu is the only way to file it in several.
