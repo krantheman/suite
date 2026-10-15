@@ -31,5 +31,7 @@ From [merged problems](../references/merged-problems.md) (ticket 003):
   opening or moving onto one draws the open bar (or the cursor) on all four.
   Either show one row per conversation, with its matching messages inside, or
   key rows by message so only the one you're on is marked — not a row per
-  message keyed by thread. Actions on a result act on the whole conversation
-  either way, decided in [Folders, labels, or both](004-folders-and-labels.md).
+  message keyed by thread. The user leans to one row per conversation, which
+  [Folders, labels, or both](004-folders-and-labels.md) builds on: actions on
+  a result act on the whole conversation. Left to decide here is how a
+  conversation row shows which of its messages matched.

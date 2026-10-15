@@ -105,12 +105,16 @@ messages is, whichever folders they are stored in.
   Today both directions take every message (`set_spam_status`,
   `replace_mailboxes=True`): Junk files your sent replies in Junk, and Not
   junk puts them in Inbox rather than Sent.
-- 2026-10-15, the user: **in Search, actions act on the whole conversation**,
-  as everywhere else. Today a result is one message and actions take only the
-  results from its conversation (`threadMails` picks result rows by thread),
-  so a message of the thread that didn't match, or isn't loaded, is left
-  behind. Acting on one message stays possible from the open thread's
-  per-message menu. How results are shown is for
+- 2026-10-15, the user: **an action acts on what the row is, and in Search a
+  row is a conversation.** Search should list conversations, one row each, as
+  the list does, and its actions act on the whole conversation, as everywhere
+  else. Today a result is one message, keyed by its conversation, and actions
+  take only the results from that conversation (`threadMails` picks result
+  rows by thread), so a message of the thread that didn't match, or isn't
+  loaded, is left behind. Message rows acting on whole conversations was ruled
+  out: Trash on one result would take mail never shown. Acting on one message
+  stays possible from the open thread's per-message menu. How a conversation
+  row shows its matches is for
   [Finding a specific mail](011-finding-a-specific-mail.md).
 - 2026-10-15, the user: **drag is a plain Move.** Dropping a conversation on a
   folder follows the Move rule; no modifier files it as well. The Folders tick
