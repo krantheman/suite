@@ -25,7 +25,6 @@ Source: the user's pain list (2026-10-09), marked important.
 From [merged problems](../references/merged-problems.md) (ticket 003):
 - C27 Finding a specific mail (A49, A50, A52, A53, A54, I21, G11, G12), with
   the facts in [Search inside attachments](009-search-inside-attachments.md).
-
 - **A conversation shows as several rows, all marked at once** (the user,
   2026-10-15). Search lists matching messages, one row each, but keys every
   row by its conversation: four results from one thread are four rows, and
