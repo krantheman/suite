@@ -49,7 +49,12 @@ From [merged problems](../references/merged-problems.md) (ticket 003):
   Drafts. Drafts offers only Discard (and Send from the editor); Archive, Junk,
   Move, Folders, Star and Mark as unread go there — today Archive shows on a
   draft's row, in its toolbar and on E, and files the draft out of Drafts. A
-  conversation's star elsewhere still works; it stars the mail received. A reply draft still shows in its
+  conversation's star elsewhere still works; it stars the mail received.
+- 2026-10-15, the user: **a draft can't be starred anywhere**, Search results
+  included. A star on a draft didn't last: every save replaces the draft with
+  one built with only `$draft` and `$seen` (`build_email_draft`), so the star
+  went at the next autosave and never reached the sent mail. The thread's own
+  star already skips drafts (`lastMessageOf`). A reply draft still shows in its
   conversation and on the conversation's row in Inbox, Archive or any folder,
   as it does today, since a conversation is drawn from every folder its
   messages are in.
