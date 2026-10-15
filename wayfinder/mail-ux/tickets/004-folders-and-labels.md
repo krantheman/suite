@@ -116,6 +116,13 @@ messages is, whichever folders they are stored in.
   stays possible from the open thread's per-message menu. How a conversation
   row shows its matches is for
   [Finding a specific mail](011-finding-a-specific-mail.md).
+- 2026-10-15, the user: **an action on one message follows the same rules.**
+  The open thread's per-message menu (set aside in
+  [Layout of the thread, compose and sidebar](038-thread-compose-and-sidebar-layout.md))
+  applies them to that message alone: a sent message keeps Sent, a draft stays
+  in Drafts, Trash takes it whatever it is. Moving a conversation back to
+  Inbox (Move To → Inbox) is the Move rule too: it leaves Archive and every
+  folder of yours.
 - 2026-10-15, the user: **drag is a plain Move.** Dropping a conversation on a
   folder follows the Move rule; no modifier files it as well. The Folders tick
   menu is the only way to file it in several.

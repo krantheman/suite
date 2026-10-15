@@ -30,6 +30,13 @@ Source: graduated from [A clean inbox](010-a-clean-inbox.md).
 
 ## Inputs
 
+- **A one-click way back to Inbox from Archive** (the user, 2026-10-15). In
+  Archive the Archive button is hidden, the mail being there already; that
+  place could hold "Move to Inbox", the one common action on archived mail.
+  Today it takes Move To → Inbox. It is a plain Move under
+  [Folders, labels, or both](004-folders-and-labels.md), so it needs no rule
+  of its own.
+
 - The stack row and its opened threads as of 2026-10-15
   (`StackListItem.vue`), from the user.
 - C02 in [merged problems](../references/merged-problems.md) (A07, A13,
