@@ -48,16 +48,18 @@ From [merged problems](../references/merged-problems.md) (ticket 003):
   when the conversation holds received mail; a conversation of nothing but
   your own sent mail has nothing to archive.
 - 2026-10-15, the user: **Move puts a conversation in the target, and only
-  there, from any view.** Its messages leave Inbox, Archive and every folder of
-  yours for the target; Sent and Drafts are never left, so your own mail stays
-  there. The whole conversation moves, so a newer reply waiting in Inbox goes
+  there, from any view.** The mail you received leaves Inbox, Archive and
+  every folder of yours for the target. Your own mail is never moved, as it is
+  never archived: a sent reply stays only in Sent (leaving any folder of yours
+  it was in) and a draft only in Drafts. The whole conversation moves, so a newer reply waiting in Inbox goes
   with it (still unread). A mail deliberately filed in two folders loses the
   other; the Folders tick menu is how to add or take away one folder and leave
   the rest. So each tool means one thing: Archive, out of Inbox into Archive;
   Move, it lives here now; the tick menu, one folder more or less. Today a
-  move replaces every folder (`move_messages_to_mailbox`,
-  `replace_mailboxes=True`) but takes your sent replies along, and Sent only
-  by re-adding it afterwards. (This replaced, the same day, rules under which
+  move already replaces every folder (`move_messages_to_mailbox`,
+  `replace_mailboxes=True`), so the change is your own mail: today your sent
+  replies are filed in the target too (Sent re-added afterwards), and a draft
+  is moved out of Drafts. (This replaced, the same day, rules under which
   Move left only the folder you were in, and from Starred or Search left only
   Inbox and otherwise just added the target.)
 - 2026-10-15, the user: **drag is a plain Move.** Dropping a conversation on a
