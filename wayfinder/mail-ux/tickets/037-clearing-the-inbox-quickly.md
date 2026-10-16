@@ -37,8 +37,10 @@ Source: graduated from [A clean inbox](010-a-clean-inbox.md).
   received and leaves every other folder (and your sent mail) as it was, so
   archiving and unarchiving round-trips. Named Unarchive rather than "Move to
   Inbox", since Move To → Inbox stays a plain Move that leaves every folder
-  (see [Folders, labels, or both](004-folders-and-labels.md)). Today it takes
-  Move To → Inbox.
+  (see [Folders, labels, or both](004-folders-and-labels.md)). Built
+  2026-10-16 in frappe/suite#1013 (toolbar, row hover and selection bar, in a
+  single account's Archive); where else it belongs — a shortcut, All Inboxes,
+  the phone — is still this ticket's to decide.
 
 - The stack row and its opened threads as of 2026-10-15
   (`StackListItem.vue`), from the user.
