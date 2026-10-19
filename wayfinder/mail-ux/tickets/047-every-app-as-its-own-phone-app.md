@@ -61,6 +61,15 @@ waits on it, as each product's own phone design does.
   sight.
   The folders sheet stays a plain list for now (the user, 2026-10-19): no
   "find a folder" field and no collapsed subfolders, even with many folders.
+- 2026-10-19, the user: **push: one worker, a subscription per installed
+  app.** The worker's code stays one (`src/apps/mail/sw.ts`, built to
+  `sw.js`), but each installed app asks for notifications and subscribes for
+  itself, and the server records which app a subscription is for: Mail's
+  notifications go to Mail's subscriptions, Calendar's reminders to
+  Calendar's, so a tap opens the app it is about. On an iPhone each home-screen
+  app keeps its own storage and push subscription, so one subscription for all
+  would deliver, and open, through whichever app subscribed first. Each app asks
+  for permission the first time it is opened after installing.
 - 2026-10-19, the user: **the nagging install prompt waits for the split,** not
   a stopgap on develop: it is redone here with the per-app install.
 
