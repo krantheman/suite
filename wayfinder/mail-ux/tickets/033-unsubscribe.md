@@ -2,7 +2,7 @@
 id: 033
 title: Unsubscribing and the subscriptions you get
 label: wayfinder:grilling
-status: open
+status: closed
 assignee:
 blocked-by: [010]
 ---
@@ -84,5 +84,19 @@ Source: graduated from [A clean inbox](010-a-clean-inbox.md).
     with the sender's page as the way out, and the mail is not marked
     unsubscribed.
 
-Still to decide: whether a subscriptions view is wanted.
+- 2026-10-19, the user: **no subscriptions view for now.** Unsubscribe
+  beside the sender ships first; a view of senders by volume is the costly
+  part (JMAP can't count by sender) and is parked as
+  [A view of your subscriptions](045-a-subscriptions-view.md).
+
+## Answer
+
+Unsubscribe is a "· Unsubscribe" link beside the sender of an open message
+whose `List-Unsubscribe` header offers it, and nowhere else: not in "…", not
+while the Screener asks about the sender, never in Junk. A click unsubscribes
+by the surest way the sender offers (one-click from the server, then mailto
+from the address the mail came to, then their page), held about 10 seconds
+for Undo. Mail already received stays where it is. A failed request says so
+and offers the sender's page. A subscriptions view is parked as ticket 045.
+Prototype on branch `proto/unsubscribe` (local).
 

@@ -65,6 +65,7 @@ Mail settings.
   [Deleting a folder with mail in it](tickets/043-deleting-a-folder-with-mail.md),
   [Categories and folders](tickets/042-categories-and-folders.md),
   [Mail refetches everything on every focus](tickets/044-mail-refetches-on-every-focus.md),
+  [A view of your subscriptions](tickets/045-a-subscriptions-view.md),
   [Dealing with mail from unknown senders](tickets/013-unknown-senders.md),
   [Which account a mail belongs to and goes out from](tickets/018-which-account.md),
   [Trusting that a draft is saved](tickets/019-draft-safety.md),
