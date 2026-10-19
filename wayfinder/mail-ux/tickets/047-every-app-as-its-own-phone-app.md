@@ -85,6 +85,11 @@ waits on it, as each product's own phone design does.
   dismissible, suggesting Mail or Calendar on their own.
 - 2026-10-19, the user: **the nagging install prompt waits for the split,** not
   a stopgap on develop: it is redone here with the per-app install.
+- 2026-10-19, the user: **installing is offered once, quietly, then from the
+  menu.** The first time a product's pages open in a phone's browser, a slim
+  banner says it can be installed as an app; dismissed, it stays dismissed on
+  that device. After that the offer lives under Profile ("Install Mail"). Never
+  inside the installed app, nor where that app is already installed. No dialog.
 
 ## Inputs
 
