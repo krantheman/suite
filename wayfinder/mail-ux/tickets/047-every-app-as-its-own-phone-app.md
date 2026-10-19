@@ -91,6 +91,19 @@ waits on it, as each product's own phone design does.
   that device. After that the offer lives under Profile ("Install Mail"). Never
   inside the installed app, nor where that app is already installed. No dialog.
 
+## Later: retiring the one Suite app
+
+2026-10-19, the user: retire it in steps, once the apps of their own exist, not
+before (people use it daily). When to take each step stays open until then.
+
+1. When the per-app apps ship: the Suite app is no longer offered; installs
+   of it keep working, with the one-time note suggesting Mail or Calendar on
+   their own (above).
+2. Once most have moved: its home becomes a page that installs each app, in
+   place of opening Suite.
+3. In the end: its manifest is no longer served; phones keep the icon, which
+   opens the browser.
+
 ## Inputs
 
 - `frontend/src/shell/InstallPrompt.vue`: shows its dialog whenever the browser
