@@ -31,8 +31,9 @@ Source: graduated from [A clean inbox](010-a-clean-inbox.md).
 
 - 2026-10-19, the user: **Unsubscribe shows beside the sender** of an open
   message that offers it (its `List-Unsubscribe` header), as a quiet link after
-  the address, and the same item sits in the message's "…" menu, so a phone
-  has it too. Not a banner (three strips over every newsletter) and not beside
+  the address, on a phone as on a desktop (it sits by the name there, where
+  the address is not shown). Not in the message's "…" menu either (the
+  user, 2026-10-19): one place to find it. Not a banner (three strips over every newsletter) and not beside
   the subject (a conversation has several senders, and a phone hides the
   subject). Tried in a prototype with a Tweak panel (branch
   `proto/unsubscribe`).
