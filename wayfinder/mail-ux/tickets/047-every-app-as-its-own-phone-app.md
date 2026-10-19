@@ -53,8 +53,12 @@ waits on it, as each product's own phone design does.
   Search, Profile,** as develop has it (`components/mobile/MobileTabBar.vue`
   on develop), and no Suite bar. Mailbox is the current folder, by its icon and
   name, and tapping it again opens the folders; Search moves down from the top
-  bar, which loses it. No Screener tab: screening now happens in the Inbox
-  (unknown senders are marked there).
+  bar, which loses it, and so does the ☰ (the folder tab opens the folders).
+  No Screener tab: screening now happens in the Inbox (unknown senders are
+  marked there). Kept after trying it against no bottom bar at all (☰ and
+  Search in the top bar) in a prototype (local branch `proto/phone-nav`): the
+  folders and Search stay under the thumb, and the folder you are in stays in
+  sight.
 - 2026-10-19, the user: **the nagging install prompt waits for the split,** not
   a stopgap on develop: it is redone here with the per-app install.
 
