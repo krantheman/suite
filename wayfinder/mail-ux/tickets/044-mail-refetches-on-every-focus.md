@@ -2,7 +2,7 @@
 id: 044
 title: Mail refetches everything on every focus
 label: wayfinder:grilling
-status: open
+status: closed
 assignee:
 blocked-by: []
 ---
@@ -37,3 +37,23 @@ else from the new shell.
 Inputs: `frontend/src/platform/server-state/index.ts`, `reads.ts`
 (`invalidate`, `refreshPages`), `useInfiniteQuery(api.mail.threads.list)` in
 `MailboxView.vue`.
+
+## Findings (2026-10-19, measured in the user's browser)
+
+- One window focus refetched 16 reads; the tab coming back into view, 20; a
+  real tab switch fires both, 21 to 36 requests, settling after ~4.5 s.
+- Clicking into a mail's body and back out fired one window focus, and with it
+  17 requests: the iframe theory holds.
+- The list itself is not slow: j/k takes ~8 ms a key, and ~7 ms while a
+  refetch lands. The cost is the server queue: a cheap request went from ~11 ms
+  to ~130 ms during a burst.
+
+## Answer
+
+No refetch on window focus. On the tab coming back into view, every read is
+fetched again only if it was out of sight for 30 s or more: realtime keeps an
+open page current, and this catches what a sleeping laptop or a dropped socket
+missed. Verified: focus 0 requests, a 5 s glance away 0, a minute away 16.
+Branch `fix/refetch-on-return` (local) into `forge/drive-layer`; the layer is
+Faris's and shared by every app.
+
