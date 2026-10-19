@@ -70,6 +70,13 @@ waits on it, as each product's own phone design does.
   app keeps its own storage and push subscription, so one subscription for all
   would deliver, and open, through whichever app subscribed first. Each app asks
   for permission the first time it is opened after installing.
+- 2026-10-19, the user: **links into another app are left to the phone.**
+  Each app's manifest asks to handle its own links (`handle_links:
+  "preferred"`), so Android opens an installed Calendar for a calendar link
+  where it can; anywhere else the link opens in the browser, where Suite is still
+  the one site. An app's scope stays its own: letting it cover all of Suite would
+  make it the whole Suite again. What can be done in place stays in place (an
+  invite is answered from the banner in Mail), so there is nothing to leave for.
 - 2026-10-19, the user: **the nagging install prompt waits for the split,** not
   a stopgap on develop: it is redone here with the per-app install.
 
