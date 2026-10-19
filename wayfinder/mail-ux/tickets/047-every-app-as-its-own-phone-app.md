@@ -77,6 +77,12 @@ waits on it, as each product's own phone design does.
   the one site. An app's scope stays its own: letting it cover all of Suite would
   make it the whole Suite again. What can be done in place stays in place (an
   invite is answered from the banner in Mail), so there is nothing to leave for.
+- 2026-10-19, the user: **the Suite app already installed keeps working, as
+  the whole Suite.** Its manifest stays at its own address, with its id and the
+  scope over everything; served a product's manifest instead, phones would turn
+  an installed Suite into Mail at their next update. New installs are offered
+  only per app, from each app's pages. Inside the old app, a note shows once,
+  dismissible, suggesting Mail or Calendar on their own.
 - 2026-10-19, the user: **the nagging install prompt waits for the split,** not
   a stopgap on develop: it is redone here with the per-app install.
 
