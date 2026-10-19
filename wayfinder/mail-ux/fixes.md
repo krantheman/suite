@@ -58,8 +58,8 @@ separately. If a fix turns out to need a real choice, move it to a ticket.
 
 ## New features with an obvious shape
 
-- [ ] **Reactions** (C44; I09, G17): send and show RFC 9078 reactions. A
-  prototype is stashed on `feat/mail-reactions`.
+- Reactions (C44; I09, G17) moved to a ticket of its own:
+  [Reactions](tickets/046-reactions.md).
 - [ ] **Print and save as PDF** (C45; I10, G23).
 - [ ] **Create an event from a mail** (C46; I11), prefilled.
 
