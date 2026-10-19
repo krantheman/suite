@@ -59,6 +59,8 @@ waits on it, as each product's own phone design does.
   Search in the top bar) in a prototype (local branch `proto/phone-nav`): the
   folders and Search stay under the thumb, and the folder you are in stays in
   sight.
+  The folders sheet stays a plain list for now (the user, 2026-10-19): no
+  "find a folder" field and no collapsed subfolders, even with many folders.
 - 2026-10-19, the user: **the nagging install prompt waits for the split,** not
   a stopgap on develop: it is redone here with the per-app install.
 
