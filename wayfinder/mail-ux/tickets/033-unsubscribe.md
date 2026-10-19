@@ -63,7 +63,13 @@ Source: graduated from [A clean inbox](010-a-clean-inbox.md).
   web page needs no Undo: Suite opens the page and the person unsubscribes
   there.
 
-Still to decide: which mail offers it
+- 2026-10-19, the user: **only mail with a `List-Unsubscribe` header offers
+  it.** No reading the body for a footer link: that is guesswork, can open a
+  wrong or hostile link, and can never be one click. Gmail and Yahoo have
+  required the header of bulk senders since 2024, so the mail that matters
+  carries it; a footer link stays where the sender put it.
+
+Still to decide:
 (only mail with the header), the RFC 8058 POST and mailto paths, and whether
 a subscriptions view is wanted.
 
