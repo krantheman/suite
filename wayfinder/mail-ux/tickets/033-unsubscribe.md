@@ -54,7 +54,16 @@ Source: graduated from [A clean inbox](010-a-clean-inbox.md).
   Unsubscribing only stops what comes next; nothing is archived or moved,
   and no offer to is made.
 
-Still to decide: whether Unsubscribe can be undone, which mail offers it
+- 2026-10-19, the user: **Unsubscribe can be undone for a few seconds, as
+  sending can.** Once a request reaches the sender there is no taking it back
+  (no standard resubscribe), so it is held: the toast says "Unsubscribed"
+  with Undo for about 10 seconds, and only then does the server send the RFC
+  8058 POST, or the mailto request as a short scheduled send. Undo cancels it
+  before anything leaves, so the sender never knew. A sender offering only a
+  web page needs no Undo: Suite opens the page and the person unsubscribes
+  there.
+
+Still to decide: which mail offers it
 (only mail with the header), the RFC 8058 POST and mailto paths, and whether
 a subscriptions view is wanted.
 
