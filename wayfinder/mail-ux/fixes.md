@@ -17,7 +17,7 @@ separately. If a fix turns out to need a real choice, move it to a ticket.
   (`shell/InstallPrompt.vue`; on develop too, so production). Remember a
   dismissal on the device, don't offer it where the app is already installed,
   and keep a way to install it in the account menu. From
-  [Mail and Calendar as their own phone apps](tickets/047-mail-and-calendar-as-their-own-apps.md).
+  [Every app as its own phone app](tickets/047-every-app-as-its-own-phone-app.md).
 - [x] **All accounts works like a single account's list** (C12; A02, A03,
   A32): checkboxes and select-all, the unknown-sender marker, the subject in
   the tab title, through selection shared by both lists.

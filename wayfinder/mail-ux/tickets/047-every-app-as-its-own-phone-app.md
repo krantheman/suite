@@ -1,8 +1,8 @@
 ---
 id: 047
-title: Mail and Calendar as their own phone apps
+title: Every app as its own phone app
 label: wayfinder:grilling
-status: closed
+status: open
 assignee:
 blocked-by: []
 ---
@@ -10,18 +10,21 @@ blocked-by: []
 ## Question
 
 On a phone, Suite is one app: one PWA, installed once, with a bottom bar of
-every area (Home, Drive, Mail, Calendar, Meet, People, Account). The user wants
-Mail and Calendar instead, each installed and opened as an app of its own
-(2026-10-19). Decide what that takes and how the two share what they must:
+every area (Home, Drive, Mail, Calendar, Meet, People, Account). It is to
+become one app per product instead: Mail, Calendar, Drive, Writer, Sheets,
+Slides, Meet, each installed and opened as an app of its own (the user,
+2026-10-19, agreed with Faris, whose unified-frontend plan made Suite one PWA
+in its tickets T010 and T018). Decide what that takes and how the apps share
+what they must:
 
 - each app's manifest: name, scope, start URL, icon, splash, theme;
 - what stands where the shell's bottom bar was inside one app, and how the
   other areas are reached from it, if at all;
-- push: one service worker for both or one each, and which app a
+- push: one service worker for all or one each, and which app a
   notification opens;
-- sign-in shared across both, and logout from one;
-- a link to the other app (an invite in a mail opening Calendar), and a
-  desktop browser, which keeps the one Suite;
+- sign-in shared across all of them, and logout from one;
+- links between apps (an invite in a mail opening Calendar, a Drive link in
+  a mail opening Drive), and a desktop browser, which keeps the one Suite;
 - what becomes of the one Suite PWA for those who installed it;
 - how installing is offered, if at all, without nagging (below).
 
@@ -36,10 +39,8 @@ installed app is recognised (`getInstalledRelatedApps`, the app's own scope).
 It can be stopped from nagging now, before the split: a dismissal remembered
 on the device is the least of it.
 
-This reverses a platform decision: the unified-frontend plan made Suite one
-PWA (its tickets T010 and T018), which is Faris's. Settle it with him before
-building. [Mail on a phone](040-mail-on-a-phone.md) waits on it; Calendar's
-phone design, on the Calendar side, does too.
+The split is decided; how is the question. [Mail on a phone](040-mail-on-a-phone.md)
+waits on it, as each product's own phone design does.
 
 ## Inputs
 
@@ -55,14 +56,4 @@ phone design, on the Calendar side, does too.
 - `frontend/vite.config.ts`: VitePWA with `manifest: false`; the webmanifest is
   served by the site.
 - Native apps through Capacitor come after this:
-  [Mail and Calendar as native apps](048-native-apps.md).
-
-## Answer
-
-2026-10-19, the user, having spoken to Faris: **not doing it.** Suite stays one
-app on a phone, one PWA, as the unified-frontend plan has it. Mail's phone
-design ([Mail on a phone](040-mail-on-a-phone.md)) goes on within it.
-
-The install prompt that nags is still a problem of its own, and moves to the
-[obvious fixes](../fixes.md).
-
+  [Native apps](048-native-apps.md).
