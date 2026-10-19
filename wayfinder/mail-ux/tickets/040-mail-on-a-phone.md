@@ -4,15 +4,14 @@ title: Mail on a phone
 label: wayfinder:grilling
 status: open
 assignee:
-blocked-by: [047]
+blocked-by: []
 ---
 
 ## Question
 
-Mail is to be an app of its own on a phone, not a part of one Suite app (the
-user, 2026-10-19): this designs it as that, with no Suite bottom bar, once
-[Mail and Calendar as their own phone apps](047-mail-and-calendar-as-their-own-apps.md)
-settles how the apps are split.
+Mail stays part of the one Suite app on a phone, with the shell's bottom bar
+(splitting it out was dropped, see
+[Mail and Calendar as their own phone apps](047-mail-and-calendar-as-their-own-apps.md)).
 
 Mail has been rebuilt on desktop: the list in
 [Layout, hierarchy and use of space](012-layout-and-hierarchy.md), and the

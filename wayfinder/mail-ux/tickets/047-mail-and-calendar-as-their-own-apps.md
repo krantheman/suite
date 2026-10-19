@@ -2,7 +2,7 @@
 id: 047
 title: Mail and Calendar as their own phone apps
 label: wayfinder:grilling
-status: open
+status: closed
 assignee:
 blocked-by: []
 ---
@@ -56,3 +56,13 @@ phone design, on the Calendar side, does too.
   served by the site.
 - Native apps through Capacitor come after this:
   [Mail and Calendar as native apps](048-native-apps.md).
+
+## Answer
+
+2026-10-19, the user, having spoken to Faris: **not doing it.** Suite stays one
+app on a phone, one PWA, as the unified-frontend plan has it. Mail's phone
+design ([Mail on a phone](040-mail-on-a-phone.md)) goes on within it.
+
+The install prompt that nags is still a problem of its own, and moves to the
+[obvious fixes](../fixes.md).
+
