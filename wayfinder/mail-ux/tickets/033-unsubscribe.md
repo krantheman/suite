@@ -41,6 +41,10 @@ Source: graduated from [A clean inbox](010-a-clean-inbox.md).
     stranger, often a spammer, that the address is read, and can't be taken
     back the way a block can. One question at a time.
   - **Never in Junk**, for the same reason.
+  - **It reads "· Unsubscribe"**: a middle dot after the address, then the word
+    underlined in grey, so it is plainly a link without a button's weight
+    (the user, 2026-10-19, of five styles tried). Once used, it reads
+    "Unsubscribed", in lighter grey and no longer a link.
   - The words claim no more than the header says: "Unsubscribe", not "a
     mailing list you are on" (a one-off invite to a group address carries the
     header too).
