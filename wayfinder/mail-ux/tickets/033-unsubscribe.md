@@ -69,7 +69,6 @@ Source: graduated from [A clean inbox](010-a-clean-inbox.md).
   required the header of bulk senders since 2024, so the mail that matters
   carries it; a footer link stays where the sender put it.
 
-Still to decide:
-(only mail with the header), the RFC 8058 POST and mailto paths, and whether
-a subscriptions view is wanted.
+Still to decide: the RFC 8058 POST and mailto paths, and whether a
+subscriptions view is wanted.
 
