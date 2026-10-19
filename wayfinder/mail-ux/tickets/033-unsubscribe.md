@@ -50,7 +50,11 @@ Source: graduated from [A clean inbox](010-a-clean-inbox.md).
     mailing list you are on" (a one-off invite to a group address carries the
     header too).
 
-Still to decide: which mail offers it (only mail with the header), what
-happens to mail already received, the RFC 8058 POST and mailto paths, and
-whether a subscriptions view is wanted.
+- 2026-10-19, the user: **mail already received stays where it is.**
+  Unsubscribing only stops what comes next; nothing is archived or moved,
+  and no offer to is made.
+
+Still to decide: whether Unsubscribe can be undone, which mail offers it
+(only mail with the header), the RFC 8058 POST and mailto paths, and whether
+a subscriptions view is wanted.
 
