@@ -69,6 +69,20 @@ Source: graduated from [A clean inbox](010-a-clean-inbox.md).
   required the header of bulk senders since 2024, so the mail that matters
   carries it; a footer link stays where the sender put it.
 
-Still to decide: the RFC 8058 POST and mailto paths, and whether a
-subscriptions view is wanted.
+- 2026-10-19, the user: **how the request goes**, where a sender offers
+  several ways:
+  - One-click first (an https URL with `List-Unsubscribe-Post:
+    List-Unsubscribe=One-Click`, POSTed by Suite's server, never the
+    browser), then the `mailto:`, then the web page. Only one-click is sure
+    and needs nothing more from the person.
+  - A mailto request goes from the address the mail was sent to, which is
+    how the sender knows whom to drop, even when it isn't the default
+    identity.
+  - It is not kept in Sent or shown in Outbox: a request to a machine, not
+    mail the person wrote.
+  - A request that fails (an error or a timeout) says "Couldn't unsubscribe"
+    with the sender's page as the way out, and the mail is not marked
+    unsubscribed.
+
+Still to decide: whether a subscriptions view is wanted.
 
