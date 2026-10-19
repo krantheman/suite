@@ -49,6 +49,12 @@ waits on it, as each product's own phone design does.
   `/mail`, Mail's name, icon and start URL), on `/calendar` Calendar's, and so
   on, so installing from wherever you are installs that product's app. A route
   outside any one product's (the Suite home, say) offers none, or the Suite.
+- 2026-10-19, the user: **Mail's app keeps a bottom bar of its own: Mailbox,
+  Search, Profile,** as develop has it (`components/mobile/MobileTabBar.vue`
+  on develop), and no Suite bar. Mailbox is the current folder, by its icon and
+  name, and tapping it again opens the folders; Search moves down from the top
+  bar, which loses it. No Screener tab: screening now happens in the Inbox
+  (unknown senders are marked there).
 - 2026-10-19, the user: **the nagging install prompt waits for the split,** not
   a stopgap on develop: it is redone here with the per-app install.
 
