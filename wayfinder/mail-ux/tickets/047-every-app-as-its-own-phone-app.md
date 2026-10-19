@@ -42,6 +42,16 @@ on the device is the least of it.
 The split is decided; how is the question. [Mail on a phone](040-mail-on-a-phone.md)
 waits on it, as each product's own phone design does.
 
+## Decisions so far
+
+- 2026-10-19, the user: **each app is installable from its own pages.** The
+  manifest a page links to follows the route: on `/mail` it is Mail's (scope
+  `/mail`, Mail's name, icon and start URL), on `/calendar` Calendar's, and so
+  on, so installing from wherever you are installs that product's app. A route
+  outside any one product's (the Suite home, say) offers none, or the Suite.
+- 2026-10-19, the user: **the nagging install prompt waits for the split,** not
+  a stopgap on develop: it is redone here with the per-app install.
+
 ## Inputs
 
 - `frontend/src/shell/InstallPrompt.vue`: shows its dialog whenever the browser

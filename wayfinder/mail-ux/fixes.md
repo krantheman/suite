@@ -11,13 +11,9 @@ separately. If a fix turns out to need a real choice, move it to a ticket.
 
 ## Daily friction
 
-- [ ] **The install prompt stops nagging** (Ayush, 2026-10-19): "Install
-  Frappe Suite" opens over the Inbox on every visit in a phone's browser, even
-  with the app installed, and closing it is never remembered
-  (`shell/InstallPrompt.vue`; on develop too, so production). Remember a
-  dismissal on the device, don't offer it where the app is already installed,
-  and keep a way to install it in the account menu. From
-  [Every app as its own phone app](tickets/047-every-app-as-its-own-phone-app.md).
+- The install prompt that nags (Ayush, 2026-10-19) is left for the per-app
+  install in [Every app as its own phone app](tickets/047-every-app-as-its-own-phone-app.md),
+  no stopgap.
 - [x] **All accounts works like a single account's list** (C12; A02, A03,
   A32): checkboxes and select-all, the unknown-sender marker, the subject in
   the tab title, through selection shared by both lists.
