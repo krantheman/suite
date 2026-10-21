@@ -75,6 +75,7 @@ Mail settings.
   [Every app as its own phone app](tickets/047-every-app-as-its-own-phone-app.md),
   [Mail on a phone](tickets/040-mail-on-a-phone.md),
   [Native apps](tickets/048-native-apps.md),
+  [Phone loose ends from the Mail app work](tickets/049-phone-loose-ends.md),
   [The top of the sidebar and the account switcher](tickets/041-the-sidebars-head.md),
   [Search opens the first result](tickets/008-search-opens-the-first-result.md),
   [Which signature is added](tickets/021-which-signature.md),
