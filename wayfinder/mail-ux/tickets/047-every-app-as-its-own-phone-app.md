@@ -2,8 +2,8 @@
 id: 047
 title: Every app as its own phone app
 label: wayfinder:grilling
-status: open
-assignee:
+status: closed
+assignee: claude (agent, 2026-10-19), with Akash
 blocked-by: []
 ---
 
@@ -90,6 +90,8 @@ waits on it, as each product's own phone design does.
   banner says it can be installed as an app; dismissed, it stays dismissed on
   that device. After that the offer lives under Profile ("Install Mail"). Never
   inside the installed app, nor where that app is already installed. No dialog.
+- 2026-10-21, the user, changing the one above: **the offer is the banner only,
+  with no row under Profile.** A popup from a Profile row was tried and dropped.
 
 ## Later: retiring the one Suite app
 
@@ -119,3 +121,22 @@ before (people use it daily). When to take each step stays open until then.
   served by the site.
 - Native apps through Capacitor come after this:
   [Native apps](048-native-apps.md).
+
+## Answer
+
+Closed 2026-11-03: the decisions above are what the question asked for, and
+they are built for Mail and Calendar.
+
+## Building
+
+Built, on `forge/drive-layer`: per-app manifests and install (frappe/suite#1038),
+Mail's phone app (#1039), the install banner and the note in the one Suite app
+(#1046), a push subscription per installed app (#1047), Calendar's phone app
+(#1052).
+
+Left, none of it a decision:
+- Notifications on a real iPhone, from a deployed site, and the install button
+  on Android: neither has been tried on a real device.
+- Drive, Writer, Sheets, Slides and Meet have no manifest yet. Each gets one
+  with its own phone design.
+- Retiring the one Suite app, in the steps above, is still to come.

@@ -3,7 +3,7 @@ id: 011
 title: Finding a specific mail
 label: wayfinder:grilling
 status: open
-assignee:
+assignee: claude (agent, 2026-11-03), with Akash
 blocked-by: [001]
 ---
 
@@ -54,3 +54,21 @@ From [merged problems](../references/merged-problems.md) (ticket 003):
   - **Its folder tags say where the received mail is** (Inbox, Archive, a
     folder of yours): up to two, then "+N". Sent is left out unless the
     conversation is only your own sent mail, where it is the one answer.
+
+## Where it stands (2026-11-03)
+
+Built: conversation rows as decided above (frappe/suite#1020); operators on the
+query line and a filter panel; removable filter pills on the results page, where
+any other edit reopens the palette.
+
+Still true:
+- A49: the palette doesn't say which account it searches. "Search across all
+  accounts" is in the filter panel, off by default even from All Inboxes, and
+  remembered.
+- A50: palette rows show subject, people, date and folders, so a match in the
+  body shows nothing of why it matched.
+- Stalwart doesn't index PDF or Office contents, or filenames
+  ([Search inside attachments](009-search-inside-attachments.md)).
+- There are no saved searches (G11) and no view of files (G12).
+
+Reported but not retested: partial words missing (I21).

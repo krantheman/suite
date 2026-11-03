@@ -4,7 +4,7 @@ title: Mail on a phone
 label: wayfinder:grilling
 status: open
 assignee:
-blocked-by: [047]
+blocked-by: []
 ---
 
 ## Question
@@ -35,6 +35,23 @@ Other tickets already ask phone questions of their own: swipe on rows (037),
 the phone's unread count (015), skimming (017), search (008) and the
 settings home (032). This one gathers the rest and checks that the phone
 reads as one app.
+
+## Where it stands (2026-11-03)
+
+[Every app as its own phone app](047-every-app-as-its-own-phone-app.md) closed,
+so this is unblocked. Already decided and built, not to reopen without reason
+(frappe/suite#1039, #1050): the bottom bar, the title row, the categories line,
+Profile and accounts, the folders sheet, and the thread's toolbar and subject.
+
+What this ticket still has to decide:
+- what replaces a hover: row actions, the sender card, folded messages;
+- whether selection, compose, search and settings hold up at phone width;
+- where toasts and bars sit so nothing covers the content;
+- whether all of it reads as one app.
+
+Start by checking the running app at phone width: C16, C17, C13 and C31 below
+come from the audit, before this work, and have not been rechecked. C17 and C31
+also have entries in [fixes.md](../fixes.md).
 
 Source: the user, 2026-10-15. Inputs from
 [merged problems](../references/merged-problems.md):

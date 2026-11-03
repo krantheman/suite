@@ -2,8 +2,8 @@
 id: 049
 title: Phone loose ends from the Mail app work
 label: wayfinder:grilling
-status: open
-assignee:
+status: closed
+assignee: claude (agent, 2026-10-21), with Akash
 blocked-by: []
 ---
 
@@ -40,3 +40,11 @@ the iOS Simulator on 2026-10-21. Each is small; decide what each should do.
   titled by the open folder.
 - Related: [Mail on a phone](040-mail-on-a-phone.md) gathers the rest of the
   phone's questions.
+
+## Answer
+
+Closed 2026-11-03: decided and built in frappe/suite#1050.
+
+- **An empty folder** keeps its title row, with the empty state under it.
+- **Profile** lists the account's settings, the workspace's and its own app's.
+- **All accounts** is titled "All Inboxes" on the merged list.

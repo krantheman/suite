@@ -148,6 +148,12 @@ Mail settings.
   tick menu adds one folder, Trash removes; your own mail stays in Sent and
   Drafts; Search acts on conversations; categories and folder deletion
   graduated.
+- [Every app as its own phone app](tickets/047-every-app-as-its-own-phone-app.md):
+  one manifest per product by route, Mail's own bottom bar, one worker with a
+  subscription per app, the old Suite app kept and retired in steps; built for
+  Mail and Calendar.
+- [Phone loose ends](tickets/049-phone-loose-ends.md): an empty folder keeps its
+  title, Profile keeps to its app, the merged list is titled "All Inboxes".
 
 ## Not yet specified
 
