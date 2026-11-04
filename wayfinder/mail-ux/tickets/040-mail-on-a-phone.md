@@ -53,6 +53,21 @@ Start by checking the running app at phone width: C16, C17, C13 and C31 below
 come from the audit, before this work, and have not been rechecked. C17 and C31
 also have entries in [fixes.md](../fixes.md).
 
+**Clean up the categories and the top bar** (the user, 2026-11-04). Above the
+first mail in the Inbox a phone stacks three rows, about a fifth of the screen:
+the title, the categories line and the "All mail" filter row. The categories
+line runs off the edge with counts of "99+", and the filter row holds only the
+filter and a ⋯. Nothing is chosen yet. Three options to try in the running app:
+
+- **Two rows:** the filter and ⋯ become icons in the title row; the categories
+  line stays, still cut off.
+- **One row:** categories move into the sheet "Inbox ⌄" already opens; their
+  counts go out of sight.
+- **One row, categories as list rows:** one line each among the mail, by date.
+  This changes [A clean inbox](010-a-clean-inbox.md) for the phone. A prototype
+  is in a local stash, "proto: Inbox categories as list rows, with sender
+  logos"; a category whose newest mail hasn't loaded yet doesn't show in it.
+
 Source: the user, 2026-10-15. Inputs from
 [merged problems](../references/merged-problems.md):
 - C16 Phone touch targets are 16–28px (A08, A39, A87).
