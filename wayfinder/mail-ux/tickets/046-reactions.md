@@ -76,7 +76,11 @@ The decisions:
   markers without the attachment in Outlook. A client that reads only RFC 9078
   sees a short reply.
 - **Several reactions:** they add up, as Gmail's do, one per person and emoji.
-- **Large messages:** past 20 recipients a reaction is refused, because it goes
-  where a reply-all would.
+- **When it's refused:** on mail from a mailing list, past 20 recipients in To and
+  Cc, when you aren't in To or Cc, and once you have 20 reactions on a message, as
+  [Gmail recommends](https://developers.google.com/workspace/gmail/reactions/format).
+  A reaction goes where a reply-all would, so on a list it reaches everyone, and a
+  Reply-To address can post it elsewhere. The button stays, dimmed, and says why
+  when pressed.
 
 The first build stays in the stash until #1144 merges.
