@@ -29,6 +29,12 @@ It should match the rest of the sidebar as rebuilt in
 decides how account identity shows across Mail, including counts in the
 switcher. This ticket is the switcher's place, look and room; agree the two.
 
+**All accounts has no Outbox or New Folder** (A56, in the
+[heuristic audit](../references/heuristic-audit.md); added 2026-11-04, still
+true then). Seeing pending or scheduled mail, or creating a folder, needs a
+switch to one account first. Decide whether they appear there, and how they say
+which account they act on.
+
 Source: the user, 2026-10-15. Inputs: the sidebar's account row and menu as
 of that date (`AppSidebar.vue`, `accountMenu`), and C21 in
 [merged problems](../references/merged-problems.md).
