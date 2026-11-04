@@ -61,10 +61,13 @@ The decisions:
 
 - **Which emoji:** any single emoji, from a short palette that opens onto the
   full picker.
-- **Taking one back:** Undo only, while the undo-send hold lasts. RFC 9078 has no
+- **Taking one back:** Undo only, during the undo-send period. RFC 9078 has no
   withdrawal and Gmail allows none after its own Undo, and an empty reaction
   would show elsewhere as a blank message. Pressing your own chip says you
   already reacted.
+- **The Outbox:** a reaction stays out of it. The Undo wait is held in the browser,
+  so it is never a pending send, and its record is removed once sent. Closing the
+  page during the wait drops the reaction.
 - **Clients that don't send RFC 9078:** Gmail's format becomes a chip. A lone
   emoji reply with no marker stays a message, so nothing is folded by guesswork.
 - **Where they show:** chips under the message, with who reacted on hover. The
