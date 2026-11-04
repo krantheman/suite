@@ -85,6 +85,7 @@ Mail settings.
   [Muting a thread](tickets/034-mute-thread.md),
   [Templates and snippets](tickets/022-templates.md),
   [Shared inboxes and delegation](tickets/023-shared-inboxes.md),
+  [Mail push notifications go missing](tickets/050-mail-push-goes-missing.md),
   [Notifications for the mail you care about](tickets/024-notifications.md),
   [Discussing a mail with colleagues](tickets/025-team-comments.md),
   [AI and translation](tickets/026-ai-and-translation.md),
