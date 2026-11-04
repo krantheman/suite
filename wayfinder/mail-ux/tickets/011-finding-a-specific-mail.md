@@ -3,7 +3,7 @@ id: 011
 title: Finding a specific mail
 label: wayfinder:grilling
 status: open
-assignee: claude (agent, 2026-11-03), with Akash
+assignee:
 blocked-by: [001]
 ---
 

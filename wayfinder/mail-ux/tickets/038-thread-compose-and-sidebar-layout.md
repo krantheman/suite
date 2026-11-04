@@ -2,8 +2,8 @@
 id: 038
 title: Layout of the thread, compose and sidebar
 label: wayfinder:grilling
-status: open
-assignee:
+status: closed
+assignee: claude (agent, 2026-11-04), with Akash
 blocked-by: [012]
 ---
 
@@ -34,3 +34,17 @@ From [merged problems](../references/merged-problems.md) (ticket 003):
   A25, A33).
 - C29 Compose covers the mail you're answering (A38, I14).
 - C40 No context on who you're writing to: a sender pane (G13).
+
+## Answer
+
+Closed 2026-11-04 with Akash: the thread and compose have been cleaned up, so
+there is nothing left here to decide. Built in frappe/suite#996: the subject
+heading the thread, a toolbar of actions only, one Folders menu, compose opening
+docked, the sender card, and a split view's divider that drags to resize.
+
+The sidebar's lower part was rebuilt in the same PR (Inbox, Starred, Drafts and
+Sent, with the rest behind More). Its top is still open, in
+[The top of the sidebar and the account switcher](041-the-sidebars-head.md).
+
+Left as plain fixes, in [fixes.md](../fixes.md): View in Desk in the message
+menu, and the message's width on a wide monitor.

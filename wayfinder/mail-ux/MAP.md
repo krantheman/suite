@@ -154,6 +154,9 @@ Mail settings.
   Mail and Calendar.
 - [Phone loose ends](tickets/049-phone-loose-ends.md): an empty folder keeps its
   title, Profile keeps to its app, the merged list is titled "All Inboxes".
+- [Layout of the thread, compose and sidebar](tickets/038-thread-compose-and-sidebar-layout.md):
+  built in frappe/suite#996, nothing left to decide; the top of the sidebar
+  stays with its own ticket.
 
 ## Not yet specified
 

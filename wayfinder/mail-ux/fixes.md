@@ -49,6 +49,13 @@ separately. If a fix turns out to need a real choice, move it to a ticket.
   toggles and Log out set apart.
 - [ ] **Toasts and Undo arrive with the action** (C26; A63).
 
+## The thread
+
+- [ ] **View in Desk leaves the message menu** (C10; A33): a Frappe admin's term
+  in an end user's menu.
+- [ ] **A message keeps a readable width on a wide monitor**: the pane sets no
+  maximum, so check how long lines run there and cap them if they run too long.
+
 ## Compose and search
 
 - [ ] **Compose keeps its controls in view** (C31; A40, A41, A45, A47): Cc
