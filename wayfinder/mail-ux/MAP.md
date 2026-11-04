@@ -158,6 +158,9 @@ Mail settings.
 - [Layout of the thread, compose and sidebar](tickets/038-thread-compose-and-sidebar-layout.md):
   built in frappe/suite#996, nothing left to decide; the top of the sidebar
   stays with its own ticket.
+- [Reactions](tickets/046-reactions.md): chips under the message, any single emoji,
+  taken back by Undo only, no notification or unread; sent in Gmail's format and
+  read in both Gmail's and RFC 9078; built in frappe/suite#1144, not merged yet.
 
 ## Not yet specified
 
