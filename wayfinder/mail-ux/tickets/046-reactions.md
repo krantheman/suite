@@ -84,7 +84,7 @@ The decisions:
   Cc, when you aren't in To or Cc, and once you have 20 reactions on a message, as
   [Gmail recommends](https://developers.google.com/workspace/gmail/reactions/format).
   A reaction goes where a reply-all would, so on a list it reaches everyone, and a
-  Reply-To address can post it elsewhere. The button stays, dimmed, and says why
-  when pressed.
+  Reply-To address can post it elsewhere. The button and chips are disabled there,
+  and the button says why on hover.
 
 The first build stays in the stash until #1144 merges.
