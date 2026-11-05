@@ -23,7 +23,7 @@ from frappe.utils import (
     time_diff_in_seconds,
 )
 
-from suite.mail import classification
+from suite.mail import classification, muting
 from suite.mail.doctype.mail_queue.mail_queue import MailQueue
 from suite.mail.doctype.sieve_script.sieve_script import UNSCREENED_KEYWORD
 from suite.mail.doctype.user_account.user_account import get_user_for_jmap_account
@@ -1792,7 +1792,17 @@ def fetch_changes(user: str, account: str, email_state: str | None = None, ctx: 
                 mailboxes_to_reload = set()
                 reactions = []
 
+                unread = [m for m in messages if not m["draft"] and not m["seen"]]
+                muted = muting.hold_back(
+                    client, account, [m for m in unread if not read_reactions(m)], mailboxes
+                )
+
                 for message in messages:
+                    # A reply in a muted conversation asks for nothing: no push, no reload, and it
+                    # is already read and out of the Inbox.
+                    if message["id"] in muted:
+                        continue
+
                     # A reaction is a mark on a message rather than mail to read: no push, and read
                     # as it lands so that nothing counts it, though a chip is new on the thread.
                     if not message["draft"] and not message["seen"] and read_reactions(message):

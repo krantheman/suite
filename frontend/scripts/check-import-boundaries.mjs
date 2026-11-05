@@ -131,6 +131,8 @@ const moduleGraphDebtGroups = [
       'mail/components/Settings/MailImportSettings.vue|@/utils/useChunkedUpload',
       'mail/components/Settings/MailLayoutSettings.vue|@/components/settings/AppSettingsBody.vue',
       'mail/components/Settings/MailLayoutSettings.vue|@/components/settings/AppSettingsHeader.vue',
+      'mail/components/Settings/MutedSettings.vue|@/components/settings/AppSettingsBody.vue',
+      'mail/components/Settings/MutedSettings.vue|@/components/settings/AppSettingsHeader.vue',
       'mail/components/Settings/PushSubscriptionSettings.vue|@/components/settings/AppSettingsHeader.vue',
       'mail/components/Settings/ScreenedEmailAddressSettings.vue|@/components/AdaptiveDropdown.vue',
       'mail/components/Settings/ScreenedEmailAddressSettings.vue|@/components/settings/AppSettingsHeader.vue',

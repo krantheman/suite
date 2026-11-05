@@ -88,6 +88,8 @@ import {
   ArchiveRestore,
   ArrowLeft,
   ArrowRight,
+  Bell,
+  BellOff,
   ChevronLeft,
   CircleAlert,
   CircleCheck,
@@ -128,6 +130,7 @@ const emit = defineEmits([
   'addThreadToMailbox',
   'removeThreadFromMailbox',
   'setSpamStatus',
+  'muteThread',
   'deleteThread',
   'prevThread',
   'nextThread',
@@ -172,6 +175,9 @@ const holdsReceived = computed(() =>
     mailboxIds.value.sent,
   ),
 )
+
+// Muted while any of its messages says so, as the list reads it.
+const muted = computed(() => (thread ?? []).some((mail: Mail) => !!mail.muted))
 
 const moreActions = computed((): Action[] => [
   {
@@ -240,6 +246,17 @@ const moreActions = computed((): Action[] => [
     onClick: () => emit('setSeen', false),
     icon: MailIcon,
     condition: () => !inDrafts.value,
+  },
+  // Junk and Trash already keep their mail from anyone's attention.
+  {
+    label: muted.value ? __('Unmute (M)') : __('Mute (M)'),
+    onClick: () => emit('muteThread', !muted.value),
+    icon: muted.value ? Bell : BellOff,
+    condition: () =>
+      !inDrafts.value &&
+      !threadMailboxes.value.some((m: string) =>
+        [mailboxIds.value.junk, mailboxIds.value.trash].includes(m),
+      ),
   },
 ])
 

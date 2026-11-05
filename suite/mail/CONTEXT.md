@@ -36,6 +36,10 @@ message of its own. It doesn't notify or count as unread, and once delivered it
 can't be taken back.
 _Avoid_: Emoji reply, Like
 
+**Mute**:
+What a person does to a **Conversation** that keeps going without needing them. Muting takes it out of the **Inbox** to **Archive**, read, and later **Messages** in it go the same way with no notification. The exception is a **Message** with one of the person's **Email addresses** in To: that stays in the **Inbox**, unread, and notifies as usual. The **Conversation** stays muted afterwards. Lives in the `$muted` keyword (RFC 9979) on its **Messages**.
+_Avoid_: Ignore, snooze, silence
+
 ### Where mail lives
 
 **Folder**:

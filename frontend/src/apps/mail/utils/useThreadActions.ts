@@ -5,6 +5,7 @@ import { computed, h, ref, type ComputedRef, type Ref } from 'vue'
 import { api, useMutation, type InputOf } from '@/api'
 import { closeComposeWindowFor } from '@/apps/mail/composables/useComposeWindow'
 import { useMailRemoval } from '@/apps/mail/composables/useMailRemoval'
+import { useMuteConversations } from '@/apps/mail/composables/useMuteConversations'
 import { useScreener } from '@/apps/mail/composables/useScreener'
 import { FOLDER_ICON_COLOR_MAP } from '@/apps/mail/constants'
 import { userStore, type MailboxRole } from '@/apps/mail/stores/user'
@@ -922,6 +923,32 @@ export function useThreadActions(deps: {
             : __('Thread archived.'),
     )
 
+  // A muted conversation's mail leaves the Inbox, so only the Inbox loses the row; elsewhere it stays,
+  // marked. The list is read again by the mutation's own effects: this keeps the counts in step.
+  const muting = useMuteConversations({
+    accountOf: () => store.accountId,
+    takeOff: (threads) =>
+      mailbox.value === mailboxIds.inbox
+        ? handleSuccessAndRemoveFromList(
+            threads.map((t) => t.thread_id),
+            false,
+          )
+        : [],
+    putBack: restoreThreadsToList,
+    refresh: () => {
+      mailboxes.refetch().catch(() => {})
+      refillIfEmpty()
+    },
+  })
+  // A thread the list doesn't hold (opened from a link) is muted by its id all the same.
+  const rowsOf = (threadIds: string[]): Thread[] =>
+    threadIds.map(
+      (id) => rows.value?.find((t: Thread) => t.thread_id === id) ?? ({ thread_id: id } as Thread),
+    )
+  const handleMuteThreads = (threadIds: string[], muted: boolean) =>
+    (muted ? muting.mute : muting.unmute)(rowsOf(threadIds))
+  const handleToggleMute = (threadIds: string[]) => muting.toggle(rowsOf(threadIds))
+
   // Archive reversed: the received mail goes back from Archive to the Inbox, every other folder kept,
   // and your own mail stays where it is. Only Archive loses the row.
   const unarchiveThreads = (threadIds: string[]) =>
@@ -1267,6 +1294,8 @@ export function useThreadActions(deps: {
     handleMoveThreads,
     handleArchiveThreads,
     handleUnarchiveThreads,
+    handleMuteThreads,
+    handleToggleMute,
     handleSetSpamStatus,
     handleAddThreadsToMailbox,
     handleRemoveThreadsFromMailbox,

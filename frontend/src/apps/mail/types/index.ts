@@ -77,6 +77,7 @@ export interface Mail {
   received_at: string
   draft: 0 | 1
   flagged: 0 | 1
+  muted?: 0 | 1
   seen: 0 | 1
   junk: 0 | 1
   /** From a sender nobody has allowed or denied yet: waiting in the Inbox, marked new. */
@@ -195,6 +196,7 @@ export interface Thread {
   draft: 0 | 1
   junk: 0 | 1
   flagged: 0 | 1
+  muted?: 0 | 1
   /** From a sender nobody has allowed or denied yet: waiting in the Inbox, marked new. */
   unscreened?: 0 | 1
   /** The senders of the thread's unscreened mail, in the order they first wrote. */

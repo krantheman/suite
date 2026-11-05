@@ -334,6 +334,7 @@
           @set-flagged="(ids: string[], flagged: boolean) => setFlaggedSubmit({ ids, flagged })"
           @archive-thread="handleArchiveThreads([threadID!])"
           @unarchive-thread="handleUnarchiveThreads([threadID!])"
+          @mute-thread="(muted: boolean) => handleMuteThreads([threadID!], muted)"
           @move-thread="
             (moveToMailbox: string) => handleMoveThreads({ [moveToMailbox]: [threadID!] })
           "
@@ -689,6 +690,12 @@ const handleThreadActions = (e: KeyboardEvent, key: string) => {
     return
   }
 
+  // Mute (m), or unmute what is muted already.
+  if (key === 'm') {
+    e.preventDefault()
+    return handleToggleMute(thread_ids)
+  }
+
   // Mark as junk (!): only mail you received is junked.
   if (key === '!') {
     e.preventDefault()
@@ -749,6 +756,8 @@ const selectActions = buildSelectActions(
     delete: () => junkOrDeleteThreads(selections.value, false),
     read: () => handleSetSeen({ 1: selections.value }),
     unread: () => handleSetSeen({ 0: selections.value }),
+    mute: () => handleMuteThreads(selections.value, true),
+    unmute: () => handleMuteThreads(selections.value, false),
   },
 )
 
@@ -1131,6 +1140,8 @@ const {
   handleMoveThreads,
   handleArchiveThreads,
   handleUnarchiveThreads,
+  handleMuteThreads,
+  handleToggleMute,
   handleSetSpamStatus,
   handleAddThreadsToMailbox,
   handleRemoveThreadsFromMailbox,

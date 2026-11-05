@@ -1,6 +1,8 @@
 import {
   Archive,
   ArchiveRestore,
+  Bell,
+  BellOff,
   CircleAlert,
   CircleCheck,
   Mail as MailIcon,
@@ -37,6 +39,8 @@ export interface SelectHandlers {
   delete: () => void
   read: () => void
   unread: () => void
+  mute: () => void
+  unmute: () => void
 }
 
 /**
@@ -156,6 +160,21 @@ export const selectActions = (
       onClick: run.unread,
       icon: MailIcon,
       condition: notDrafts((t) => t.seen === 1),
+    },
+    // Junk and Trash already keep their mail from anyone's attention.
+    {
+      label: __('Mute (M)'),
+      shortLabel: __('Mute'),
+      onClick: run.mute,
+      icon: BellOff,
+      condition: () => !folder().trash && notDrafts((t) => !t.muted && t.junk === 0)(),
+    },
+    {
+      label: __('Unmute (M)'),
+      shortLabel: __('Unmute'),
+      onClick: run.unmute,
+      icon: Bell,
+      condition: notDrafts((t) => !!t.muted),
     },
   ]
 }

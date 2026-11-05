@@ -16,7 +16,7 @@ from jmap import MethodError, RequestError, TransportError
 from jmap.core.errors import CapabilityNotSupportedError
 from werkzeug.wrappers import Response
 
-from suite.mail import classification, unsubscribe
+from suite.mail import classification, muting, unsubscribe
 from suite.mail.api.contacts import (
     create_contacts_if_not_exists,
     enrich_contacts_with_user_images,
@@ -115,6 +115,9 @@ ALL_INBOX_MAX_FETCH = 500
 # Starred is a keyword rather than a mailbox, so it has no slug of its own; it is the one unified
 # folder named outright.
 STARRED_FOLDER = "starred"
+
+# The lists of conversations that are defined by a keyword on any of their messages, not by a folder.
+KEYWORD_LISTS = {STARRED_FOLDER: "$flagged", "muted": muting.MUTED_KEYWORD}
 
 # The order the system folders take in the unified folder list; any other role follows them.
 UNIFIED_ROLE_ORDER = ("inbox", "sent", "drafts", "important", "junk", "archive", "trash")
@@ -292,6 +295,7 @@ def list_filter(filter_by: str | None, skip: tuple[str, ...] = ()) -> dict | Non
 
     conditions_by_key = {
         "starred": {"someInThreadHaveKeyword": "$flagged"},
+        "muted": {"someInThreadHaveKeyword": muting.MUTED_KEYWORD},
         "unread": {"notKeyword": "$seen"},
         "has_attachments": {"hasAttachment": True},
         # Mail from senders nobody has decided on yet (see the screening gate).
@@ -322,7 +326,7 @@ def get_threads(
     `category` narrows the list to one of the Inbox's tabs (see `classification.inbox_tabs`).
     """
 
-    if mailbox == "starred":
+    if keyword := KEYWORD_LISTS.get(mailbox):
         conditions = [
             {
                 "inMailboxOtherThan": [
@@ -330,12 +334,12 @@ def get_threads(
                     get_mailbox_id_by_role(account, "trash", create_if_not_exists=True, raise_exception=True),
                 ]
             },
-            {"someInThreadHaveKeyword": "$flagged"},
+            {"someInThreadHaveKeyword": keyword},
         ]
     else:
         conditions = [{"inMailbox": mailbox}]
 
-    if condition := list_filter(filter_by, skip=("starred",) if mailbox == "starred" else ()):
+    if condition := list_filter(filter_by, skip=(mailbox,)):
         conditions.append(condition)
     if category:
         conditions.append(tab_filter(validate_tab(category), classification.inbox_tabs()))
@@ -1069,6 +1073,8 @@ def serialize_thread(
         # (someInThreadHaveKeyword). Read off the row's own message, a thread starred by an older one
         # sat in Starred with a hollow star.
         "flagged": cint(any(message.get("flagged") for message in thread_messages)),
+        # Muted while any of its messages says so, whichever of them this view shows.
+        "muted": cint(any(muting.is_muted_message(message) for message in thread_messages)),
         # A thread waits on a decision while any of its mail here is from an unscreened sender; these are
         # those senders, in the order they first wrote, so deciding the thread can decide them all.
         "unscreened": cint(any(is_unscreened_message(message) for message in messages)),
@@ -1120,6 +1126,7 @@ def serialize_mail(mail: dict) -> dict:
         "reacts_with": read_reactions(mail),
         "mailing_list": cint(mail.get("mailing_list")),
         "unscreened": cint(is_unscreened_message(mail)),
+        "muted": cint(muting.is_muted_message(mail)),
         "attachments": serialize_attachments(mail.get("attachments", [])),
         # The part has no filename, so it never survives `serialize_attachments`: the UI asks for
         # the parsed report by the message's id instead (see DeliveryStatusBanner).
@@ -1596,6 +1603,19 @@ def set_flagged(account: str, ids: list[str], flagged: bool) -> dict:
     set_flagged_status(account, ids, flagged)
 
     return {"ids": ids, "flagged": flagged}
+
+
+@frappe.whitelist()
+def set_threads_muted(
+    account: str,
+    thread_ids: list[str],
+    muted: bool,
+    back_to_inbox: bool = False,
+    mark_unread: list[str] | None = None,
+) -> muting.MuteResult:
+    """Mutes or unmutes whole conversations (see `suite.mail.muting`)."""
+
+    return muting.set_muted(account, thread_ids, muted, back_to_inbox, mark_unread)
 
 
 @frappe.whitelist()

@@ -5329,6 +5329,7 @@ export type GetThreadsOutputCopy = {
   flagged: 0 | 1
   draft: 0 | 1
   unscreened?: 0 | 1
+  muted?: 0 | 1
 }
 
 export type GetThreadsOutputMailboxRef = {
@@ -5350,6 +5351,7 @@ export type GetThreadsOutputMessage = {
   flagged: 0 | 1
   draft: 0 | 1
   unscreened?: 0 | 1
+  muted?: 0 | 1
   message_id: string | null
   in_reply_to: string | null
   reacts_with: Array<string>
@@ -5395,6 +5397,7 @@ export type GetThreadsOutputThread = {
   flagged: 0 | 1
   draft: 0 | 1
   unscreened?: 0 | 1
+  muted?: 0 | 1
   account?: string
   account_name?: string
   view_mailbox?: string
@@ -5478,6 +5481,7 @@ export type GetUnifiedThreadsOutputCopy = {
   flagged: 0 | 1
   draft: 0 | 1
   unscreened?: 0 | 1
+  muted?: 0 | 1
 }
 
 export type GetUnifiedThreadsOutputMailboxRef = {
@@ -5499,6 +5503,7 @@ export type GetUnifiedThreadsOutputMessage = {
   flagged: 0 | 1
   draft: 0 | 1
   unscreened?: 0 | 1
+  muted?: 0 | 1
   message_id: string | null
   in_reply_to: string | null
   reacts_with: Array<string>
@@ -5544,6 +5549,7 @@ export type GetUnifiedThreadsOutputThread = {
   flagged: 0 | 1
   draft: 0 | 1
   unscreened?: 0 | 1
+  muted?: 0 | 1
   account?: string
   account_name?: string
   view_mailbox?: string
@@ -5720,6 +5726,7 @@ export type GetThreadOutputCopy = {
   flagged: 0 | 1
   draft: 0 | 1
   unscreened?: 0 | 1
+  muted?: 0 | 1
 }
 
 export type GetThreadOutputMailboxRef = {
@@ -5741,6 +5748,7 @@ export type GetThreadOutputMessage = {
   flagged: 0 | 1
   draft: 0 | 1
   unscreened?: 0 | 1
+  muted?: 0 | 1
   message_id: string | null
   in_reply_to: string | null
   reacts_with: Array<string>
@@ -5847,6 +5855,7 @@ export type SearchMailsOutputCopy = {
   flagged: 0 | 1
   draft: 0 | 1
   unscreened?: 0 | 1
+  muted?: 0 | 1
 }
 
 export type SearchMailsOutputMailboxRef = {
@@ -5868,6 +5877,7 @@ export type SearchMailsOutputMessage = {
   flagged: 0 | 1
   draft: 0 | 1
   unscreened?: 0 | 1
+  muted?: 0 | 1
   message_id: string | null
   in_reply_to: string | null
   reacts_with: Array<string>
@@ -5913,6 +5923,7 @@ export type SearchMailsOutputSearchRow = {
   flagged: 0 | 1
   draft: 0 | 1
   unscreened?: 0 | 1
+  muted?: 0 | 1
   account?: string
   account_name?: string
   view_mailbox?: string
@@ -6322,6 +6333,42 @@ const operationSetMailsSeen: MutationRef<SetMailsSeenInput, SetMailsSeenOutput, 
     errors: ['PermissionError', 'ValidationError'],
     loadValidators: async () => (await import('./validators')).operationSetMailsSeen,
   }
+
+export type SetThreadsMutedInput = {
+  account: string
+  thread_ids: Array<string>
+  muted: boolean
+  back_to_inbox?: boolean
+  mark_unread?: Array<string> | null
+}
+
+export type SetThreadsMutedOutput = {
+  updated: Array<string>
+  left_inbox: boolean
+  marked_read: Array<string>
+}
+
+export type SetThreadsMutedError = 'PermissionError' | 'ValidationError'
+
+const operationSetThreadsMuted: MutationRef<
+  SetThreadsMutedInput,
+  SetThreadsMutedOutput,
+  SetThreadsMutedError
+> = {
+  id: 'set_threads_muted',
+  owner: 'mail',
+  kind: 'mutation',
+  publicName: 'messages.mute',
+  envelope: 'message',
+  method: 'POST',
+  path: '/api/method/suite.mail.api.mail.set_threads_muted',
+  prefix: '/api/suite/mail/',
+  pathParams: [],
+  nodeParams: [],
+  entity: null,
+  errors: ['PermissionError', 'ValidationError'],
+  loadValidators: async () => (await import('./validators')).operationSetThreadsMuted,
+}
 
 export type MoveMailsInput = {
   account: string
@@ -7359,6 +7406,7 @@ export const api = {
     deleteDraft: operationDeleteMail,
     flag: operationSetFlagged,
     seen: operationSetMailsSeen,
+    mute: operationSetThreadsMuted,
     move: operationMoveMails,
     file: operationFileMails,
     addToFolder: operationAddMailsToMailbox,

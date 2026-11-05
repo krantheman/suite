@@ -131,6 +131,7 @@ from suite.mail.api.mail import (
     set_mails_mailboxes,
     set_mails_seen,
     set_mails_spam_status,
+    set_threads_muted,
     undo_screening_verdict,
     unscreen_email_addresses,
     unsubscribe_mail,

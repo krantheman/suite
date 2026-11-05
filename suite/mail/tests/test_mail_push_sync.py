@@ -132,6 +132,7 @@ class FetchChangesReactions(unittest.TestCase):
     def _arrive(self, message: dict) -> tuple[mock.Mock, mock.Mock, mock.Mock]:
         server = _server()
         server.respond("Email/changes", _changes(created=[message["id"]]))
+        server.respond("Email/query", {"accountId": ACCOUNT, "ids": [], "position": 0})
         pn = mock.Mock()
         pn.return_value.is_enabled.return_value = True
 

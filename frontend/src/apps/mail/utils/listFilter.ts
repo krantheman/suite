@@ -31,7 +31,7 @@ interface ListFilterOptions {
 }
 
 /**
- * The list filter — Unread, Starred, Has attachments, Unknown sender — its menu, and the title the
+ * The list filter — Unread, Starred, Has attachments, Muted, Unknown sender — its menu, and the title the
  * toolbar shows for it. Filters combine: each one ticked narrows the list further, and none ticked is
  * all of it. Sent to the server as one `filter_by` of comma-joined keys. Not remembered: a list opens
  * unfiltered, and another list starts clear, so mail is never hidden by a filter set long ago.
@@ -51,6 +51,7 @@ export const useListFilter = ({
     { key: 'unread', label: () => __('Unread'), offered: () => true },
     { key: 'starred', label: () => __('Starred'), offered: starrable },
     { key: 'has_attachments', label: () => __('Has attachments'), offered: () => true },
+    { key: 'muted', label: () => __('Muted'), offered: () => true },
     { key: 'unscreened', label: () => __('Unknown sender'), offered: screenable },
   ]
 

@@ -264,6 +264,7 @@
           "
           @archive-thread="handleArchive(openRow!)"
           @unarchive-thread="handleUnarchive(openRow!)"
+          @mute-thread="(muted: boolean) => (muted ? muting.mute : muting.unmute)([openRow!])"
           @sync-unseen="handleSyncUnseen"
           @add-thread-to-mailbox="handleAddToMailbox"
           @remove-thread-from-mailbox="handleRemoveFromMailbox"
@@ -330,6 +331,7 @@ import { useKeptRead } from '@/apps/mail/composables/useKeptRead'
 import { useListRows } from '@/apps/mail/composables/useListRows'
 import { useListSelection } from '@/apps/mail/composables/useListSelection'
 import { useMailRemoval } from '@/apps/mail/composables/useMailRemoval'
+import { useMuteConversations } from '@/apps/mail/composables/useMuteConversations'
 import { PAGE_LENGTH, usePaginatedThreads } from '@/apps/mail/composables/usePaginatedThreads'
 import { useScreener } from '@/apps/mail/composables/useScreener'
 import { userStore } from '@/apps/mail/stores/user'
@@ -697,6 +699,11 @@ const handleThreadActions = (e: KeyboardEvent, key: string) => {
     else if (unarchivable(messages, thread)) handleUnarchive(thread)
     return true
   }
+  if (key === 'm') {
+    e.preventDefault()
+    muting.toggle([thread])
+    return true
+  }
 
   // Junk takes only mail you received; Not junk, in Junk, whatever is there.
   if (key === '!') {
@@ -719,6 +726,7 @@ const handleSelectionShortcut = (e: KeyboardEvent, key: string) => {
       if (rows.some((t) => archivable(messagesOf(t), t))) archiveSelected()
       else if (rows.some((t) => unarchivable(messagesOf(t), t))) unarchiveThreads(takeSelected())
     },
+    m: () => muting.toggle(takeSelected()),
     '!': () => setThreadsSpam(takeSelected(), !isJunkFolder.value),
   }[key]
   if (!action) return false
@@ -1283,6 +1291,19 @@ const fileThreads = (
     },
   )
 }
+// A muted conversation's mail leaves the Inbox, so only All Inboxes loses the row; the rest keep it.
+const muting = useMuteConversations({
+  accountOf: (thread) => thread.account,
+  takeOff: (threads) => {
+    if (folder !== INBOX_FOLDER) return []
+    goToNextThreadOrClose(threads.map(threadKey))
+    keptRead.release(threads.map(threadKey))
+    return threads
+  },
+  putBack: (rows) => keptRead.restore(rows, keptRead.current()),
+  refresh: () => refreshThreads(),
+})
+
 const handleArchive = (thread: Thread) => fileThreads([thread], 'archive')
 const handleUnarchive = (thread: Thread) => fileThreads([thread], 'unarchive')
 const handleTrash = (thread: Thread) => fileThreads([thread], 'trash')
@@ -1448,6 +1469,8 @@ const selectActions = buildSelectActions(
     delete: deleteSelected,
     read: () => setThreadsSeen(takeSelected(), true),
     unread: () => setThreadsSeen(takeSelected(), false),
+    mute: () => muting.mute(takeSelected()),
+    unmute: () => muting.unmute(takeSelected()),
   },
 )
 

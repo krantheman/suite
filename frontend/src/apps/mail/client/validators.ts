@@ -339,6 +339,8 @@ import type {
   SetMemberReceivingEnabledOutput,
   SetSignatureInput,
   SetSignatureOutput,
+  SetThreadsMutedInput,
+  SetThreadsMutedOutput,
   SignaturesInput,
   SignaturesOutput,
   SignupInput,
@@ -7157,6 +7159,7 @@ export const operationGetThreads: Validators<GetThreadsInput, GetThreadsOutput> 
               flagged: { enum: [0, 1], title: 'Flagged', type: 'integer' },
               draft: { enum: [0, 1], title: 'Draft', type: 'integer' },
               unscreened: { enum: [0, 1], title: 'Unscreened', type: 'integer' },
+              muted: { enum: [0, 1], title: 'Muted', type: 'integer' },
             },
             required: [
               'name',
@@ -7205,6 +7208,7 @@ export const operationGetThreads: Validators<GetThreadsInput, GetThreadsOutput> 
               flagged: { enum: [0, 1], title: 'Flagged', type: 'integer' },
               draft: { enum: [0, 1], title: 'Draft', type: 'integer' },
               unscreened: { enum: [0, 1], title: 'Unscreened', type: 'integer' },
+              muted: { enum: [0, 1], title: 'Muted', type: 'integer' },
               message_id: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Message Id' },
               in_reply_to: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'In Reply To' },
               reacts_with: { items: { type: 'string' }, title: 'Reacts With', type: 'array' },
@@ -7318,6 +7322,7 @@ export const operationGetThreads: Validators<GetThreadsInput, GetThreadsOutput> 
               flagged: { enum: [0, 1], title: 'Flagged', type: 'integer' },
               draft: { enum: [0, 1], title: 'Draft', type: 'integer' },
               unscreened: { enum: [0, 1], title: 'Unscreened', type: 'integer' },
+              muted: { enum: [0, 1], title: 'Muted', type: 'integer' },
               account: { title: 'Account', type: 'string' },
               account_name: { title: 'Account Name', type: 'string' },
               view_mailbox: { title: 'View Mailbox', type: 'string' },
@@ -7446,6 +7451,7 @@ export const operationGetUnifiedThreads: Validators<
               flagged: { enum: [0, 1], title: 'Flagged', type: 'integer' },
               draft: { enum: [0, 1], title: 'Draft', type: 'integer' },
               unscreened: { enum: [0, 1], title: 'Unscreened', type: 'integer' },
+              muted: { enum: [0, 1], title: 'Muted', type: 'integer' },
             },
             required: [
               'name',
@@ -7494,6 +7500,7 @@ export const operationGetUnifiedThreads: Validators<
               flagged: { enum: [0, 1], title: 'Flagged', type: 'integer' },
               draft: { enum: [0, 1], title: 'Draft', type: 'integer' },
               unscreened: { enum: [0, 1], title: 'Unscreened', type: 'integer' },
+              muted: { enum: [0, 1], title: 'Muted', type: 'integer' },
               message_id: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Message Id' },
               in_reply_to: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'In Reply To' },
               reacts_with: { items: { type: 'string' }, title: 'Reacts With', type: 'array' },
@@ -7607,6 +7614,7 @@ export const operationGetUnifiedThreads: Validators<
               flagged: { enum: [0, 1], title: 'Flagged', type: 'integer' },
               draft: { enum: [0, 1], title: 'Draft', type: 'integer' },
               unscreened: { enum: [0, 1], title: 'Unscreened', type: 'integer' },
+              muted: { enum: [0, 1], title: 'Muted', type: 'integer' },
               account: { title: 'Account', type: 'string' },
               account_name: { title: 'Account Name', type: 'string' },
               view_mailbox: { title: 'View Mailbox', type: 'string' },
@@ -7876,6 +7884,7 @@ export const operationGetThread: Validators<GetThreadInput, GetThreadOutput> = {
               flagged: { enum: [0, 1], title: 'Flagged', type: 'integer' },
               draft: { enum: [0, 1], title: 'Draft', type: 'integer' },
               unscreened: { enum: [0, 1], title: 'Unscreened', type: 'integer' },
+              muted: { enum: [0, 1], title: 'Muted', type: 'integer' },
             },
             required: [
               'name',
@@ -7924,6 +7933,7 @@ export const operationGetThread: Validators<GetThreadInput, GetThreadOutput> = {
               flagged: { enum: [0, 1], title: 'Flagged', type: 'integer' },
               draft: { enum: [0, 1], title: 'Draft', type: 'integer' },
               unscreened: { enum: [0, 1], title: 'Unscreened', type: 'integer' },
+              muted: { enum: [0, 1], title: 'Muted', type: 'integer' },
               message_id: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Message Id' },
               in_reply_to: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'In Reply To' },
               reacts_with: { items: { type: 'string' }, title: 'Reacts With', type: 'array' },
@@ -8132,6 +8142,7 @@ export const operationSearchMails: Validators<SearchMailsInput, SearchMailsOutpu
               flagged: { enum: [0, 1], title: 'Flagged', type: 'integer' },
               draft: { enum: [0, 1], title: 'Draft', type: 'integer' },
               unscreened: { enum: [0, 1], title: 'Unscreened', type: 'integer' },
+              muted: { enum: [0, 1], title: 'Muted', type: 'integer' },
             },
             required: [
               'name',
@@ -8180,6 +8191,7 @@ export const operationSearchMails: Validators<SearchMailsInput, SearchMailsOutpu
               flagged: { enum: [0, 1], title: 'Flagged', type: 'integer' },
               draft: { enum: [0, 1], title: 'Draft', type: 'integer' },
               unscreened: { enum: [0, 1], title: 'Unscreened', type: 'integer' },
+              muted: { enum: [0, 1], title: 'Muted', type: 'integer' },
               message_id: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Message Id' },
               in_reply_to: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'In Reply To' },
               reacts_with: { items: { type: 'string' }, title: 'Reacts With', type: 'array' },
@@ -8293,6 +8305,7 @@ export const operationSearchMails: Validators<SearchMailsInput, SearchMailsOutpu
               flagged: { enum: [0, 1], title: 'Flagged', type: 'integer' },
               draft: { enum: [0, 1], title: 'Draft', type: 'integer' },
               unscreened: { enum: [0, 1], title: 'Unscreened', type: 'integer' },
+              muted: { enum: [0, 1], title: 'Muted', type: 'integer' },
               account: { title: 'Account', type: 'string' },
               account_name: { title: 'Account Name', type: 'string' },
               view_mailbox: { title: 'View Mailbox', type: 'string' },
@@ -8870,6 +8883,47 @@ export const operationSetMailsSeen: Validators<SetMailsSeenInput, SetMailsSeenOu
   },
   validateOutput(value: unknown): asserts value is SetMailsSeenOutput {
     assertSchema(value, { items: { type: 'string' }, type: 'array' }, 'set_mails_seen output')
+  },
+}
+
+export const operationSetThreadsMuted: Validators<SetThreadsMutedInput, SetThreadsMutedOutput> = {
+  validateInput(value: unknown): asserts value is SetThreadsMutedInput {
+    assertSchema(
+      value,
+      {
+        type: 'object',
+        properties: {
+          account: { title: 'Account', type: 'string' },
+          thread_ids: { items: { type: 'string' }, title: 'Thread Ids', type: 'array' },
+          muted: { title: 'Muted', type: 'boolean' },
+          back_to_inbox: { title: 'Back To Inbox', type: 'boolean' },
+          mark_unread: {
+            anyOf: [{ items: { type: 'string' }, type: 'array' }, { type: 'null' }],
+            title: 'Mark Unread',
+          },
+        },
+        required: ['account', 'thread_ids', 'muted'],
+        additionalProperties: false,
+        $defs: {},
+      },
+      'set_threads_muted input',
+    )
+  },
+  validateOutput(value: unknown): asserts value is SetThreadsMutedOutput {
+    assertSchema(
+      value,
+      {
+        properties: {
+          updated: { items: { type: 'string' }, title: 'Updated', type: 'array' },
+          left_inbox: { title: 'Left Inbox', type: 'boolean' },
+          marked_read: { items: { type: 'string' }, title: 'Marked Read', type: 'array' },
+        },
+        required: ['updated', 'left_inbox', 'marked_read'],
+        title: 'MuteResult',
+        type: 'object',
+      },
+      'set_threads_muted output',
+    )
   },
 }
 

@@ -55,6 +55,8 @@ class Copy(TypedDict):
     draft: Flag
     # From a sender nobody has allowed or denied yet: the mail waits in the Inbox, marked new.
     unscreened: NotRequired[Flag]
+    # In a conversation the person muted: later replies skip the Inbox and don't notify.
+    muted: NotRequired[Flag]
 
 
 class Reaction(TypedDict):

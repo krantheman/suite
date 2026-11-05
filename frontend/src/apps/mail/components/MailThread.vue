@@ -12,6 +12,7 @@
       @add-thread-to-mailbox="(mailboxId: string) => fileThread(mailboxId, true)"
       @remove-thread-from-mailbox="(mailboxId: string) => fileThread(mailboxId, false)"
       @set-spam-status="onSetSpamStatus"
+      @mute-thread="(muted: boolean) => emit('muteThread', muted)"
       @delete-thread="emit('deleteThread')"
       @prev-thread="emit('prevThread')"
       @next-thread="emit('nextThread')"
@@ -873,6 +874,7 @@ const emit = defineEmits([
   'deleteThread',
   'setSeen',
   'setFlagged',
+  'muteThread',
   'moveThread',
   'addThreadToMailbox',
   'removeThreadFromMailbox',

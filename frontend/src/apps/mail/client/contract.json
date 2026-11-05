@@ -15342,6 +15342,14 @@
                 ],
                 "title": "Unscreened",
                 "type": "integer"
+              },
+              "muted": {
+                "enum": [
+                  0,
+                  1
+                ],
+                "title": "Muted",
+                "type": "integer"
               }
             },
             "required": [
@@ -15468,6 +15476,14 @@
                   1
                 ],
                 "title": "Unscreened",
+                "type": "integer"
+              },
+              "muted": {
+                "enum": [
+                  0,
+                  1
+                ],
+                "title": "Muted",
                 "type": "integer"
               },
               "message_id": {
@@ -15816,6 +15832,14 @@
                   1
                 ],
                 "title": "Unscreened",
+                "type": "integer"
+              },
+              "muted": {
+                "enum": [
+                  0,
+                  1
+                ],
+                "title": "Muted",
                 "type": "integer"
               },
               "account": {
@@ -16240,6 +16264,14 @@
                 ],
                 "title": "Unscreened",
                 "type": "integer"
+              },
+              "muted": {
+                "enum": [
+                  0,
+                  1
+                ],
+                "title": "Muted",
+                "type": "integer"
               }
             },
             "required": [
@@ -16366,6 +16398,14 @@
                   1
                 ],
                 "title": "Unscreened",
+                "type": "integer"
+              },
+              "muted": {
+                "enum": [
+                  0,
+                  1
+                ],
+                "title": "Muted",
                 "type": "integer"
               },
               "message_id": {
@@ -16714,6 +16754,14 @@
                   1
                 ],
                 "title": "Unscreened",
+                "type": "integer"
+              },
+              "muted": {
+                "enum": [
+                  0,
+                  1
+                ],
+                "title": "Muted",
                 "type": "integer"
               },
               "account": {
@@ -17410,6 +17458,14 @@
                 ],
                 "title": "Unscreened",
                 "type": "integer"
+              },
+              "muted": {
+                "enum": [
+                  0,
+                  1
+                ],
+                "title": "Muted",
+                "type": "integer"
               }
             },
             "required": [
@@ -17536,6 +17592,14 @@
                   1
                 ],
                 "title": "Unscreened",
+                "type": "integer"
+              },
+              "muted": {
+                "enum": [
+                  0,
+                  1
+                ],
+                "title": "Muted",
                 "type": "integer"
               },
               "message_id": {
@@ -18182,6 +18246,14 @@
                 ],
                 "title": "Unscreened",
                 "type": "integer"
+              },
+              "muted": {
+                "enum": [
+                  0,
+                  1
+                ],
+                "title": "Muted",
+                "type": "integer"
               }
             },
             "required": [
@@ -18308,6 +18380,14 @@
                   1
                 ],
                 "title": "Unscreened",
+                "type": "integer"
+              },
+              "muted": {
+                "enum": [
+                  0,
+                  1
+                ],
+                "title": "Muted",
                 "type": "integer"
               },
               "message_id": {
@@ -18656,6 +18736,14 @@
                   1
                 ],
                 "title": "Unscreened",
+                "type": "integer"
+              },
+              "muted": {
+                "enum": [
+                  0,
+                  1
+                ],
+                "title": "Muted",
                 "type": "integer"
               },
               "account": {
@@ -20070,6 +20158,98 @@
           "type": "string"
         },
         "type": "array"
+      },
+      "errors": [
+        "PermissionError",
+        "ValidationError"
+      ],
+      "entity": null,
+      "nodeParams": [],
+      "stream": false,
+      "bytes": false
+    },
+    {
+      "id": "set_threads_muted",
+      "kind": "mutation",
+      "publicName": "messages.mute",
+      "page": null,
+      "envelope": "message",
+      "method": "POST",
+      "path": "/api/method/suite.mail.api.mail.set_threads_muted",
+      "pathParams": [],
+      "query": null,
+      "body": {
+        "properties": {
+          "account": {
+            "title": "Account",
+            "type": "string"
+          },
+          "thread_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Thread Ids",
+            "type": "array"
+          },
+          "muted": {
+            "title": "Muted",
+            "type": "boolean"
+          },
+          "back_to_inbox": {
+            "title": "Back To Inbox",
+            "type": "boolean"
+          },
+          "mark_unread": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mark Unread"
+          }
+        },
+        "required": [
+          "account",
+          "thread_ids",
+          "muted"
+        ],
+        "title": "MuteInput",
+        "type": "object"
+      },
+      "output": {
+        "properties": {
+          "updated": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Updated",
+            "type": "array"
+          },
+          "left_inbox": {
+            "title": "Left Inbox",
+            "type": "boolean"
+          },
+          "marked_read": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Marked Read",
+            "type": "array"
+          }
+        },
+        "required": [
+          "updated",
+          "left_inbox",
+          "marked_read"
+        ],
+        "title": "MuteResult",
+        "type": "object"
       },
       "errors": [
         "PermissionError",

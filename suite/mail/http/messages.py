@@ -98,6 +98,19 @@ class FlagResult(TypedDict):
     flagged: bool
 
 
+class MuteInput(AccountInput):
+    thread_ids: list[str]
+    muted: bool
+    back_to_inbox: NotRequired[bool]
+    mark_unread: NotRequired[list[str] | None]
+
+
+class MuteResult(TypedDict):
+    updated: list[str]
+    left_inbox: bool
+    marked_read: list[str]
+
+
 class MoveInput(IdsInput):
     mailbox: str
     clear_junk: NotRequired[bool]
@@ -366,6 +379,7 @@ _OPERATIONS: tuple[
     (mail.delete_mail, "mutation", "messages.deleteDraft", IdInput, type(None), None),
     (mail.set_flagged, "mutation", "messages.flag", FlagInput, FlagResult, None),
     (mail.set_mails_seen, "mutation", "messages.seen", SeenInput, list[str], None),
+    (mail.set_threads_muted, "mutation", "messages.mute", MuteInput, MuteResult, None),
     (mail.move_mails, "mutation", "messages.move", MoveInput, type(None), None),
     (mail.file_mails, "mutation", "messages.file", FileInput, FiledResult, None),
     (mail.add_mails_to_mailbox, "mutation", "messages.addToFolder", FolderInput, type(None), None),

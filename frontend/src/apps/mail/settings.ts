@@ -79,6 +79,12 @@ export const mailSettings = {
       body: scoped(() => import('@/apps/mail/components/Settings/AutomationSettings.vue')),
     },
     {
+      id: 'mail.muted',
+      label: () => __('Muted Conversations'),
+      icon: 'lucide-bell-off',
+      body: scoped(() => import('@/apps/mail/components/Settings/MutedSettings.vue')),
+    },
+    {
       id: 'mail.push-subscriptions',
       label: () => __('Push Subscriptions'),
       icon: 'lucide-bell-ring',

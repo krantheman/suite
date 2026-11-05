@@ -37,10 +37,15 @@
           <UserRoundSearch class="text-ink-gray-5 size-3.5" :aria-label="unknownSendersLabel" />
         </span>
       </Tooltip>
+      <MuteMark v-if="mail.muted" />
       <Badge v-if="mail.draft" size="sm" :label="__('Draft')" theme="red" />
     </template>
 
     <template #subject>
+      <!-- A stack's member has no sender line to carry the mark. -->
+      <span v-if="mail.muted && hideSender" class="mr-1.5 inline-block align-middle">
+        <MuteMark />
+      </span>
       <HighlightedText :text="mail.subject || __('[No subject]')" :term="searchTerm" />
     </template>
     <template #preview>
@@ -178,6 +183,7 @@ import AttachmentCapsule from '@/apps/mail/components/AttachmentCapsule.vue'
 import AttachmentViewer from '@/apps/mail/components/AttachmentViewer.vue'
 import MailRow from '@/apps/mail/components/MailRow.vue'
 import MailRowActions from '@/apps/mail/components/MailRowActions.vue'
+import MuteMark from '@/apps/mail/components/MuteMark.vue'
 import { useScreener } from '@/apps/mail/composables/useScreener'
 import { getAttachmentUrl } from '@/apps/mail/resources'
 import { userStore } from '@/apps/mail/stores/user'
