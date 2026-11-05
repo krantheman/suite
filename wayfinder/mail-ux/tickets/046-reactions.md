@@ -72,7 +72,8 @@ The decisions:
   emoji reply with no marker stays a message, so nothing is folded by guesswork.
 - **Where they show:** chips under the message, with who reacted on hover. Each
   message offers one add button: beside its chips once it has any, otherwise
-  beside Forward for the newest message and in the header for an older one.
+  beside Forward for the newest message on desktop, and in the header for the
+  rest. A phone's bottom bar keeps to Reply and Forward.
 - **Notifying and unread:** a reaction neither notifies nor counts as unread. It
   doesn't redate a row or bring a conversation back to a folder.
 - **What goes out:** Gmail's format only, since one message can't carry both
