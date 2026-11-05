@@ -70,9 +70,9 @@ The decisions:
   page during the wait drops the reaction.
 - **Clients that don't send RFC 9078:** Gmail's format becomes a chip. A lone
   emoji reply with no marker stays a message, so nothing is folded by guesswork.
-- **Where they show:** chips under the message, with who reacted on hover. The
-  add button sits beside Forward, and in the message header when a conversation
-  has more than one message.
+- **Where they show:** chips under the message, with who reacted on hover. Each
+  message offers one add button: beside its chips once it has any, otherwise
+  beside Forward for the newest message and in the header for an older one.
 - **Notifying and unread:** a reaction neither notifies nor counts as unread. It
   doesn't redate a row or bring a conversation back to a folder.
 - **What goes out:** Gmail's format only, since one message can't carry both
