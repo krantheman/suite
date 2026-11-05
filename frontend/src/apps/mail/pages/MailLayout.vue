@@ -8,11 +8,20 @@
   </component>
   <ShortcutsModal v-model:open="showShortcuts" />
   <OldMailDialog v-if="!mailServerUnavailable" />
+  <MuteTweaks v-if="showTweaks" />
 </template>
 
 <script setup lang="ts">
 import { providePortalTarget } from 'frappe-ui'
-import { computed, onMounted, onScopeDispose, onUnmounted, provide, watch } from 'vue'
+import {
+  computed,
+  defineAsyncComponent,
+  onMounted,
+  onScopeDispose,
+  onUnmounted,
+  provide,
+  watch,
+} from 'vue'
 import { useRoute, useRouter, type RouteLocationRaw } from 'vue-router'
 
 import DefaultLayout from '@/apps/mail/components/DefaultLayout.vue'
@@ -22,6 +31,7 @@ import OldMailDialog from '@/apps/mail/components/Screener/OldMailDialog.vue'
 import { isMailRoute } from '@/apps/mail/router'
 import { initSocket } from '@/apps/mail/socket'
 import { userStore } from '@/apps/mail/stores/user'
+import { tweaksOn } from '@/apps/mail/tweaks/tweaks'
 import { shouldIgnoreKeypress } from '@/apps/mail/utils'
 import { useSettings, useShortcuts, useUndo } from '@/apps/mail/utils/composables'
 import dayjs from '@/apps/mail/utils/dayjs'
@@ -50,6 +60,9 @@ import { useRootStore } from '@/stores/root'
  * Public pre-auth routes (login/signup/...) sit OUTSIDE this layout since they
  * do not need the $user/$dayjs/$socket injects.
  */
+const showTweaks = tweaksOn()
+const MuteTweaks = defineAsyncComponent(() => import('@/apps/mail/tweaks/MuteTweaks.vue'))
+
 const { userResource, mailboxIds, accountId } = userStore()
 const router = useRouter()
 const route = useRoute()
