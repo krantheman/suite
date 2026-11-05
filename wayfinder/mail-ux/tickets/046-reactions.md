@@ -82,6 +82,8 @@ The decisions:
 - **When it's refused:** on mail from a mailing list, past 20 recipients in To and
   Cc, when you aren't in To or Cc, and once you have 20 reactions on a message, as
   [Gmail recommends](https://developers.google.com/workspace/gmail/reactions/format).
+  Also when replies go to a different address than the sender, or the sender is a
+  no-reply address.
   A reaction goes where a reply-all would, so on a list it reaches everyone, and a
   Reply-To address can post it elsewhere. The button and chips are disabled there,
   and the button says why on hover.
