@@ -160,7 +160,7 @@ Mail settings.
   stays with its own ticket.
 - [Reactions](tickets/046-reactions.md): chips under the message, any single emoji,
   taken back by Undo only, no notification or unread; sent in Gmail's format and
-  read in both Gmail's and RFC 9078; built in frappe/suite#1144, not merged yet.
+  read in both Gmail's and RFC 9078; merged in frappe/suite#1144.
 
 ## Not yet specified
 
