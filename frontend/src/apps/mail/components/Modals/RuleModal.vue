@@ -19,24 +19,20 @@
           </div>
           <!-- On a phone the field and its comparison share a line, and what is typed takes the
                next, so none of the three is squeezed. -->
-          <div
-            v-for="(condition, i) in rule.conditions"
-            :key="i"
-            class="grid grid-cols-2 gap-2 sm:flex sm:items-center"
-          >
+          <div v-for="(condition, i) in rule.conditions" :key="i" :class="layout.condition">
             <Select
               :model-value="condition.field"
               :options="FIELD_OPTIONS"
-              class="sm:w-36 sm:shrink-0"
+              :class="layout.field"
               @update:model-value="(field) => setField(i, field as ConditionField)"
             />
             <Select
               :model-value="comparisonOf(condition).value"
               :options="comparisonOptions(condition)"
-              class="sm:w-48 sm:shrink-0"
+              :class="layout.comparison"
               @update:model-value="(value) => setComparison(i, String(value))"
             />
-            <div class="col-span-2 flex min-w-0 flex-1 items-center gap-2">
+            <div :class="layout.value">
               <FormControl
                 v-model="condition.value"
                 :type="condition.field === 'size' ? 'number' : 'text'"
@@ -62,15 +58,11 @@
 
         <section class="space-y-2">
           <div class="text-p-base">{{ __('Do this') }}</div>
-          <div
-            v-for="(action, i) in rule.actions"
-            :key="action.type"
-            class="flex flex-wrap items-center gap-2 sm:flex-nowrap"
-          >
+          <div v-for="(action, i) in rule.actions" :key="action.type" :class="layout.action">
             <Select
               :model-value="action.type"
               :options="actionOptions(action)"
-              class="w-full sm:w-48 sm:shrink-0"
+              :class="layout.actionType"
               @update:model-value="(type) => (rule.actions[i] = { type: type as ActionType })"
             />
             <div class="flex min-w-0 flex-1 items-center gap-2">
@@ -139,6 +131,7 @@
             {{ __('Fill in the conditions to see which mail they match.') }}
           </p>
         </section>
+        <RuleTweaks v-if="showTweaks" />
       </div>
     </template>
     <template #actions>
@@ -167,10 +160,12 @@
 <script setup lang="ts">
 import { refDebounced } from '@vueuse/core'
 import { Button, Dialog, Dropdown, FormControl, Select } from 'frappe-ui'
-import { computed, ref, toRaw, watch } from 'vue'
+import { computed, defineAsyncComponent, ref, toRaw, watch } from 'vue'
 
 import { api, useQuery } from '@/api'
 import { useRules } from '@/apps/mail/composables/useRules'
+import { ruleLayout } from '@/apps/mail/tweaks/ruleLayout'
+import { tweaksOn } from '@/apps/mail/tweaks/tweaks'
 import { raiseToast } from '@/apps/mail/utils'
 import dayjs from '@/apps/mail/utils/dayjs'
 import {
@@ -190,6 +185,30 @@ import {
 } from '@/apps/mail/utils/rules'
 
 const show = defineModel<boolean>()
+
+const showTweaks = tweaksOn()
+const RuleTweaks = defineAsyncComponent(() => import('@/apps/mail/tweaks/RuleTweaks.vue'))
+// A row of the rule as a sentence, which a phone breaks after the comparison; or every part on a line
+// of its own, in a box per condition or action.
+const LAYOUTS = {
+  sentence: {
+    condition: 'grid grid-cols-2 gap-2 sm:flex sm:items-center',
+    field: 'sm:w-36 sm:shrink-0',
+    comparison: 'sm:w-48 sm:shrink-0',
+    value: 'col-span-2 flex min-w-0 flex-1 items-center gap-2',
+    action: 'flex flex-wrap items-center gap-2 sm:flex-nowrap',
+    actionType: 'w-full sm:w-48 sm:shrink-0',
+  },
+  stacked: {
+    condition: 'border-outline-gray-2 flex flex-col gap-2 rounded-lg border p-2',
+    field: 'w-full',
+    comparison: 'w-full',
+    value: 'flex min-w-0 items-center gap-2',
+    action: 'border-outline-gray-2 flex flex-col gap-2 rounded-lg border p-2',
+    actionType: 'w-full',
+  },
+}
+const layout = computed(() => LAYOUTS[ruleLayout.value])
 const { account, initial } = defineProps<{
   account: string
   /** The rule to edit, or a draft to finish; a blank rule when left out. */
