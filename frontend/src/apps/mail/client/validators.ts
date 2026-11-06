@@ -117,6 +117,8 @@ import type {
   DisableMembersOutput,
   DismissFailedMailInput,
   DismissFailedMailOutput,
+  DraftRuleInput,
+  DraftRuleOutput,
   EmptyUserMailboxInput,
   EmptyUserMailboxOutput,
   EnableMembersInput,
@@ -217,6 +219,8 @@ import type {
   GetQuotaOutput,
   GetRecentThreadsFromInput,
   GetRecentThreadsFromOutput,
+  GetRulesInput,
+  GetRulesOutput,
   GetScheduledMailInput,
   GetScheduledMailOutput,
   GetScreenedAddressesInput,
@@ -267,6 +271,8 @@ import type {
   OngoingCalendarExchangeOutput,
   OngoingExchangeInput,
   OngoingExchangeOutput,
+  PreviewRuleInput,
+  PreviewRuleOutput,
   ReactInput,
   ReactOutput,
   RebuildAutomationScriptForAccountInput,
@@ -303,6 +309,8 @@ import type {
   RetryFailedMailOutput,
   SaveIdentityInput,
   SaveIdentityOutput,
+  SaveRulesInput,
+  SaveRulesOutput,
   ScreenEmailAddressesInput,
   ScreenEmailAddressesOutput,
   ScreenEmailAddressInput,
@@ -337,6 +345,8 @@ import type {
   SetMemberEmailEnabledOutput,
   SetMemberReceivingEnabledInput,
   SetMemberReceivingEnabledOutput,
+  SetSieveScriptIncludedInput,
+  SetSieveScriptIncludedOutput,
   SetSignatureInput,
   SetSignatureOutput,
   SignaturesInput,
@@ -2040,6 +2050,7 @@ export const operationGetSieveScripts: Validators<GetSieveScriptsInput, GetSieve
               id: { title: 'Id', type: 'string' },
               _name: { title: 'Name', type: 'string' },
               active: { enum: [0, 1], title: 'Active', type: 'integer' },
+              included: { enum: [0, 1], title: 'Included', type: 'integer' },
               blob_id: { title: 'Blob Id', type: 'string' },
               content: { title: 'Content', type: 'string' },
               read_only: { title: 'Read Only', type: 'boolean' },
@@ -3742,6 +3753,429 @@ export const operationDeleteSieveScript: Validators<
   },
   validateOutput(value: unknown): asserts value is DeleteSieveScriptOutput {
     assertSchema(value, { type: 'null' }, 'delete_sieve_script output')
+  },
+}
+
+export const operationSetSieveScriptIncluded: Validators<
+  SetSieveScriptIncludedInput,
+  SetSieveScriptIncludedOutput
+> = {
+  validateInput(value: unknown): asserts value is SetSieveScriptIncludedInput {
+    assertSchema(
+      value,
+      {
+        type: 'object',
+        properties: {
+          account: { title: 'Account', type: 'string' },
+          id: { title: 'Id', type: 'string' },
+          included: { title: 'Included', type: 'boolean' },
+        },
+        required: ['account', 'id', 'included'],
+        additionalProperties: false,
+        $defs: {},
+      },
+      'set_sieve_script_included input',
+    )
+  },
+  validateOutput(value: unknown): asserts value is SetSieveScriptIncludedOutput {
+    assertSchema(value, { type: 'null' }, 'set_sieve_script_included output')
+  },
+}
+
+export const operationGetRules: Validators<GetRulesInput, GetRulesOutput> = {
+  validateInput(value: unknown): asserts value is GetRulesInput {
+    assertSchema(
+      value,
+      {
+        type: 'object',
+        properties: { account: { title: 'Account', type: 'string' } },
+        required: ['account'],
+        additionalProperties: false,
+        $defs: {},
+      },
+      'get_rules input',
+    )
+  },
+  validateOutput(value: unknown): asserts value is GetRulesOutput {
+    assertSchema(
+      value,
+      {
+        $defs: {
+          Action: {
+            properties: {
+              type: {
+                enum: ['move', 'archive', 'trash', 'mark_read', 'star', 'category'],
+                title: 'Type',
+                type: 'string',
+              },
+              value: { title: 'Value', type: 'string' },
+            },
+            required: ['type'],
+            title: 'Action',
+            type: 'object',
+          },
+          Condition: {
+            properties: {
+              field: {
+                enum: ['from', 'to', 'cc', 'to_or_cc', 'subject', 'body', 'list_id', 'size'],
+                title: 'Field',
+                type: 'string',
+              },
+              op: { enum: ['is', 'contains', 'domain', 'over'], title: 'Op', type: 'string' },
+              value: { title: 'Value', type: 'string' },
+              negate: { title: 'Negate', type: 'boolean' },
+            },
+            required: ['field', 'op', 'value'],
+            title: 'Condition',
+            type: 'object',
+          },
+          FolderRule: {
+            properties: {
+              mailbox_id: { title: 'Mailbox Id', type: 'string' },
+              folder: { title: 'Folder', type: 'string' },
+              emails_from: { title: 'Emails From', type: 'string' },
+              subject_contains: { title: 'Subject Contains', type: 'string' },
+              match_if: { title: 'Match If', type: 'string' },
+              mark_as_read: { title: 'Mark As Read', type: 'boolean' },
+              add_star: { title: 'Add Star', type: 'boolean' },
+            },
+            required: [
+              'mailbox_id',
+              'folder',
+              'emails_from',
+              'subject_contains',
+              'match_if',
+              'mark_as_read',
+              'add_star',
+            ],
+            title: 'FolderRule',
+            type: 'object',
+          },
+          Rule: {
+            properties: {
+              id: { title: 'Id', type: 'string' },
+              name: { title: 'Name', type: 'string' },
+              enabled: { title: 'Enabled', type: 'boolean' },
+              match: { enum: ['all', 'any'], title: 'Match', type: 'string' },
+              conditions: {
+                items: { $ref: '#/$defs/Condition' },
+                title: 'Conditions',
+                type: 'array',
+              },
+              actions: { items: { $ref: '#/$defs/Action' }, title: 'Actions', type: 'array' },
+            },
+            required: ['id', 'name', 'enabled', 'match', 'conditions', 'actions'],
+            title: 'Rule',
+            type: 'object',
+          },
+        },
+        properties: {
+          paused_by: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Paused By' },
+          own_scripts: { items: { type: 'string' }, title: 'Own Scripts', type: 'array' },
+          rules: { items: { $ref: '#/$defs/Rule' }, title: 'Rules', type: 'array' },
+          folder_rules: {
+            items: { $ref: '#/$defs/FolderRule' },
+            title: 'Folder Rules',
+            type: 'array',
+          },
+        },
+        required: ['paused_by', 'own_scripts', 'rules', 'folder_rules'],
+        title: 'Rules',
+        type: 'object',
+      },
+      'get_rules output',
+    )
+  },
+}
+
+export const operationSaveRules: Validators<SaveRulesInput, SaveRulesOutput> = {
+  validateInput(value: unknown): asserts value is SaveRulesInput {
+    assertSchema(
+      value,
+      {
+        type: 'object',
+        properties: {
+          account: { title: 'Account', type: 'string' },
+          rules: { items: { $ref: '#/$defs/Rule' }, title: 'Rules', type: 'array' },
+        },
+        required: ['account', 'rules'],
+        additionalProperties: false,
+        $defs: {
+          Action: {
+            properties: {
+              type: {
+                enum: ['move', 'archive', 'trash', 'mark_read', 'star', 'category'],
+                title: 'Type',
+                type: 'string',
+              },
+              value: { title: 'Value', type: 'string' },
+            },
+            required: ['type'],
+            title: 'Action',
+            type: 'object',
+          },
+          Condition: {
+            properties: {
+              field: {
+                enum: ['from', 'to', 'cc', 'to_or_cc', 'subject', 'body', 'list_id', 'size'],
+                title: 'Field',
+                type: 'string',
+              },
+              op: { enum: ['is', 'contains', 'domain', 'over'], title: 'Op', type: 'string' },
+              value: { title: 'Value', type: 'string' },
+              negate: { title: 'Negate', type: 'boolean' },
+            },
+            required: ['field', 'op', 'value'],
+            title: 'Condition',
+            type: 'object',
+          },
+          Rule: {
+            properties: {
+              id: { title: 'Id', type: 'string' },
+              name: { title: 'Name', type: 'string' },
+              enabled: { title: 'Enabled', type: 'boolean' },
+              match: { enum: ['all', 'any'], title: 'Match', type: 'string' },
+              conditions: {
+                items: { $ref: '#/$defs/Condition' },
+                title: 'Conditions',
+                type: 'array',
+              },
+              actions: { items: { $ref: '#/$defs/Action' }, title: 'Actions', type: 'array' },
+            },
+            required: ['id', 'name', 'enabled', 'match', 'conditions', 'actions'],
+            title: 'Rule',
+            type: 'object',
+          },
+        },
+      },
+      'save_rules input',
+    )
+  },
+  validateOutput(value: unknown): asserts value is SaveRulesOutput {
+    assertSchema(
+      value,
+      {
+        $defs: {
+          Action: {
+            properties: {
+              type: {
+                enum: ['move', 'archive', 'trash', 'mark_read', 'star', 'category'],
+                title: 'Type',
+                type: 'string',
+              },
+              value: { title: 'Value', type: 'string' },
+            },
+            required: ['type'],
+            title: 'Action',
+            type: 'object',
+          },
+          Condition: {
+            properties: {
+              field: {
+                enum: ['from', 'to', 'cc', 'to_or_cc', 'subject', 'body', 'list_id', 'size'],
+                title: 'Field',
+                type: 'string',
+              },
+              op: { enum: ['is', 'contains', 'domain', 'over'], title: 'Op', type: 'string' },
+              value: { title: 'Value', type: 'string' },
+              negate: { title: 'Negate', type: 'boolean' },
+            },
+            required: ['field', 'op', 'value'],
+            title: 'Condition',
+            type: 'object',
+          },
+          Rule: {
+            properties: {
+              id: { title: 'Id', type: 'string' },
+              name: { title: 'Name', type: 'string' },
+              enabled: { title: 'Enabled', type: 'boolean' },
+              match: { enum: ['all', 'any'], title: 'Match', type: 'string' },
+              conditions: {
+                items: { $ref: '#/$defs/Condition' },
+                title: 'Conditions',
+                type: 'array',
+              },
+              actions: { items: { $ref: '#/$defs/Action' }, title: 'Actions', type: 'array' },
+            },
+            required: ['id', 'name', 'enabled', 'match', 'conditions', 'actions'],
+            title: 'Rule',
+            type: 'object',
+          },
+        },
+        properties: {
+          paused_by: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Paused By' },
+          own_scripts: { items: { type: 'string' }, title: 'Own Scripts', type: 'array' },
+          rules: { items: { $ref: '#/$defs/Rule' }, title: 'Rules', type: 'array' },
+        },
+        required: ['paused_by', 'own_scripts', 'rules'],
+        title: 'SavedRules',
+        type: 'object',
+      },
+      'save_rules output',
+    )
+  },
+}
+
+export const operationPreviewRule: Validators<PreviewRuleInput, PreviewRuleOutput> = {
+  validateInput(value: unknown): asserts value is PreviewRuleInput {
+    assertSchema(
+      value,
+      {
+        type: 'object',
+        properties: {
+          account: { title: 'Account', type: 'string' },
+          rule: { $ref: '#/$defs/Rule' },
+        },
+        required: ['account', 'rule'],
+        additionalProperties: false,
+        $defs: {
+          Action: {
+            properties: {
+              type: {
+                enum: ['move', 'archive', 'trash', 'mark_read', 'star', 'category'],
+                title: 'Type',
+                type: 'string',
+              },
+              value: { title: 'Value', type: 'string' },
+            },
+            required: ['type'],
+            title: 'Action',
+            type: 'object',
+          },
+          Condition: {
+            properties: {
+              field: {
+                enum: ['from', 'to', 'cc', 'to_or_cc', 'subject', 'body', 'list_id', 'size'],
+                title: 'Field',
+                type: 'string',
+              },
+              op: { enum: ['is', 'contains', 'domain', 'over'], title: 'Op', type: 'string' },
+              value: { title: 'Value', type: 'string' },
+              negate: { title: 'Negate', type: 'boolean' },
+            },
+            required: ['field', 'op', 'value'],
+            title: 'Condition',
+            type: 'object',
+          },
+          Rule: {
+            properties: {
+              id: { title: 'Id', type: 'string' },
+              name: { title: 'Name', type: 'string' },
+              enabled: { title: 'Enabled', type: 'boolean' },
+              match: { enum: ['all', 'any'], title: 'Match', type: 'string' },
+              conditions: {
+                items: { $ref: '#/$defs/Condition' },
+                title: 'Conditions',
+                type: 'array',
+              },
+              actions: { items: { $ref: '#/$defs/Action' }, title: 'Actions', type: 'array' },
+            },
+            required: ['id', 'name', 'enabled', 'match', 'conditions', 'actions'],
+            title: 'Rule',
+            type: 'object',
+          },
+        },
+      },
+      'preview_rule input',
+    )
+  },
+  validateOutput(value: unknown): asserts value is PreviewRuleOutput {
+    assertSchema(
+      value,
+      {
+        $defs: {
+          PreviewRow: {
+            properties: {
+              id: { title: 'Id', type: 'string' },
+              thread_id: { title: 'Thread Id', type: 'string' },
+              subject: { title: 'Subject', type: 'string' },
+              from_name: { title: 'From Name', type: 'string' },
+              from_email: { title: 'From Email', type: 'string' },
+              received_at: { title: 'Received At', type: 'string' },
+            },
+            required: ['id', 'thread_id', 'subject', 'from_name', 'from_email', 'received_at'],
+            title: 'PreviewRow',
+            type: 'object',
+          },
+        },
+        properties: {
+          total: { title: 'Total', type: 'integer' },
+          rows: { items: { $ref: '#/$defs/PreviewRow' }, title: 'Rows', type: 'array' },
+        },
+        required: ['total', 'rows'],
+        title: 'Preview',
+        type: 'object',
+      },
+      'preview_rule output',
+    )
+  },
+}
+
+export const operationDraftRule: Validators<DraftRuleInput, DraftRuleOutput> = {
+  validateInput(value: unknown): asserts value is DraftRuleInput {
+    assertSchema(
+      value,
+      {
+        type: 'object',
+        properties: {
+          account: { title: 'Account', type: 'string' },
+          message_id: { title: 'Message Id', type: 'string' },
+        },
+        required: ['account', 'message_id'],
+        additionalProperties: false,
+        $defs: {},
+      },
+      'draft_rule input',
+    )
+  },
+  validateOutput(value: unknown): asserts value is DraftRuleOutput {
+    assertSchema(
+      value,
+      {
+        $defs: {
+          Action: {
+            properties: {
+              type: {
+                enum: ['move', 'archive', 'trash', 'mark_read', 'star', 'category'],
+                title: 'Type',
+                type: 'string',
+              },
+              value: { title: 'Value', type: 'string' },
+            },
+            required: ['type'],
+            title: 'Action',
+            type: 'object',
+          },
+          Condition: {
+            properties: {
+              field: {
+                enum: ['from', 'to', 'cc', 'to_or_cc', 'subject', 'body', 'list_id', 'size'],
+                title: 'Field',
+                type: 'string',
+              },
+              op: { enum: ['is', 'contains', 'domain', 'over'], title: 'Op', type: 'string' },
+              value: { title: 'Value', type: 'string' },
+              negate: { title: 'Negate', type: 'boolean' },
+            },
+            required: ['field', 'op', 'value'],
+            title: 'Condition',
+            type: 'object',
+          },
+        },
+        properties: {
+          id: { title: 'Id', type: 'string' },
+          name: { title: 'Name', type: 'string' },
+          enabled: { title: 'Enabled', type: 'boolean' },
+          match: { enum: ['all', 'any'], title: 'Match', type: 'string' },
+          conditions: { items: { $ref: '#/$defs/Condition' }, title: 'Conditions', type: 'array' },
+          actions: { items: { $ref: '#/$defs/Action' }, title: 'Actions', type: 'array' },
+        },
+        required: ['id', 'name', 'enabled', 'match', 'conditions', 'actions'],
+        title: 'Rule',
+        type: 'object',
+      },
+      'draft_rule output',
+    )
   },
 }
 

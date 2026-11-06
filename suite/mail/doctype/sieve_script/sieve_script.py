@@ -481,7 +481,8 @@ def set_last_active_sieve_script_id(account: str, sieve_script_id: str | None = 
 def format_sieve_script(account: str, script: dict) -> dict:
     """Format the sieve script for display."""
 
-    read_only = script["name"].lower() == "vacation"
+    # The rules script is written by the rule builder only, not as Sieve.
+    read_only = script["name"].lower() == "vacation" or script["name"] == "suite_rules"
 
     return {
         "name": f"{account}|{script['id']}",
@@ -549,8 +550,16 @@ SCREENER_MAILBOX_NAME = "Screener"
 UNSCREENED_KEYWORD = "unscreened"
 AUTOMATION_SCRIPT_NAME = "frappe_mail_automation"
 AUTOMATION_SCRIPT_REQUIRE = (
-    'require ["fileinto", "mailbox", "imap4flags", "spamtest", "relational", "comparator-i;ascii-numeric"];'
+    'require ["fileinto", "mailbox", "imap4flags", "spamtest", "relational", "comparator-i;ascii-numeric",'
+    ' "include"];'
 )
+# The scripts a person wrote by hand that run alongside the generated rules, by `include` from the
+# automation script. Only one script can be active at a time, so turning one of theirs on adds it here
+# instead of making it the active script, which would switch off their rules, folder rules and
+# Screener. The list lives in the automation script itself, as its include lines.
+OWN_SCRIPTS_BLOCK = "Your Scripts"
+RULES_BLOCK = "Rules"
+_INCLUDE = re.compile(r'^include :personal :optional "((?:[^"\\]|\\.)*)";$', re.MULTILINE)
 
 
 def maybe_build_automation_sieve(account: str, activate: bool = False) -> None:
@@ -562,7 +571,12 @@ def maybe_build_automation_sieve(account: str, activate: bool = False) -> None:
     build_automation_sieve(account, activate=activate)
 
 
-def build_automation_sieve(account: str, activate: bool = False, raise_exception: bool = False) -> None:
+def build_automation_sieve(
+    account: str,
+    activate: bool = False,
+    raise_exception: bool = False,
+    own_scripts: dict[str, bool] | None = None,
+) -> bool:
     """Build the automation sieve script for the given account and optionally activate it.
 
     Activation is skipped while the vacation sieve script is active, so rebuilding the automation
@@ -577,15 +591,24 @@ def build_automation_sieve(account: str, activate: bool = False, raise_exception
 
     A failed build is logged rather than raised, unless `raise_exception` asks for it — for a caller
     that handles the failure itself, e.g. to retry.
+
+    The scripts the person wrote by hand that the script runs are kept as they were, changed by
+    `own_scripts` (a script's name: whether it runs). Activating it over a script of theirs that is
+    active runs that one from it, rather than switching it off. Returns whether the automation script
+    is active afterwards.
     """
 
     user = get_user_for_jmap_account(account, raise_exception=False)
     if not user or not (frappe.get_cached_value("User", user, "enabled") or is_provisioning(user)):
-        return
+        return False
 
-    def _build_automation_sieve(account: str, activate: bool = False) -> None:
+    def _build_automation_sieve(account: str, activate: bool = False) -> bool:
         doc = frappe.get_doc("Sieve Script", get_automation_script_name(account))
-        doc.content = _build_automation_content(account)
+        scripts = dict.fromkeys(get_own_scripts(doc.content), True)
+        if activate and not doc.active and (own := get_active_own_script_name(account)):
+            scripts[own] = True
+        scripts.update(own_scripts or {})
+        doc.content = _build_automation_content(account, [name for name, runs in scripts.items() if runs])
 
         # Activate the automation script unless vacation is active. `doc.active` is the freshly loaded
         # state (load_from_db just fetched it), and only one script can be active at a time — so an
@@ -596,17 +619,42 @@ def build_automation_sieve(account: str, activate: bool = False, raise_exception
             doc.active = True
 
         doc.save()
+        return bool(doc.active)
 
     if raise_exception:
-        _build_automation_sieve(account, activate=activate)
-        return
+        return _build_automation_sieve(account, activate=activate)
 
-    execute_with_logging(
+    active = execute_with_logging(
         lambda: _build_automation_sieve(account, activate=activate),
         title="Failed to build automation sieve script",
         with_context=False,
         module="Mail",
     )
+    return bool(active)
+
+
+def get_own_scripts(content: str | None) -> list[str]:
+    """The names of the scripts written by hand that an automation script runs, in its order."""
+
+    from suite.mail.rules import RULES_SCRIPT_NAME
+
+    names = [re.sub(r"\\(.)", r"\1", name) for name in _INCLUDE.findall(content or "")]
+    return [name for name in dict.fromkeys(names) if name != RULES_SCRIPT_NAME]
+
+
+def get_active_own_script_name(account: str) -> str | None:
+    """The name of the active script, when it is one the person wrote by hand rather than one of
+    Suite's: the automation script, the rules or the vacation responder."""
+
+    from suite.mail.rules import RULES_SCRIPT_NAME
+
+    active_id = get_active_sieve_script_id(account)
+    if not active_id or not (scripts := SieveScript._get_sieve_scripts(account, [active_id])):
+        return None
+    name = scripts[0]["_name"]
+    if scripts[0].get("read_only") or name in (AUTOMATION_SCRIPT_NAME, RULES_SCRIPT_NAME):
+        return None
+    return name
 
 
 @frappe.whitelist()
@@ -812,8 +860,15 @@ def get_automation_script_name(account: str) -> str:
     return f"{account}|{script_id}"
 
 
-def _build_automation_content(account: str) -> str:
+def _build_automation_content(account: str, own_scripts: list[str] | None = None) -> str:
+    from suite.mail.rules import RULES_SCRIPT_NAME
+
     content = AUTOMATION_SCRIPT_REQUIRE + "\n"
+    # The person's rules come first, ahead of the folder rules. Optional: an account that never made
+    # one has no such script.
+    content = append_sieve_block(
+        content, RULES_BLOCK, f'\ninclude :personal :optional "{_escape_sieve_string(RULES_SCRIPT_NAME)}";'
+    )
 
     # Mailbox section: one block per mailbox that has automation rules in Mailbox Settings.
     for mailbox in get_mailboxes(account):
@@ -827,7 +882,7 @@ def _build_automation_content(account: str) -> str:
             content = append_sieve_block(content, f"Mailbox: {mailbox['_name']}", block)
 
     # Spam / Screening sections, layered on top of the mailbox rules.
-    content = _apply_screening_blocks(account, content)
+    content = _apply_screening_blocks(account, content, own_scripts or [])
 
     return content.rstrip() + "\n"
 
@@ -982,7 +1037,7 @@ def append_sieve_block(script: str, block_name: str, sieve_block: str) -> str:
     return script.rstrip() + "\n" + f"\n# {block_name}{sieve_block}"
 
 
-def _apply_screening_blocks(account: str, content: str) -> str:
+def _apply_screening_blocks(account: str, content: str, own_scripts: list[str] | None = None) -> str:
     """Layer the Spam/Screening sieve blocks onto `content` and return the result.
 
     Rebuilt from the Screened Email Address list (+ JMAP Account) in one pass. The mailbox automation
@@ -996,6 +1051,10 @@ def _apply_screening_blocks(account: str, content: str) -> str:
 
     Nothing is discarded: blocking a sender files their mail into Junk. A "Rejected Emails" block left
     by an older script — which discarded it — is removed with the rest.
+
+    The scripts the person wrote by hand (`own_scripts`) run between Spam and the gate. A fault in one
+    aborts the rest of the script when it runs (an unknown extension or test compiles, then fails on
+    delivery): what came before it has acted already, and the mail is still delivered.
     """
 
     content = (content or "").lstrip()
@@ -1003,7 +1062,14 @@ def _apply_screening_blocks(account: str, content: str) -> str:
     # Remove any existing screening blocks, including legacy ones — the discarding "Rejected Emails"
     # block, and the names from the pre-merge "Blocked Email Address" / "Junk Email Address"
     # doctypes — so old scripts get cleaned up.
-    for name in ("Rejected Emails", "Spam Senders", "Screening", "Blocked Emails", "Junk Senders"):
+    for name in (
+        "Rejected Emails",
+        "Spam Senders",
+        OWN_SCRIPTS_BLOCK,
+        "Screening",
+        "Blocked Emails",
+        "Junk Senders",
+    ):
         content = remove_sieve_block(content, name)
 
     screened = get_effective_screened_email_addresses(account)
@@ -1023,6 +1089,12 @@ def _apply_screening_blocks(account: str, content: str) -> str:
         )
         if spam_block:
             content = content.rstrip() + "\n\n" + spam_block.rstrip() + "\n"
+
+    if own_scripts:
+        includes = "\n".join(
+            f'include :personal :optional "{_escape_sieve_string(name)}";' for name in own_scripts
+        )
+        content = append_sieve_block(content, OWN_SCRIPTS_BLOCK, "\n" + includes) + "\n"
 
     # Append the Screening gate last — the catch-all fallback, below every other block.
     if is_screening_enabled(account):

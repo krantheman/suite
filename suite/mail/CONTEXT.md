@@ -95,6 +95,25 @@ The view that merges every account's folders into one list. Its Inbox is titled
 All Inboxes.
 _Avoid_: Unified inbox, Merged view
 
+### Sorting mail as it arrives
+
+**Rule**:
+Conditions a person sets, and what to do with mail that meets them: move it,
+archive it, trash it, mark it read, star it or give it a category. Rules act on
+mail as it arrives, in the order they are listed, and leave mail already
+received where it is.
+_Avoid_: Filter, Automation
+
+**Folder rule**:
+The senders or subject set on a folder, whose mail goes there. Folder rules run
+after the person's rules.
+_Avoid_: Folder automation
+
+**Script**:
+Sieve a person writes by hand, kept under Advanced. A script that is on runs
+after rules, folder rules and blocked senders, and before the Screener.
+_Avoid_: Filter, Active script
+
 ### Getting rid of mail
 
 **Move to Trash**:

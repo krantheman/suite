@@ -493,6 +493,7 @@ export const extractNameFromEmail = (email: string) =>
 export const getScriptName = (scriptName: string) => {
   if (scriptName === 'vacation') return __('Vacation Response')
   if (scriptName === 'frappe_mail_automation') return __('Folder Automation')
+  if (scriptName === 'suite_rules') return __('Rules')
   return `'${scriptName}'`
 }
 

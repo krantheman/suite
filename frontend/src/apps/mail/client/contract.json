@@ -3692,6 +3692,14 @@
                 "title": "Active",
                 "type": "integer"
               },
+              "included": {
+                "enum": [
+                  0,
+                  1
+                ],
+                "title": "Included",
+                "type": "integer"
+              },
               "blob_id": {
                 "title": "Blob Id",
                 "type": "string"
@@ -7351,6 +7359,970 @@
       },
       "output": {
         "type": "null"
+      },
+      "errors": [
+        "PermissionError",
+        "ValidationError"
+      ],
+      "entity": null,
+      "nodeParams": [],
+      "stream": false,
+      "bytes": false
+    },
+    {
+      "id": "set_sieve_script_included",
+      "kind": "mutation",
+      "publicName": "sieve.setIncluded",
+      "page": null,
+      "envelope": "message",
+      "method": "POST",
+      "path": "/api/method/suite.mail.api.sieve.set_sieve_script_included",
+      "pathParams": [],
+      "query": null,
+      "body": {
+        "properties": {
+          "account": {
+            "title": "Account",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "included": {
+            "title": "Included",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "account",
+          "id",
+          "included"
+        ],
+        "title": "ScriptIncluded",
+        "type": "object"
+      },
+      "output": {
+        "type": "null"
+      },
+      "errors": [
+        "PermissionError",
+        "ValidationError"
+      ],
+      "entity": null,
+      "nodeParams": [],
+      "stream": false,
+      "bytes": false
+    },
+    {
+      "id": "get_rules",
+      "kind": "query",
+      "publicName": "rules.list",
+      "page": null,
+      "envelope": "message",
+      "method": "POST",
+      "path": "/api/method/suite.mail.api.rules.get_rules",
+      "pathParams": [],
+      "query": null,
+      "body": {
+        "properties": {
+          "account": {
+            "title": "Account",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account"
+        ],
+        "title": "AccountInput",
+        "type": "object"
+      },
+      "output": {
+        "$defs": {
+          "Action": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "move",
+                  "archive",
+                  "trash",
+                  "mark_read",
+                  "star",
+                  "category"
+                ],
+                "title": "Type",
+                "type": "string"
+              },
+              "value": {
+                "title": "Value",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "Action",
+            "type": "object"
+          },
+          "Condition": {
+            "properties": {
+              "field": {
+                "enum": [
+                  "from",
+                  "to",
+                  "cc",
+                  "to_or_cc",
+                  "subject",
+                  "body",
+                  "list_id",
+                  "size"
+                ],
+                "title": "Field",
+                "type": "string"
+              },
+              "op": {
+                "enum": [
+                  "is",
+                  "contains",
+                  "domain",
+                  "over"
+                ],
+                "title": "Op",
+                "type": "string"
+              },
+              "value": {
+                "title": "Value",
+                "type": "string"
+              },
+              "negate": {
+                "title": "Negate",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "field",
+              "op",
+              "value"
+            ],
+            "title": "Condition",
+            "type": "object"
+          },
+          "FolderRule": {
+            "properties": {
+              "mailbox_id": {
+                "title": "Mailbox Id",
+                "type": "string"
+              },
+              "folder": {
+                "title": "Folder",
+                "type": "string"
+              },
+              "emails_from": {
+                "title": "Emails From",
+                "type": "string"
+              },
+              "subject_contains": {
+                "title": "Subject Contains",
+                "type": "string"
+              },
+              "match_if": {
+                "title": "Match If",
+                "type": "string"
+              },
+              "mark_as_read": {
+                "title": "Mark As Read",
+                "type": "boolean"
+              },
+              "add_star": {
+                "title": "Add Star",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "mailbox_id",
+              "folder",
+              "emails_from",
+              "subject_contains",
+              "match_if",
+              "mark_as_read",
+              "add_star"
+            ],
+            "title": "FolderRule",
+            "type": "object"
+          },
+          "Rule": {
+            "properties": {
+              "id": {
+                "title": "Id",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "enabled": {
+                "title": "Enabled",
+                "type": "boolean"
+              },
+              "match": {
+                "enum": [
+                  "all",
+                  "any"
+                ],
+                "title": "Match",
+                "type": "string"
+              },
+              "conditions": {
+                "items": {
+                  "$ref": "#/$defs/Condition"
+                },
+                "title": "Conditions",
+                "type": "array"
+              },
+              "actions": {
+                "items": {
+                  "$ref": "#/$defs/Action"
+                },
+                "title": "Actions",
+                "type": "array"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "enabled",
+              "match",
+              "conditions",
+              "actions"
+            ],
+            "title": "Rule",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "paused_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paused By"
+          },
+          "own_scripts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Own Scripts",
+            "type": "array"
+          },
+          "rules": {
+            "items": {
+              "$ref": "#/$defs/Rule"
+            },
+            "title": "Rules",
+            "type": "array"
+          },
+          "folder_rules": {
+            "items": {
+              "$ref": "#/$defs/FolderRule"
+            },
+            "title": "Folder Rules",
+            "type": "array"
+          }
+        },
+        "required": [
+          "paused_by",
+          "own_scripts",
+          "rules",
+          "folder_rules"
+        ],
+        "title": "Rules",
+        "type": "object"
+      },
+      "errors": [
+        "PermissionError",
+        "ValidationError"
+      ],
+      "entity": null,
+      "nodeParams": [],
+      "stream": false,
+      "bytes": false
+    },
+    {
+      "id": "save_rules",
+      "kind": "mutation",
+      "publicName": "rules.save",
+      "page": null,
+      "envelope": "message",
+      "method": "POST",
+      "path": "/api/method/suite.mail.api.rules.save_rules",
+      "pathParams": [],
+      "query": null,
+      "body": {
+        "$defs": {
+          "Action": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "move",
+                  "archive",
+                  "trash",
+                  "mark_read",
+                  "star",
+                  "category"
+                ],
+                "title": "Type",
+                "type": "string"
+              },
+              "value": {
+                "title": "Value",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "Action",
+            "type": "object"
+          },
+          "Condition": {
+            "properties": {
+              "field": {
+                "enum": [
+                  "from",
+                  "to",
+                  "cc",
+                  "to_or_cc",
+                  "subject",
+                  "body",
+                  "list_id",
+                  "size"
+                ],
+                "title": "Field",
+                "type": "string"
+              },
+              "op": {
+                "enum": [
+                  "is",
+                  "contains",
+                  "domain",
+                  "over"
+                ],
+                "title": "Op",
+                "type": "string"
+              },
+              "value": {
+                "title": "Value",
+                "type": "string"
+              },
+              "negate": {
+                "title": "Negate",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "field",
+              "op",
+              "value"
+            ],
+            "title": "Condition",
+            "type": "object"
+          },
+          "Rule": {
+            "properties": {
+              "id": {
+                "title": "Id",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "enabled": {
+                "title": "Enabled",
+                "type": "boolean"
+              },
+              "match": {
+                "enum": [
+                  "all",
+                  "any"
+                ],
+                "title": "Match",
+                "type": "string"
+              },
+              "conditions": {
+                "items": {
+                  "$ref": "#/$defs/Condition"
+                },
+                "title": "Conditions",
+                "type": "array"
+              },
+              "actions": {
+                "items": {
+                  "$ref": "#/$defs/Action"
+                },
+                "title": "Actions",
+                "type": "array"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "enabled",
+              "match",
+              "conditions",
+              "actions"
+            ],
+            "title": "Rule",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "account": {
+            "title": "Account",
+            "type": "string"
+          },
+          "rules": {
+            "items": {
+              "$ref": "#/$defs/Rule"
+            },
+            "title": "Rules",
+            "type": "array"
+          }
+        },
+        "required": [
+          "account",
+          "rules"
+        ],
+        "title": "SaveRules",
+        "type": "object"
+      },
+      "output": {
+        "$defs": {
+          "Action": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "move",
+                  "archive",
+                  "trash",
+                  "mark_read",
+                  "star",
+                  "category"
+                ],
+                "title": "Type",
+                "type": "string"
+              },
+              "value": {
+                "title": "Value",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "Action",
+            "type": "object"
+          },
+          "Condition": {
+            "properties": {
+              "field": {
+                "enum": [
+                  "from",
+                  "to",
+                  "cc",
+                  "to_or_cc",
+                  "subject",
+                  "body",
+                  "list_id",
+                  "size"
+                ],
+                "title": "Field",
+                "type": "string"
+              },
+              "op": {
+                "enum": [
+                  "is",
+                  "contains",
+                  "domain",
+                  "over"
+                ],
+                "title": "Op",
+                "type": "string"
+              },
+              "value": {
+                "title": "Value",
+                "type": "string"
+              },
+              "negate": {
+                "title": "Negate",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "field",
+              "op",
+              "value"
+            ],
+            "title": "Condition",
+            "type": "object"
+          },
+          "Rule": {
+            "properties": {
+              "id": {
+                "title": "Id",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "enabled": {
+                "title": "Enabled",
+                "type": "boolean"
+              },
+              "match": {
+                "enum": [
+                  "all",
+                  "any"
+                ],
+                "title": "Match",
+                "type": "string"
+              },
+              "conditions": {
+                "items": {
+                  "$ref": "#/$defs/Condition"
+                },
+                "title": "Conditions",
+                "type": "array"
+              },
+              "actions": {
+                "items": {
+                  "$ref": "#/$defs/Action"
+                },
+                "title": "Actions",
+                "type": "array"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "enabled",
+              "match",
+              "conditions",
+              "actions"
+            ],
+            "title": "Rule",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "paused_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paused By"
+          },
+          "own_scripts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Own Scripts",
+            "type": "array"
+          },
+          "rules": {
+            "items": {
+              "$ref": "#/$defs/Rule"
+            },
+            "title": "Rules",
+            "type": "array"
+          }
+        },
+        "required": [
+          "paused_by",
+          "own_scripts",
+          "rules"
+        ],
+        "title": "SavedRules",
+        "type": "object"
+      },
+      "errors": [
+        "PermissionError",
+        "ValidationError"
+      ],
+      "entity": null,
+      "nodeParams": [],
+      "stream": false,
+      "bytes": false
+    },
+    {
+      "id": "preview_rule",
+      "kind": "query",
+      "publicName": "rules.preview",
+      "page": null,
+      "envelope": "message",
+      "method": "POST",
+      "path": "/api/method/suite.mail.api.rules.preview_rule",
+      "pathParams": [],
+      "query": null,
+      "body": {
+        "$defs": {
+          "Action": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "move",
+                  "archive",
+                  "trash",
+                  "mark_read",
+                  "star",
+                  "category"
+                ],
+                "title": "Type",
+                "type": "string"
+              },
+              "value": {
+                "title": "Value",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "Action",
+            "type": "object"
+          },
+          "Condition": {
+            "properties": {
+              "field": {
+                "enum": [
+                  "from",
+                  "to",
+                  "cc",
+                  "to_or_cc",
+                  "subject",
+                  "body",
+                  "list_id",
+                  "size"
+                ],
+                "title": "Field",
+                "type": "string"
+              },
+              "op": {
+                "enum": [
+                  "is",
+                  "contains",
+                  "domain",
+                  "over"
+                ],
+                "title": "Op",
+                "type": "string"
+              },
+              "value": {
+                "title": "Value",
+                "type": "string"
+              },
+              "negate": {
+                "title": "Negate",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "field",
+              "op",
+              "value"
+            ],
+            "title": "Condition",
+            "type": "object"
+          },
+          "Rule": {
+            "properties": {
+              "id": {
+                "title": "Id",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "enabled": {
+                "title": "Enabled",
+                "type": "boolean"
+              },
+              "match": {
+                "enum": [
+                  "all",
+                  "any"
+                ],
+                "title": "Match",
+                "type": "string"
+              },
+              "conditions": {
+                "items": {
+                  "$ref": "#/$defs/Condition"
+                },
+                "title": "Conditions",
+                "type": "array"
+              },
+              "actions": {
+                "items": {
+                  "$ref": "#/$defs/Action"
+                },
+                "title": "Actions",
+                "type": "array"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "enabled",
+              "match",
+              "conditions",
+              "actions"
+            ],
+            "title": "Rule",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "account": {
+            "title": "Account",
+            "type": "string"
+          },
+          "rule": {
+            "$ref": "#/$defs/Rule"
+          }
+        },
+        "required": [
+          "account",
+          "rule"
+        ],
+        "title": "PreviewInput",
+        "type": "object"
+      },
+      "output": {
+        "$defs": {
+          "PreviewRow": {
+            "properties": {
+              "id": {
+                "title": "Id",
+                "type": "string"
+              },
+              "thread_id": {
+                "title": "Thread Id",
+                "type": "string"
+              },
+              "subject": {
+                "title": "Subject",
+                "type": "string"
+              },
+              "from_name": {
+                "title": "From Name",
+                "type": "string"
+              },
+              "from_email": {
+                "title": "From Email",
+                "type": "string"
+              },
+              "received_at": {
+                "title": "Received At",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "thread_id",
+              "subject",
+              "from_name",
+              "from_email",
+              "received_at"
+            ],
+            "title": "PreviewRow",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/$defs/PreviewRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          }
+        },
+        "required": [
+          "total",
+          "rows"
+        ],
+        "title": "Preview",
+        "type": "object"
+      },
+      "errors": [
+        "PermissionError",
+        "ValidationError"
+      ],
+      "entity": null,
+      "nodeParams": [],
+      "stream": false,
+      "bytes": false
+    },
+    {
+      "id": "draft_rule",
+      "kind": "query",
+      "publicName": "rules.draft",
+      "page": null,
+      "envelope": "message",
+      "method": "POST",
+      "path": "/api/method/suite.mail.api.rules.draft_rule",
+      "pathParams": [],
+      "query": null,
+      "body": {
+        "properties": {
+          "account": {
+            "title": "Account",
+            "type": "string"
+          },
+          "message_id": {
+            "title": "Message Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account",
+          "message_id"
+        ],
+        "title": "DraftInput",
+        "type": "object"
+      },
+      "output": {
+        "$defs": {
+          "Action": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "move",
+                  "archive",
+                  "trash",
+                  "mark_read",
+                  "star",
+                  "category"
+                ],
+                "title": "Type",
+                "type": "string"
+              },
+              "value": {
+                "title": "Value",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "Action",
+            "type": "object"
+          },
+          "Condition": {
+            "properties": {
+              "field": {
+                "enum": [
+                  "from",
+                  "to",
+                  "cc",
+                  "to_or_cc",
+                  "subject",
+                  "body",
+                  "list_id",
+                  "size"
+                ],
+                "title": "Field",
+                "type": "string"
+              },
+              "op": {
+                "enum": [
+                  "is",
+                  "contains",
+                  "domain",
+                  "over"
+                ],
+                "title": "Op",
+                "type": "string"
+              },
+              "value": {
+                "title": "Value",
+                "type": "string"
+              },
+              "negate": {
+                "title": "Negate",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "field",
+              "op",
+              "value"
+            ],
+            "title": "Condition",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "match": {
+            "enum": [
+              "all",
+              "any"
+            ],
+            "title": "Match",
+            "type": "string"
+          },
+          "conditions": {
+            "items": {
+              "$ref": "#/$defs/Condition"
+            },
+            "title": "Conditions",
+            "type": "array"
+          },
+          "actions": {
+            "items": {
+              "$ref": "#/$defs/Action"
+            },
+            "title": "Actions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "enabled",
+          "match",
+          "conditions",
+          "actions"
+        ],
+        "title": "Rule",
+        "type": "object"
       },
       "errors": [
         "PermissionError",

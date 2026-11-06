@@ -74,7 +74,7 @@ export const mailSettings = {
     },
     {
       id: 'mail.automation',
-      label: () => __('Automation'),
+      label: () => __('Rules'),
       icon: 'lucide-zap',
       body: scoped(() => import('@/apps/mail/components/Settings/AutomationSettings.vue')),
     },

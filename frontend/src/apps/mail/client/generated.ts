@@ -1178,6 +1178,7 @@ export type GetSieveScriptsOutputSieveScript = {
   id: string
   _name: string
   active: 0 | 1
+  included?: 0 | 1
   blob_id: string
   content: string
   read_only: boolean
@@ -2648,6 +2649,252 @@ const operationDeleteSieveScript: MutationRef<
   entity: null,
   errors: ['PermissionError', 'ValidationError'],
   loadValidators: async () => (await import('./validators')).operationDeleteSieveScript,
+}
+
+export type SetSieveScriptIncludedInput = { account: string; id: string; included: boolean }
+
+export type SetSieveScriptIncludedOutput = null
+
+export type SetSieveScriptIncludedError = 'PermissionError' | 'ValidationError'
+
+const operationSetSieveScriptIncluded: MutationRef<
+  SetSieveScriptIncludedInput,
+  SetSieveScriptIncludedOutput,
+  SetSieveScriptIncludedError
+> = {
+  id: 'set_sieve_script_included',
+  owner: 'mail',
+  kind: 'mutation',
+  publicName: 'sieve.setIncluded',
+  empty: true,
+  envelope: 'message',
+  method: 'POST',
+  path: '/api/method/suite.mail.api.sieve.set_sieve_script_included',
+  prefix: '/api/suite/mail/',
+  pathParams: [],
+  nodeParams: [],
+  entity: null,
+  errors: ['PermissionError', 'ValidationError'],
+  loadValidators: async () => (await import('./validators')).operationSetSieveScriptIncluded,
+}
+
+export type GetRulesOutputAction = {
+  type: 'move' | 'archive' | 'trash' | 'mark_read' | 'star' | 'category'
+  value?: string
+}
+
+export type GetRulesOutputCondition = {
+  field: 'from' | 'to' | 'cc' | 'to_or_cc' | 'subject' | 'body' | 'list_id' | 'size'
+  op: 'is' | 'contains' | 'domain' | 'over'
+  value: string
+  negate?: boolean
+}
+
+export type GetRulesOutputFolderRule = {
+  mailbox_id: string
+  folder: string
+  emails_from: string
+  subject_contains: string
+  match_if: string
+  mark_as_read: boolean
+  add_star: boolean
+}
+
+export type GetRulesOutputRule = {
+  id: string
+  name: string
+  enabled: boolean
+  match: 'all' | 'any'
+  conditions: Array<GetRulesOutputCondition>
+  actions: Array<GetRulesOutputAction>
+}
+
+export type GetRulesInput = { account: string }
+
+export type GetRulesOutput = {
+  paused_by: string | null
+  own_scripts: Array<string>
+  rules: Array<GetRulesOutputRule>
+  folder_rules: Array<GetRulesOutputFolderRule>
+}
+
+export type GetRulesError = 'PermissionError' | 'ValidationError'
+
+const operationGetRules: QueryRef<GetRulesInput, GetRulesOutput, GetRulesError> = {
+  id: 'get_rules',
+  owner: 'mail',
+  kind: 'query',
+  publicName: 'rules.list',
+  envelope: 'message',
+  method: 'POST',
+  path: '/api/method/suite.mail.api.rules.get_rules',
+  prefix: '/api/suite/mail/',
+  pathParams: [],
+  nodeParams: [],
+  entity: null,
+  errors: ['PermissionError', 'ValidationError'],
+  loadValidators: async () => (await import('./validators')).operationGetRules,
+}
+
+export type SaveRulesInputAction = {
+  type: 'move' | 'archive' | 'trash' | 'mark_read' | 'star' | 'category'
+  value?: string
+}
+
+export type SaveRulesInputCondition = {
+  field: 'from' | 'to' | 'cc' | 'to_or_cc' | 'subject' | 'body' | 'list_id' | 'size'
+  op: 'is' | 'contains' | 'domain' | 'over'
+  value: string
+  negate?: boolean
+}
+
+export type SaveRulesInputRule = {
+  id: string
+  name: string
+  enabled: boolean
+  match: 'all' | 'any'
+  conditions: Array<SaveRulesInputCondition>
+  actions: Array<SaveRulesInputAction>
+}
+
+export type SaveRulesOutputAction = {
+  type: 'move' | 'archive' | 'trash' | 'mark_read' | 'star' | 'category'
+  value?: string
+}
+
+export type SaveRulesOutputCondition = {
+  field: 'from' | 'to' | 'cc' | 'to_or_cc' | 'subject' | 'body' | 'list_id' | 'size'
+  op: 'is' | 'contains' | 'domain' | 'over'
+  value: string
+  negate?: boolean
+}
+
+export type SaveRulesOutputRule = {
+  id: string
+  name: string
+  enabled: boolean
+  match: 'all' | 'any'
+  conditions: Array<SaveRulesOutputCondition>
+  actions: Array<SaveRulesOutputAction>
+}
+
+export type SaveRulesInput = { account: string; rules: Array<SaveRulesInputRule> }
+
+export type SaveRulesOutput = {
+  paused_by: string | null
+  own_scripts: Array<string>
+  rules: Array<SaveRulesOutputRule>
+}
+
+export type SaveRulesError = 'PermissionError' | 'ValidationError'
+
+const operationSaveRules: MutationRef<SaveRulesInput, SaveRulesOutput, SaveRulesError> = {
+  id: 'save_rules',
+  owner: 'mail',
+  kind: 'mutation',
+  publicName: 'rules.save',
+  envelope: 'message',
+  method: 'POST',
+  path: '/api/method/suite.mail.api.rules.save_rules',
+  prefix: '/api/suite/mail/',
+  pathParams: [],
+  nodeParams: [],
+  entity: null,
+  errors: ['PermissionError', 'ValidationError'],
+  loadValidators: async () => (await import('./validators')).operationSaveRules,
+}
+
+export type PreviewRuleInputAction = {
+  type: 'move' | 'archive' | 'trash' | 'mark_read' | 'star' | 'category'
+  value?: string
+}
+
+export type PreviewRuleInputCondition = {
+  field: 'from' | 'to' | 'cc' | 'to_or_cc' | 'subject' | 'body' | 'list_id' | 'size'
+  op: 'is' | 'contains' | 'domain' | 'over'
+  value: string
+  negate?: boolean
+}
+
+export type PreviewRuleInputRule = {
+  id: string
+  name: string
+  enabled: boolean
+  match: 'all' | 'any'
+  conditions: Array<PreviewRuleInputCondition>
+  actions: Array<PreviewRuleInputAction>
+}
+
+export type PreviewRuleOutputPreviewRow = {
+  id: string
+  thread_id: string
+  subject: string
+  from_name: string
+  from_email: string
+  received_at: string
+}
+
+export type PreviewRuleInput = { account: string; rule: PreviewRuleInputRule }
+
+export type PreviewRuleOutput = { total: number; rows: Array<PreviewRuleOutputPreviewRow> }
+
+export type PreviewRuleError = 'PermissionError' | 'ValidationError'
+
+const operationPreviewRule: QueryRef<PreviewRuleInput, PreviewRuleOutput, PreviewRuleError> = {
+  id: 'preview_rule',
+  owner: 'mail',
+  kind: 'query',
+  publicName: 'rules.preview',
+  envelope: 'message',
+  method: 'POST',
+  path: '/api/method/suite.mail.api.rules.preview_rule',
+  prefix: '/api/suite/mail/',
+  pathParams: [],
+  nodeParams: [],
+  entity: null,
+  errors: ['PermissionError', 'ValidationError'],
+  loadValidators: async () => (await import('./validators')).operationPreviewRule,
+}
+
+export type DraftRuleOutputAction = {
+  type: 'move' | 'archive' | 'trash' | 'mark_read' | 'star' | 'category'
+  value?: string
+}
+
+export type DraftRuleOutputCondition = {
+  field: 'from' | 'to' | 'cc' | 'to_or_cc' | 'subject' | 'body' | 'list_id' | 'size'
+  op: 'is' | 'contains' | 'domain' | 'over'
+  value: string
+  negate?: boolean
+}
+
+export type DraftRuleInput = { account: string; message_id: string }
+
+export type DraftRuleOutput = {
+  id: string
+  name: string
+  enabled: boolean
+  match: 'all' | 'any'
+  conditions: Array<DraftRuleOutputCondition>
+  actions: Array<DraftRuleOutputAction>
+}
+
+export type DraftRuleError = 'PermissionError' | 'ValidationError'
+
+const operationDraftRule: QueryRef<DraftRuleInput, DraftRuleOutput, DraftRuleError> = {
+  id: 'draft_rule',
+  owner: 'mail',
+  kind: 'query',
+  publicName: 'rules.draft',
+  envelope: 'message',
+  method: 'POST',
+  path: '/api/method/suite.mail.api.rules.draft_rule',
+  prefix: '/api/suite/mail/',
+  pathParams: [],
+  nodeParams: [],
+  entity: null,
+  errors: ['PermissionError', 'ValidationError'],
+  loadValidators: async () => (await import('./validators')).operationDraftRule,
 }
 
 export type CreateAutomationScriptInput = { account: string; active?: boolean }
@@ -7336,6 +7583,7 @@ export const api = {
     create: operationCreateSieveScript,
     update: operationUpdateSieveScript,
     delete: operationDeleteSieveScript,
+    setIncluded: operationSetSieveScriptIncluded,
     createAutomation: operationCreateAutomationScript,
     rebuildAutomation: operationRebuildAutomationScriptForAccount,
   },
@@ -7385,6 +7633,12 @@ export const api = {
   attachments: {
     download: operationFetchAttachment,
     zip: operationFetchAttachmentsAsZip,
+  },
+  rules: {
+    list: operationGetRules,
+    save: operationSaveRules,
+    preview: operationPreviewRule,
+    draft: operationDraftRule,
   },
   vacation: {
     get: operationGetVacationResponse,

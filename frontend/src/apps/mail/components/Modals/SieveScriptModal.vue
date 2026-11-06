@@ -33,24 +33,11 @@
         <hr />
         <Switch
           v-model="script.active"
-          :label="__('Activate Script')"
-          :description="__('Activate this script to apply your rules and filters.')"
-          class="!p-0"
-        />
-        <Alert
-          v-if="script.active && activeScript && activeScript !== original._name"
-          :title="
-            isSystemScript(activeScript)
-              ? __('{0} Enabled', [getScriptName(activeScript)])
-              : __('Active Script {0} Detected', [getScriptName(activeScript)])
-          "
+          :label="__('Turn On')"
           :description="
-            isSystemScript(activeScript)
-              ? __('Activating this script will disable {0}.', [getScriptName(activeScript)])
-              : __('Activating this script will deactivate the currently active script.')
+            __('Runs after your rules, folder rules and blocked senders, and before the Screener.')
           "
-          theme="amber"
-          :dismissable="false"
+          class="!p-0"
         />
       </div>
     </template>
@@ -58,20 +45,19 @@
 </template>
 
 <script setup lang="ts">
-import { Alert, Dialog, FormControl, Switch } from 'frappe-ui'
+import { Dialog, FormControl, Switch } from 'frappe-ui'
 import { computed, reactive, watch } from 'vue'
 
 import { api, useMutation, type InputOf } from '@/api'
 import { userStore } from '@/apps/mail/stores/user'
 import type { SieveScript } from '@/apps/mail/types'
-import { getScriptName, isSystemScript, raiseToast } from '@/apps/mail/utils'
+import { raiseToast } from '@/apps/mail/utils'
 
 const show = defineModel<boolean>()
 const { selectedScript } = defineProps<{
   selectedScript?: SieveScript
 }>()
 const store = userStore()
-const activeScript = computed(() => store.sieveScripts.data?.find((s) => s.active)?._name)
 const DEFAULT_SCRIPT = {
   _name: '',
   content: '',
@@ -117,7 +103,7 @@ watch(show, (val) => {
   } else if (selectedScript) {
     script._name = original._name = selectedScript._name
     script.content = original.content = selectedScript.content
-    script.active = original.active = !!selectedScript.active
+    script.active = original.active = !!(selectedScript.included || selectedScript.active)
   }
 })
 </script>

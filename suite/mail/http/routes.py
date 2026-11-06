@@ -137,6 +137,7 @@ from suite.mail.api.mail import (
     update_draft_mail,
     update_mailbox,
 )
+from suite.mail.api.rules import draft_rule, get_rules, preview_rule, save_rules
 from suite.mail.api.scheduled import (
     cancel_scheduled_mail,
     dismiss_failed_mail,
@@ -152,6 +153,7 @@ from suite.mail.api.sieve import (
     delete_sieve_script,
     get_sieve_scripts,
     rebuild_automation_script_for_account,
+    set_sieve_script_included,
     update_sieve_script,
 )
 from suite.mail.doctype.address_book.address_book import add_address_book, delete_address_books

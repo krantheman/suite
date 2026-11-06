@@ -37,6 +37,8 @@
       <component :is="action.icon" class="text-ink-gray-5 icon" />
     </template>
   </Button>
+
+  <RuleModal v-if="ruleDraft" v-model="showRule" :account="scopeAccountId" :initial="ruleDraft" />
 </template>
 
 <script lang="ts" setup>
@@ -59,11 +61,13 @@ import {
   SquarePen,
   Star,
   Trash2,
+  Zap,
 } from 'lucide-vue-next'
-import { computed, h, inject } from 'vue'
+import { computed, h, inject, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { api, client, type InputOf } from '@/api'
+import RuleModal from '@/apps/mail/components/Modals/RuleModal.vue'
 import { useScreener } from '@/apps/mail/composables/useScreener'
 import { FLAGGED_STAR_STYLE } from '@/apps/mail/constants'
 import type { ComposeMailData, Identity, Mail, ScreenedAddress } from '@/apps/mail/types'
@@ -78,6 +82,7 @@ import { injectAccountScope } from '@/apps/mail/utils/accountScope'
 import { useFilterBySender, useScreenSize, useUndo } from '@/apps/mail/utils/composables'
 import { mailCopyIds } from '@/apps/mail/utils/mailCopies'
 import { isReceived } from '@/apps/mail/utils/receivedMail'
+import type { Rule } from '@/apps/mail/utils/rules'
 import { UNIFIED_ROUTE, UNIFIED_THREAD_ROUTE } from '@/apps/mail/utils/unifiedFolders'
 import AdaptiveDropdown from '@/components/AdaptiveDropdown.vue'
 
@@ -126,6 +131,18 @@ const {
   screenedAddresses,
 } = injectAccountScope()
 const { setUndoAction, undo } = useUndo()
+
+// A rule for mail like this message, drafted by the server from its mailing list or sender, for the
+// person to finish.
+const ruleDraft = ref<Rule>()
+const showRule = ref(false)
+const makeRule = async () => {
+  ruleDraft.value = await client.query(api.mail.rules.draft, {
+    account: scopeAccountId.value,
+    message_id: mail.id,
+  })
+  showRule.value = true
+}
 const screener = useScreener()
 const { filterBySender } = useFilterBySender()
 const user = inject('$user')
@@ -277,6 +294,12 @@ const moreActions = (mail: Mail): GroupedAction[] => [
         onClick: () => filterBySender(mail.from_email),
         icon: ListFilter,
         condition: () => !mail.draft && !!mail.from_email,
+      },
+      {
+        label: __('Make a Rule…'),
+        onClick: () => makeRule(),
+        icon: Zap,
+        condition: () => !mail.draft && !!mail.id && isReceived(mail, mailboxIds.value.sent),
       },
       {
         label: __('Block Sender'),

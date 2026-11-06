@@ -43,7 +43,53 @@ def render_automation_script() -> str:
         patch.object(sieve_script, "get_inbox_mailbox_path", return_value="INBOX"),
         patch.object(sieve_script, "get_account_emails", return_value=["me@example.org"]),
     ):
-        return sieve_script._build_automation_content("account")
+        return sieve_script._build_automation_content("account", ['my "own" script'])
+
+
+def render_rules_script() -> str:
+    """A rules script using every condition and action the rule builder offers."""
+
+    from suite.mail import rules
+
+    mailboxes = [{"id": "f1", "_name": 'Clients "VIP"', "parent_id": None}]
+    conditions = [
+        {"field": "from", "op": "is", "value": "boss@example.org"},
+        {"field": "to", "op": "contains", "value": "team"},
+        {"field": "cc", "op": "domain", "value": "example.org"},
+        {"field": "to_or_cc", "op": "is", "value": "me@example.org", "negate": True},
+        {"field": "subject", "op": "contains", "value": 'say "hi" \\ bye'},
+        {"field": "body", "op": "contains", "value": "unsubscribe"},
+        {"field": "list_id", "op": "is", "value": "<dev.example.org>"},
+        {"field": "size", "op": "over", "value": "500"},
+    ]
+    made = rules.clean(
+        [
+            {
+                "name": "All",
+                "match": "all",
+                "conditions": conditions,
+                "actions": [{"type": "move", "value": "f1"}],
+            },
+            {
+                "name": "Any",
+                "match": "any",
+                "conditions": conditions,
+                "actions": [
+                    {"type": "mark_read"},
+                    {"type": "star"},
+                    {"type": "category", "value": "updates"},
+                ],
+            },
+            {
+                "name": "Archive",
+                "match": "all",
+                "conditions": conditions[:1],
+                "actions": [{"type": "archive"}],
+            },
+        ],
+        mailboxes,
+    )
+    return rules.write(made, mailboxes, {"archive": "a1", "trash": "t1"})
 
 
 class TestAutomationSieveCompiles(IntegrationTestCase):
@@ -100,6 +146,10 @@ class TestAutomationSieveCompiles(IntegrationTestCase):
 
     def test_the_generated_script_compiles(self):
         script = render_automation_script()
+        self.assertIsNone(self.validate(script), script)
+
+    def test_the_rules_script_compiles(self):
+        script = render_rules_script()
         self.assertIsNone(self.validate(script), script)
 
     def test_a_script_missing_a_require_does_not(self):

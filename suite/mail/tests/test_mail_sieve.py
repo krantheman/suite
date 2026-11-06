@@ -7,14 +7,18 @@ import frappe
 
 from suite.mail.api.mail import create_mailbox, get_mailboxes, get_threads
 from suite.mail.api.sieve import (
-    create_automation_script,
     create_sieve_script,
     delete_sieve_script,
     get_sieve_scripts,
     rebuild_automation_script_for_account,
+    set_sieve_script_included,
     update_sieve_script,
 )
-from suite.mail.doctype.sieve_script.sieve_script import AUTOMATION_SCRIPT_NAME
+from suite.mail.doctype.sieve_script.sieve_script import (
+    AUTOMATION_SCRIPT_NAME,
+    SieveScript,
+    get_own_scripts,
+)
 from suite.mail.jmap import SuiteJMAPClient, get_account_client
 from suite.mail.tests.base import StalwartIntegrationTestCase, unique_name
 
@@ -45,19 +49,44 @@ class TestMailSieve(StalwartIntegrationTestCase):
             update_sieve_script(
                 self.account, script["id"], name, 'require ["fileinto"];\ndiscard;\n', active=True
             )
-        script = self._scripts()[name]
-        self.assertTrue(script["active"])
+        # Turned on, it runs alongside the rules from the automation script, which stays the active one.
+        scripts = self._scripts()
+        script = scripts[name]
+        self.assertFalse(script["active"])
+        self.assertTrue(script["included"])
+        self.assertTrue(scripts[AUTOMATION_SCRIPT_NAME]["active"])
         self.assertIn("discard;", script["content"])
 
         with self.set_user(self.member.email):
-            # An active script cannot be deleted - deactivate it first, then restore the
-            # automation script as the active one for later tests.
-            update_sieve_script(
-                self.account, script["id"], name, 'require ["fileinto"];\ndiscard;\n', active=False
-            )
-            create_automation_script(self.account, active=True)
+            set_sieve_script_included(self.account, script["id"], included=False)
+        scripts = self._scripts()
+        self.assertFalse(scripts[name]["included"])
+        self.assertTrue(scripts[AUTOMATION_SCRIPT_NAME]["active"])
+
+        with self.set_user(self.member.email):
             delete_sieve_script(self.account, script["id"])
         self.assertNotIn(name, self._scripts())
+
+    def test_turning_automation_on_runs_a_script_that_was_active_by_itself(self):
+        # From before scripts ran alongside the rules, a person's own script could be the active one.
+        # Turning folder automation back on keeps it running, from the automation script.
+        name = unique_name("legacy")
+        with self.set_user(self.member.email):
+            SieveScript._add_sieve_script(self.account, name, 'require ["fileinto"];\nkeep;\n', True)
+            automation = self._scripts()[AUTOMATION_SCRIPT_NAME]
+            update_sieve_script(
+                self.account, automation["id"], AUTOMATION_SCRIPT_NAME, automation["content"], active=True
+            )
+
+        scripts = self._scripts()
+        self.assertTrue(scripts[AUTOMATION_SCRIPT_NAME]["active"])
+        self.assertTrue(scripts[name]["included"])
+        runs = get_own_scripts(scripts[AUTOMATION_SCRIPT_NAME]["content"])
+        self.assertIn(name, runs)
+        self.assertNotIn(AUTOMATION_SCRIPT_NAME, runs)
+
+        with self.set_user(self.member.email):
+            delete_sieve_script(self.account, scripts[name]["id"])
 
     def test_script_content_travels_inside_the_request(self):
         # Stalwart offers RFC 9404, so a save uploads the script in the request and names its blob

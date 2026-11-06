@@ -82,7 +82,13 @@ export const registration: OwnerRegistration = {
       return {
         effects: {
           matches: matchingAccount,
-          invalidates: ['mail.get_mailboxes', 'mail.get_unified_folders', 'mail.get_sieve_scripts'],
+          invalidates: [
+            'mail.get_mailboxes',
+            'mail.get_unified_folders',
+            'mail.get_sieve_scripts',
+            // A folder's own rules are listed beside the rules, and a rule may move mail into it.
+            'mail.get_rules',
+          ],
         },
       }
     if (
@@ -90,14 +96,17 @@ export const registration: OwnerRegistration = {
         'create_sieve_script',
         'update_sieve_script',
         'delete_sieve_script',
+        'set_sieve_script_included',
         'create_automation_script',
         'rebuild_automation_script_for_account',
+        'save_rules',
       ].includes(reference.id)
     )
       return {
         effects: {
           invalidates: [
             'mail.get_sieve_scripts',
+            'mail.get_rules',
             'mail.get_mailboxes',
             'mail.get_vacation_response',
           ],
@@ -107,7 +116,7 @@ export const registration: OwnerRegistration = {
       return {
         effects: {
           matches: matchingAccount,
-          invalidates: ['mail.get_vacation_response', 'mail.get_sieve_scripts'],
+          invalidates: ['mail.get_vacation_response', 'mail.get_sieve_scripts', 'mail.get_rules'],
         },
       }
     if (reference.id === 'set_signature')

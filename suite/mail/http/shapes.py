@@ -142,6 +142,8 @@ class SieveScript(TypedDict):
     id: str
     _name: str
     active: Flag
+    # Runs alongside the rules, from the automation script.
+    included: NotRequired[Flag]
     blob_id: str
     content: str
     read_only: bool

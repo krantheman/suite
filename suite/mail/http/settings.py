@@ -6,9 +6,10 @@ from typing import Literal, NotRequired, TypedDict
 import frappe
 
 from suite.composition.http import Route, RouteKind
-from suite.mail.api import account, mail, sieve
+from suite.mail.api import account, mail, rules, sieve
 from suite.mail.doctype.vacation_response import vacation_response
 from suite.mail.http.shapes import AccountInput, Flag
+from suite.mail.rules import Rule
 
 
 class MailClientConfig(TypedDict):
@@ -80,6 +81,63 @@ class CreateAutomation(AccountInput):
     active: NotRequired[bool]
 
 
+class ScriptIncluded(AccountInput):
+    id: str
+    included: bool
+
+
+class FolderRule(TypedDict):
+    mailbox_id: str
+    folder: str
+    emails_from: str
+    subject_contains: str
+    match_if: str
+    mark_as_read: bool
+    add_star: bool
+
+
+class RulesStanding(TypedDict):
+    # A script of the person's own that is active instead of the rules, or "vacation".
+    paused_by: str | None
+    # The scripts of their own that run alongside the rules.
+    own_scripts: list[str]
+
+
+class Rules(RulesStanding):
+    rules: list[Rule]
+    folder_rules: list[FolderRule]
+
+
+class SaveRules(AccountInput):
+    rules: list[Rule]
+
+
+class SavedRules(RulesStanding):
+    rules: list[Rule]
+
+
+class PreviewInput(AccountInput):
+    rule: Rule
+
+
+class DraftInput(AccountInput):
+    message_id: str
+
+
+class PreviewRow(TypedDict):
+    id: str
+    thread_id: str
+    subject: str
+    from_name: str
+    from_email: str
+    received_at: str
+
+
+class Preview(TypedDict):
+    total: int
+    rows: list[PreviewRow]
+
+
 class Vacation(TypedDict):
     account: str
     enabled: bool | Flag
@@ -112,6 +170,11 @@ _OPERATIONS: tuple[tuple[Callable[..., object], RouteKind, str, object, object],
     (sieve.create_sieve_script, "mutation", "sieve.create", CreateScript, type(None)),
     (sieve.update_sieve_script, "mutation", "sieve.update", UpdateScript, type(None)),
     (sieve.delete_sieve_script, "mutation", "sieve.delete", DeleteScript, type(None)),
+    (sieve.set_sieve_script_included, "mutation", "sieve.setIncluded", ScriptIncluded, type(None)),
+    (rules.get_rules, "query", "rules.list", AccountInput, Rules),
+    (rules.save_rules, "mutation", "rules.save", SaveRules, SavedRules),
+    (rules.preview_rule, "query", "rules.preview", PreviewInput, Preview),
+    (rules.draft_rule, "query", "rules.draft", DraftInput, Rule),
     (sieve.create_automation_script, "mutation", "sieve.createAutomation", CreateAutomation, type(None)),
     (
         sieve.rebuild_automation_script_for_account,
