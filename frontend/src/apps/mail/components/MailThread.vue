@@ -81,9 +81,8 @@
                 <span v-else class="text-ink-gray-4 min-w-0 flex-1">{{ __('[No subject]') }}</span>
               </h1>
               <!-- One wrapper's margin, so two strips aren't parted by twice the gap. It collapses with
-                   the next row's margin, so it sets the gap below on its own, sized to read even with
-                   the space above the strip, where the subject's line has slack of its own. -->
-              <div v-if="hasStrip" class="sm:mb-4 sm:space-y-2">
+                   the next row's margin, so it sets the gap below on its own. -->
+              <div v-if="hasStrip" class="sm:mb-6 sm:space-y-2">
                 <ThreadStrip v-if="returned" :icon="noReply ? 'lucide-bell' : 'lucide-clock'">
                   <span class="flex flex-wrap gap-x-2">
                     <span>{{ returnedText.text }}</span>
